@@ -7,6 +7,7 @@ class Armor
 	: public Base
 {
 public:
+	Armor(std::string image);
 	sf::Sprite getArmor();
 	float getRotationArmor();
 	sf::Vector2f getOriginArmor();

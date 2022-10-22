@@ -1,5 +1,10 @@
 #include "Armor.h"
 
+
+Armor::Armor(std::string image) : Base(image)
+{
+}
+
 sf::Sprite Armor::getArmor()
 {
 	return _sprite;
