@@ -19,6 +19,7 @@ public:
 	void setLife(int life);
 	void setScale(sf::Vector2f scale);
 	void setAngle(float deg);
+	void updateAnimation();
 	void update();
 };
 

@@ -35,17 +35,22 @@ void Block::setAngle(float deg)
 	_sprite.rotate(deg);
 }
 
-void Block::update()
+void Block::updateAnimation()
 {
-	// Update animacion con la vida que le queda al objeto
 	if (_life <= 0)
 		_life = 0;
+	
 	sf::Vector2u currentImage = _animation.getCurrentImage();
 	currentImage.x = _max_life - _life;
 	_animation.setCurrentImage(currentImage);
 	_sprite.setTextureRect(_animation.uvRect);
 	_sprite.setOrigin(_animation.uvRect.width / 2, _animation.uvRect.height / 2);
 	_animation.update();
+}
+
+void Block::update()
+{
+	updateAnimation();
 }
 
 void Block::setScale(sf::Vector2f scale)
