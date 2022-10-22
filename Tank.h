@@ -10,6 +10,7 @@ class Tank
 {
 protected:
 	Armor* _armor;
+	sf::Texture _armorTexture;
 	sf::Vector2f _last_position;
 	float _movement_speed;
 	float _attack;
@@ -20,10 +21,12 @@ protected:
 	Animation _animation;
 	int _life;
 	int _max_life;
-	void _initTexture(std::string image, sf::Vector2u imageCount);
+	void _initTexture(std::string image);
+	void _initSprite();
+	void _initArmor(std::string armorTexture);
 
 public:
-	Tank(std::string image, sf::Vector2u imageCount);
+	Tank(std::string image, std::string armorTexture, sf::Vector2u imageCount);
 	~Tank();
 	
 	//getter
@@ -47,6 +50,7 @@ public:
 	Collider getCollider();
 	void updateAttack();
 	void updateArmor(sf::RenderWindow& window);
+	void updateAnimation();
 	void update(sf::RenderWindow& window);
 	void render(sf::RenderWindow& window);
 };

@@ -1,27 +1,34 @@
 #include "Tank.h"
-void Tank::_initTexture(std::string image, sf::Vector2u imageCount)
+void Tank::_initTexture(std::string image)
 {
 	//Load Texture
 	if (!_texture.loadFromFile(image))
-		std::cout << "ERROR::PLAYER::INITTEXTURE::Could not load texture." << std::endl;
+		std::cout << "ERROR::PLAYER::INITTEXTURE::Could not load player texture." << std::endl;
 }
 
-Tank::Tank(std::string image, sf::Vector2u imageCount) : _animation(image, imageCount)
+void Tank::_initSprite()
 {
-	//Init Sprite
-	_initTexture(image, imageCount);
-	_initSprite();
+	_sprite.setTexture(_texture);
 	_sprite.setScale(0.7f, 0.7f);
 	_sprite.setPosition(200, 200);
-	_sprite.setOrigin(_sprite.getLocalBounds().width / 2, _sprite.getLocalBounds().height / 2);
+}
+
+void Tank::_initArmor(std::string armorTexture)
+{
+	_armor = new Armor(armorTexture);
+	_armor->setPosition({ _sprite.getPosition().x, _sprite.getPosition().y });
+}
+
+Tank::Tank(std::string image, std::string armorTexture, sf::Vector2u imageCount) : _animation(image, imageCount)
+{
+	//Init Textures
+	_initTexture(image);
+	_initSprite();
+	_initArmor(armorTexture);
+	
+	//Init Variables
 	_life = imageCount.x;
 	_max_life = imageCount.x;
-	
-	// Iniciar Arma
-	_armor = new Armor;
-	_armor->setPosition({_sprite.getPosition().x, _sprite.getPosition().y});
-
-	// Propiedades
 	_movement_speed = 3.f;
 	_attack_max = 5.f;
 	_attack = _attack_max;
@@ -128,8 +135,23 @@ void Tank::updateArmor(sf::RenderWindow& window)
 	_armor->setRotation(abs(deg));
 }
 
+void Tank::updateAnimation()
+{
+	if (_life <= 0)
+		_life = 0;
+	
+	sf::Vector2u currentImage = _animation.getCurrentImage();
+	currentImage.x = _max_life - _life;
+	_animation.setCurrentImage(currentImage);
+	_sprite.setTextureRect(_animation.uvRect);
+	_sprite.setOrigin(_animation.uvRect.width / 2, _animation.uvRect.height / 2);
+	_animation.update();
+}
+
 void Tank::update(sf::RenderWindow& window)
 {
+
+	updateAnimation();
 	updateArmor(window);
 	_armor->update();
 	updateAttack();
