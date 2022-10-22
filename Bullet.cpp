@@ -1,6 +1,5 @@
 #include "Bullet.h"
 
-
 Bullet::Bullet(float pos_x, float pos_y, float x, float y, float degree, std::string texture) : Base(texture)
 {
 	_max_distance = 120.f;
