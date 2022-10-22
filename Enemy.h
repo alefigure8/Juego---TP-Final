@@ -7,7 +7,7 @@ class Enemy
 	: public Tank
 {
 public:
-	Enemy(std::string image, sf::Vector2u imageCount, float speed, float speed_attack, int hp);
+	Enemy(std::string image, std::string armorTexture, sf::Vector2u imageCount, float speed, float speed_attack, int hp);
 	~Enemy();
 };
 

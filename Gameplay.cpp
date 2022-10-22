@@ -15,7 +15,7 @@ void Gameplay::_initWindow()
 
 void Gameplay::_initPlayer()
 {
-	_player = new Player("Texture/tank1_body.png", sf::Vector2u(1, 1));
+	_player = new Player("Texture/tank1_body.png", "Texture/tank1_gun.png", sf::Vector2u(1, 1));
 }
 
 Bullet* Gameplay::_initBullet()
