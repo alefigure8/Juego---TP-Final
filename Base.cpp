@@ -1,21 +1,28 @@
 #include "Base.h"
 
-void Base::_initTexture()
+void Base::_initTexture(std::string texture)
 {
 	//Load Texture Default
-	if (!_texture.loadFromFile("Texture/void.png"))
+	if (!_texture.loadFromFile(texture))
 		std::cout << "ERROR::PLAYER::INITTEXTURE::Could not load texture." << std::endl;
+}
+
+Base::Base(std::string texture)
+{
+	_initTexture(texture);
+	_initSprite();
 }
 
 Base::Base()
 {
-	_initTexture();
-	_initSprite();
+	_life = 0;
+	_max_life = _life;
 }
 
 void Base::_initSprite()
 {
 	_sprite.setTexture(_texture);
+	_sprite.setOrigin(_sprite.getLocalBounds().width / 2, _sprite.getLocalBounds().height / 2);
 }
 
 sf::FloatRect Base::getBounds()

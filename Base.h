@@ -13,8 +13,9 @@ protected:
 	int _max_life;
 	
 	void _initSprite();
-	void _initTexture();
+	void _initTexture(std::string texture);
 public:
+	Base(std::string texture);
 	Base();
 	
 	//Getters
