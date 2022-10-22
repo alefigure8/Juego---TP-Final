@@ -4,7 +4,7 @@
 #include "Base.h"
 
 class Armor
-	: protected Base
+	: public Base
 {
 public:
 	sf::Sprite getArmor();
