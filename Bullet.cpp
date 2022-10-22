@@ -1,8 +1,14 @@
 #include "Bullet.h"
 
-Bullet::Bullet(float pos_x, float pos_y, float x, float y, float degree)
+void Bullet::_initTexture(std::string texture)
 {
-	_initTexture();
+	if (!_texture.loadFromFile("Texture/bulletGreen1.png"))
+		std::cout << "ERROR::PLAYER::INITTEXTURE::Could not load texture." << std::endl;
+}
+
+Bullet::Bullet(float pos_x, float pos_y, float x, float y, float degree, std::string texture)
+{
+	_initTexture(texture);
 	_initSprite();
 
 	_max_distance = 120.f;

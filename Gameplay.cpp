@@ -31,7 +31,7 @@ Bullet* Gameplay::_initBullet()
 	float armorPositionX = _player->getArmor()->getPosition().x + (_player->getArmor()->getBounds().width / 2 * velx);
 	float armorPositionY = _player->getArmor()->getPosition().y + (_player->getArmor()->getBounds().height / 2 * vely);
 
-	return new Bullet(armorPositionX, armorPositionY, velx, vely, degree - 180);
+	return new Bullet(armorPositionX, armorPositionY, velx, vely, degree - 180, "Texture/bulletGreen1.png");
 }
 
 void Gameplay::_initBlock()
