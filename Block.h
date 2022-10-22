@@ -5,7 +5,7 @@
 #include "Animation.h"
 
 class Block 
-	: protected Base
+	: public Base
 {
 private:
 	Animation _animation;
