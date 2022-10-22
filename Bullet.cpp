@@ -24,3 +24,8 @@ float Bullet::getMaxDistance()
 {
 	return _max_distance;
 }
+
+void Bullet::setMaxDistance(float distance)
+{
+	_max_distance = distance;
+}

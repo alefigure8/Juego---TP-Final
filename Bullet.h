@@ -4,7 +4,7 @@
 #include "Base.h"
 
 class Bullet
-	: protected Base
+	: public Base
 {
 private:
 	sf::Vector2f _direction;
@@ -14,6 +14,11 @@ private:
 public:
 	Bullet(float pos_x, float pos_y, float x, float y, float degree);
 	~Bullet();
+	
+	//getter
 	float getMaxDistance();
+	
+	//setter
+	void setMaxDistance(float distance);
 };
 
