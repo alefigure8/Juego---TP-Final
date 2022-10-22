@@ -22,5 +22,8 @@ public:
 	
 	//setter
 	void setMaxDistance(float distance);
+
+	//methods
+	void update();
 };
 
