@@ -6,7 +6,7 @@ class Player
 	: public Tank
 {
 public:
-	Player(std::string image, sf::Vector2u imageCount);
+	Player(std::string image, std::string armorTexture, sf::Vector2u imageCount);
 	~Player();
 };
 
