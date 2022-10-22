@@ -167,12 +167,8 @@
     <ClInclude Include="Level.h" />
     <ClInclude Include="Movable.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="Tank.h" />
     <ClInclude Include="Tree.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Juego - TP Final.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

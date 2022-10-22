@@ -55,3 +55,13 @@ bool Collider::CheckCollision(Collider& other, float push)
 	}
 	return false;
 }
+
+sf::Vector2f Collider::GetPosition()
+{
+	return _sprite.getPosition();
+}
+
+sf::Vector2f Collider::GetHalfSize()
+{
+	return { _sprite.getGlobalBounds().width / 2, _sprite.getGlobalBounds().height / 2 };
+}
