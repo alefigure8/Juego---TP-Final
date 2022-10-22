@@ -19,7 +19,7 @@ Tank::Tank(std::string image, sf::Vector2u imageCount) : _animation(image, image
 	
 	// Iniciar Arma
 	_armor = new Armor;
-	_armor->setPosition(_sprite.getPosition().x, _sprite.getPosition().y);
+	_armor->setPosition({_sprite.getPosition().x, _sprite.getPosition().y});
 
 	// Propiedades
 	_movement_speed = 3.f;
@@ -42,11 +42,21 @@ Armor* Tank::getArmor()
 	return _armor;
 }
 
+int Tank::getLife()
+{
+	return _life;
+}
+
+void Tank::setLife(int life)
+{
+	_life = life;
+}
+
 void Tank::move(float x, float y)
 {
 	_last_position = _sprite.getPosition();
 	_sprite.move(_movement_speed * x, _movement_speed * y);
-	_armor->setPosition(_sprite.getPosition().x, _sprite.getPosition().y);
+	_armor->setPosition({ _sprite.getPosition().x, _sprite.getPosition().y });
 }
 
 void Tank::setRotation(float degree)
@@ -69,6 +79,11 @@ float Tank::getSpeedMovement()
 	return _movement_speed;
 }
 
+int Tank::getHP()
+{
+	return _hp;
+}
+
 void Tank::setSpeedAttack(float speed)
 {
 	_speed_attack = speed;
@@ -77,6 +92,11 @@ void Tank::setSpeedAttack(float speed)
 void Tank::setSpeedMovement(float speed)
 {
 	_movement_speed = speed;
+}
+
+void Tank::setHP(int hp)
+{
+	_hp = hp;
 }
 
 
@@ -118,5 +138,5 @@ void Tank::update(sf::RenderWindow& window)
 void Tank::render(sf::RenderWindow& window)
 {
 	window.draw(_sprite);
-	window.draw(_arma->getArma());
+	window.draw(_armor->getArmor());
 }

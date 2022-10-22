@@ -6,15 +6,16 @@
 #include "Armor.h"
 
 class Tank
-	: protected Base
+	: public Base
 {
-private:
+protected:
 	Armor* _armor;
 	sf::Vector2f _last_position;
 	float _movement_speed;
 	float _attack;
 	float _attack_max;
 	float _speed_attack;
+	int _hp;
 
 	Animation _animation;
 	int _life;
@@ -32,12 +33,13 @@ public:
 	void setLife(int life);
 	float getSpeedAttack();
 	float getSpeedMovement();
-	
+	int getHP();
 	
 	//setter
 	void setRotation(float degree);
 	void setSpeedAttack(float speed);
 	void setSpeedMovement(float speed);
+	void setHP(int hp);
 	
 	//methods
 	bool canAttack();
