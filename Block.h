@@ -11,7 +11,7 @@ private:
 	Animation _animation;
 	int _life;
 	int _max_life;
-	void _initTexture(std::string image, sf::Vector2u imageCount);
+
 public:
 	Block(std::string image, sf::Vector2u imageCount);
 	~Block();

@@ -1,16 +1,8 @@
 #include "Block.h"
 
-void Block::_initTexture(std::string image, sf::Vector2u imageCount)
-{
-	//Load Texture
-	if (!_texture.loadFromFile(image))
-		std::cout << "ERROR::PLAYER::INITTEXTURE::Could not load texture." << std::endl;
-}
 
-Block::Block(std::string image, sf::Vector2u imageCount) : _animation(image, imageCount)
+Block::Block(std::string image, sf::Vector2u imageCount) : _animation(image, imageCount), Base(image)
 {
-	_initTexture(image, imageCount);
-	_initSprite();
 	_life = imageCount.x;
 	_max_life = imageCount.x;
 }
