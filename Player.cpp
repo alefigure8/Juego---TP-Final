@@ -9,7 +9,7 @@ Player::Player(std::string image, std::string armorTexture, sf::Vector2u imageCo
 	_speed_attack = 0.2f;
 	_hp = 1;
 
-	//Init armor
+	//armor config
 	_armor->getSprite().setScale(0.7f, -0.7f);
 }
 

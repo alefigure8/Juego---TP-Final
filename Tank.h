@@ -21,8 +21,7 @@ protected:
 	Animation _animation;
 	int _life;
 	int _max_life;
-	void _initTexture(std::string image);
-	void _initSprite();
+
 	void _initArmor(std::string armorTexture);
 
 public:

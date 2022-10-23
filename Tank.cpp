@@ -1,17 +1,5 @@
 #include "Tank.h"
-void Tank::_initTexture(std::string image)
-{
-	//Load Texture
-	if (!_texture.loadFromFile(image))
-		std::cout << "ERROR::PLAYER::INITTEXTURE::Could not load player texture." << std::endl;
-}
 
-void Tank::_initSprite()
-{
-	_sprite.setTexture(_texture);
-	_sprite.setScale(0.7f, 0.7f);
-	_sprite.setPosition(200, 200);
-}
 
 void Tank::_initArmor(std::string armorTexture)
 {
@@ -19,12 +7,14 @@ void Tank::_initArmor(std::string armorTexture)
 	_armor->setPosition({ _sprite.getPosition().x, _sprite.getPosition().y });
 }
 
-Tank::Tank(std::string image, std::string armorTexture, sf::Vector2u imageCount) : _animation(image, imageCount)
+Tank::Tank(std::string image, std::string armorTexture, sf::Vector2u imageCount) : _animation(image, imageCount), Base(image)
 {
-	//Init Textures
-	_initTexture(image);
-	_initSprite();
+	//Init Armor
 	_initArmor(armorTexture);
+
+	//Tank Config
+	_sprite.setScale(0.7f, 0.7f);
+	_sprite.setPosition(200, 200);
 	
 	//Init Variables
 	_life = imageCount.x;
