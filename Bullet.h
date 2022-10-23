@@ -11,8 +11,6 @@ private:
 	float _movement_speed;
 	float _max_distance;
 
-	void _initTexture(std::string texture);
-
 public:
 	Bullet(float pos_x, float pos_y, float x, float y, float degree, std::string texture);
 	~Bullet();
