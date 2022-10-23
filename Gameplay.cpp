@@ -39,8 +39,6 @@ void Gameplay::_initBlock()
 	_movable = new Movable("Texture/truck2b_destroyed.png", sf::Vector2u(1, 1));
 	_movable->setPosition({ 200, 300 });
 	_movable->setScale({ 0.7, 0.7 });
-	//_bloque_arbol = new Arbol("Texture/treeGreen_large.png", sf::Vector2u(1, 1));
-	//_bloque_arbol->setPosition({ 100, 150 });
 }
 
 void Gameplay::_initLevel()
@@ -279,7 +277,6 @@ void Gameplay::update()
 
 	//Bloque
 	_movable->update();
-	//_bloque_arbol->update();
 
 	//Colliders
 	updateColliders();
@@ -318,9 +315,6 @@ void Gameplay::render()
 	{
 		_shoot->render(*_window);
 	}
-
-	//Bloque Arbol
-	//_bloque_arbol->render(*_window);
 
 	//Display
 	_window->display();
