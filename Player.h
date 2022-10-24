@@ -8,5 +8,8 @@ class Player
 public:
 	Player(std::string image, std::string armorTexture, sf::Vector2u imageCount);
 	~Player();
+	
+	//Methods
+	void updateArmor(sf::RenderWindow& window);
 };
 
