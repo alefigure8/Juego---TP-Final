@@ -4,7 +4,7 @@
 void Tank::_initArmor(std::string armorTexture)
 {
 	_armor = new Armor(armorTexture);
-	_armor->setPosition({ _sprite.getPosition().x, _sprite.getPosition().y });
+	_armor->setPosition(_sprite.getPosition());
 }
 
 Tank::Tank(std::string image, std::string armorTexture, sf::Vector2u imageCount) : _animation(image, imageCount), Base(image)
@@ -14,12 +14,11 @@ Tank::Tank(std::string image, std::string armorTexture, sf::Vector2u imageCount)
 
 	//Tank Config
 	_sprite.setScale(0.7f, 0.7f);
-	_sprite.setPosition(200, 200);
 	
 	//Init Variables
 	_life = imageCount.x;
 	_max_life = imageCount.x;
-	_movement_speed = 3.f;
+	_movement_speed = 1.0f;
 	_attack_max = 5.f;
 	_attack = _attack_max;
 }
@@ -116,13 +115,13 @@ bool Tank::canAttack()
 
 void Tank::updateArmor(sf::RenderWindow& window)
 {
-	float armaCenterX = _armor->getPosition().x;
+	/*float armaCenterX = _armor->getPosition().x;
 	float armaCenterY = _armor->getPosition().y;
 	float mousePosX = sf::Mouse::getPosition(window).x;
 	float mousePosY = sf::Mouse::getPosition(window).y;
 	float atan = atan2(armaCenterX - mousePosX, mousePosY - armaCenterY);
 	float deg = (atan / 3.14159265358979323846 * 180) + (atan > 0 ? 0 : 360);
-	_armor->setRotation(abs(deg));
+	_armor->setRotation(abs(deg));*/
 }
 
 void Tank::updateAnimation()
@@ -142,7 +141,6 @@ void Tank::update(sf::RenderWindow& window)
 {
 
 	updateAnimation();
-	updateArmor(window);
 	_armor->update();
 	updateAttack();
 }
