@@ -6,20 +6,36 @@
 
 void Gameplay::_initWindow()
 {
-	_window = new sf::RenderWindow(sf::VideoMode(900, 700), "FORCE TANK", sf::Style::Close | sf::Style::Titlebar);
+	_window = new sf::RenderWindow(sf::VideoMode(_rectHeight, _rectWidth), _nameGame, sf::Style::Close | sf::Style::Titlebar);
 	_window->setFramerateLimit(60);
 	_window->setVerticalSyncEnabled(false);
-	sf::View view(sf::FloatRect(-20, -15, 900, 700));
+	sf::View view(sf::FloatRect(-20, -15, _rectHeight, _rectWidth));
 	_window->setView(view);
 }
 
 void Gameplay::_initPlayer()
 {
 	_player = new Player("Texture/tank1_body.png", "Texture/tank1_gun.png", sf::Vector2u(1, 1));
+
+	// Init Position
+	_player->getSprite().setPosition({ 200, 200 });
+	_player->getArmor()->setPosition(_player->getPosition());
+}
+
+void Gameplay::_initEnemy()
+{
+	_enemy = new Enemy("Texture/tank1b_body.png", "Texture/tank1b_gun.png", sf::Vector2u(1, 1));
+
+	//Init Position
+	_enemy->getSprite().setPosition({ 400, 400 });
+	_enemy->getArmor()->setPosition(_enemy->getPosition());
+	
 }
 
 Bullet* Gameplay::_initBullet()
 {
+
+	// Init Player BUllet
 	float PI = 3.14;
 	float degree = _player->getArmor()->getRotationArmor();
 
@@ -32,6 +48,7 @@ Bullet* Gameplay::_initBullet()
 	float armorPositionY = _player->getArmor()->getPosition().y + (_player->getArmor()->getBounds().height / 2 * vely);
 
 	return new Bullet(armorPositionX, armorPositionY, velx, vely, degree - 180, "Texture/bulletGreen1.png");
+	//return new BUllet(helper.amorPosition(_player), helper.vel(degree),degree-180,"Texture/bulletGreen1.png");
 }
 
 void Gameplay::_initBlock()
@@ -53,9 +70,16 @@ void Gameplay::_initEffect()
 
 Gameplay::Gameplay()
 {
+	//Init variables
+	_nameGame = "FORCE TANK";
+	_rectHeight = 800;
+	_rectWidth = 700;
+
+	//Init functiones
 	_initWindow();
 	_initLevel();
 	_initPlayer();
+	_initEnemy();
 	_initBlock();
 	_initEffect();
 }
@@ -63,8 +87,8 @@ Gameplay::Gameplay()
 Gameplay::~Gameplay()
 {
 	delete _window;
-
 	delete _player;
+	delete _enemy;
 
 	for (auto* i : _bullet)
 	{
@@ -101,25 +125,25 @@ void Gameplay::updateInput()
 	//Player
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
-		_player->move(0.f, -0.4f);
+		_player->move(0.f, -_player->getSpeedMovement());
 		_player->setRotation(0);
 	}
 
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
-		_player->move(0.f, 0.4f);
+		_player->move(0.f, _player->getSpeedMovement());
 		_player->setRotation(180);
 	}
 
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
-		_player->move(-0.4f, 0.f);
+		_player->move(-_player->getSpeedMovement(), 0.f);
 		_player->setRotation(-90);
 	}
 
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
-		_player->move(0.4f, 0.f);
+		_player->move(_player->getSpeedMovement(), 0.f);
 		_player->setRotation(90);
 	}
 
@@ -198,11 +222,11 @@ void Gameplay::updateBullet()
 }
 
 
-//Collider bloque
 void Gameplay::updateColliders()
 {
-	Collider c = _player->getCollider();
-	Collider c2 = _movable->getCollider();
+	Collider palyer = _player->getCollider();
+	Collider movable = _movable->getCollider();
+	Collider enemy = _enemy->getCollider();
 
 	for (int i = 0; i < _level->getHeight(); i++)
 	{
@@ -210,25 +234,41 @@ void Gameplay::updateColliders()
 		{
 			if (_level->getTile(i, j)->getLife() > 0)
 			{
-				//Si la casa tiene vida, detiene al camion y a nosotros
-				_level->getTile(i, j)->getCollider().CheckCollision(c, 1.f);
-
-				if (_level->getTile(i, j)->getCollider().CheckCollision(c2, 1.f))
+				//Si la casa tiene vida
+				_level->getTile(i, j)->getCollider().CheckCollision(palyer, 1.f);
+				
+				// Cambiar estado a Enemigo si colisiona
+				if(_level->getTile(i, j)->getCollider().CheckCollision(enemy, 1.0f))
 				{
-					_movable->getCollider().CheckCollision(c, 1.f);
+					_enemy->setMovementState(true);
+					_enemy->updateMovement();
 				}
 				else
 				{
-					_movable->getCollider().CheckCollision(c, 0.5f);
+					_enemy->setMovementState(false);
+				}
+				
+				_level->getTile(i, j)->getCollider().CheckCollision(enemy, 1.f);
+
+				if (_level->getTile(i, j)->getCollider().CheckCollision(movable, 1.f))
+				{
+					_movable->getCollider().CheckCollision(palyer, 1.f);
+				}
+				else
+				{
+					_movable->getCollider().CheckCollision(palyer, 0.5f);
 				}
 			}
 			else
 			{
-				//Si la casa no tiene vida, podemos seguir moviendonos y al camion
-				_movable->getCollider().CheckCollision(c, 0.5f);
+				_movable->getCollider().CheckCollision(palyer, 0.5f);
 			}
 		}
 	}
+	
+	// Colision de Player y Enemigo
+	_enemy->getCollider().CheckCollision(palyer, 1.0f);
+	_player->getCollider().CheckCollision(enemy, 1.0f);
 
 }
 
@@ -273,8 +313,14 @@ void Gameplay::update()
 	updateBullet();
 
 	//Player
+	_player->updateArmor(*_window);
 	_player->update(*_window);
 
+	//Enemy
+	_enemy->updateArmor(*_window);
+	_enemy->update(*_window);
+	_enemy->updateMovement();
+	
 	//Bloque
 	_movable->update();
 
@@ -303,6 +349,9 @@ void Gameplay::render()
 
 	//Player
 	_player->render(*_window);
+
+	//Enemy
+	_enemy->render(*_window);
 
 	//Bullets
 	for (auto* bala : _bullet)

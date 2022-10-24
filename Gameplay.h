@@ -3,6 +3,7 @@
 #include "SFML/Graphics.hpp"
 #include "Level.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "Bullet.h"
 #include "Effect.h"
 #include "Movable.h"
@@ -10,12 +11,21 @@
 class Gameplay
 {
 private:
+	//window config
 	sf::RenderWindow* _window;
+	float _rectWidth;
+	float _rectHeight;
+	std::string _nameGame;
+	
+	//objects compose
 	Level* _level;
 	Player* _player;
+	Enemy* _enemy;
 	std::vector<Bullet*> _bullet;
-	sf::Vector2f _last_position_shoot;
 	Effect* _shoot;
+
+	//methods
+	sf::Vector2f _last_position_shoot;
 
 	//Test
 	Movable* _movable;
@@ -23,6 +33,7 @@ private:
 	// Init functions
 	void _initWindow();
 	void _initPlayer();
+	void _initEnemy();
 	void _initBlock();
 	Bullet* _initBullet();
 	void _initEffect();
