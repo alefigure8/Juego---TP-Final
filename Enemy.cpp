@@ -16,10 +16,34 @@ Enemy::Enemy(std::string image, std::string armorTexture, sf::Vector2u imageCoun
 
 	//armor config
 	_armor->getSprite().setScale(0.7f, -0.7f);
+
 }
 
 Enemy::~Enemy()
 {
+}
+
+Bullet* Enemy::initBullet()
+{
+	// Init Enemy BUllet
+	float PI = 3.14;
+	float degree = this->getArmor()->getRotationArmor();
+
+	// Angulo de la bala
+	float velx = sin((PI / 180) * -degree);
+	float vely = cos((PI / 180) * -degree);
+
+	// Posicion de la bala
+	float armorPositionX = this->getArmor()->getPosition().x + (this->getArmor()->getBounds().width / 2 * velx);
+	float armorPositionY = this->getArmor()->getPosition().y + (this->getArmor()->getBounds().height / 2 * vely);
+
+	return new Bullet(armorPositionX, armorPositionY, velx, vely, degree - 180, "Texture/bulletGreen1.png");
+	//return new BUllet(helper.amorPosition(_player), helper.vel(degree),degree-180,"Texture/bulletGreen1.png");
+}
+
+std::vector<Bullet*>& Enemy::getBullets()
+{
+	return _bullet;
 }
 
 void Enemy::movement()
@@ -140,6 +164,11 @@ float Enemy::getTimeDirection()
 	return _time_direction;
 }
 
+sf::Vector2f Enemy::getLastPositionShoot()
+{
+	return _last_position_shoot;
+}
+
 bool Enemy::canMove()
 {
 	if (_time_direction >= _max_time_direction)
@@ -179,6 +208,16 @@ void Enemy::updateArmor()
 	//Si está yendo hacia la base
 }
 
+void Enemy::updateBullet()
+{
+	//Enemy Bulltes
+	if (this->canAttack())
+	{
+		_bullet.push_back(initBullet());
+		_last_position_shoot = { this->getArmor()->getPosition().x, this->getArmor()->getPosition().y };
+	}
+}
+
 void Enemy::updateMovement(sf::Vector2f player_position)
 {
 	//save player position
@@ -187,4 +226,5 @@ void Enemy::updateMovement(sf::Vector2f player_position)
 	movement();
 	updateTime();
 	updateArmor();
+	updateBullet();
 }
