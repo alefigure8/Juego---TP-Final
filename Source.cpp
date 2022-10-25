@@ -2,10 +2,13 @@
 #include "SFML/Graphics.hpp"
 #include "Gameplay.h"
 
+
 int main()
 {
-    Gameplay game;
-    game.run();
+    srand(time(NULL));
+	
+    Gameplay gameplay;
+    gameplay.run();
 
     return 0;
 }
