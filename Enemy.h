@@ -12,19 +12,28 @@ private:
 	int _direction;
 	float _time_direction;
 	float _max_time_direction;
+	sf::Vector2f _player_position;
 public:
 	Enemy(std::string image, std::string armorTexture, sf::Vector2u imageCount);
 	~Enemy();
+
+	//getters
+	bool getMovementState();
+	float getTimeDirection();
+
+
+	//setters
+	void setTimeDirection(float time);
+	void setMovementState(bool state);
 	
 	//Methods
 	void movement();
 	bool canMove();
-	void updateMovement();
+
+	//updates
+	void updateTime();
+	void updateArmor();
+	void updateMovement(sf::Vector2f player_position);
 	
-	void setMovementState(bool state);
-	bool getMovementState();
-	
-	void setTimeDirection(float time);
-	float getTimeDirection();
 };
 

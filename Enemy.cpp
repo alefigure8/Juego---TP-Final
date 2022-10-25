@@ -12,6 +12,7 @@ Enemy::Enemy(std::string image, std::string armorTexture, sf::Vector2u imageCoun
 	_hp = 1;
 	_time_direction = 20.f;
 	_max_time_direction = _time_direction;
+	_direction = NULL;
 
 	//armor config
 	_armor->getSprite().setScale(0.7f, -0.7f);
@@ -23,46 +24,100 @@ Enemy::~Enemy()
 
 void Enemy::movement()
 {
-	std::cout << _movement_state << std::endl;
+	float player_positionX = _player_position.x;
+	float player_positionY = _player_position.y;
+	float enemy_positionX = _sprite.getPosition().x;
+	float enemy_positionY = _sprite.getPosition().y;
+	float nearPlayerX = player_positionX - enemy_positionX;
+	float nearPlayerY = player_positionY - enemy_positionY;
+	float STOPMOVING = 60;
+
+	int optionCase = 0;
 	
+	//Si colisiona o el tiempo de movimiento se supera, entonces se mueve
 	if (_movement_state || canMove())
 	{
-		_direction = rand() % 4; //Todo: tomar direccion de player y moverse hacia el
-	
+		_direction = rand() % 3;
+
+		if (_direction == 2)
+		{
+			optionCase = rand() % 4;
+		}
+
+		//Reset variables
+		_movement_state = false;
+		_time_direction = 0.f;
 	}
-	
-	switch(_direction)
+
+	//Si el tanque está a menos de 60 X y 60 Y del player, se detiene.
+	if (abs(nearPlayerX) < STOPMOVING && abs(nearPlayerY) < STOPMOVING)
 	{
-	case 0:
-		_sprite.move(_movement_speed, 0.f);
-		_sprite.setRotation(90);
-		break;
-	case 1:
-		_sprite.move(-_movement_speed, 0.f);
-		_sprite.setRotation(270);
-		break;
-	case 2:
-		_sprite.move(0.f, _movement_speed);
-		_sprite.setRotation(180);
-		break;
-	case 3:
-		_sprite.move(0.f, -_movement_speed);
-		_sprite.setRotation(0);
-		break;
-
+		_direction = 3;
 	}
-	
-	//Setea la rotación del arma enemiga. 
-	_armor->setRotation(_sprite.getRotation());
-}
 
-void Enemy::updateMovement()
-{
-	movement();
 
-	//Incremente el tiempo para cambio de direccion
-	if (_time_direction < _max_time_direction)
-		_time_direction += 0.3f;
+	switch (_direction)
+	{
+		case 0:
+		{
+			if (player_positionX > _sprite.getPosition().x)
+			{
+				_sprite.move(_movement_speed, 0.f);
+				_sprite.setRotation(90);
+			}
+			else
+			{
+				_sprite.move(-_movement_speed, 0.f);
+				_sprite.setRotation(270);
+			}
+		}
+		break;
+		case 1:
+		{
+
+			if (player_positionY > _sprite.getPosition().y)
+			{
+				_sprite.move(0.f, _movement_speed);
+				_sprite.setRotation(180);
+			}
+			else
+			{
+				_sprite.move(0.f, -_movement_speed);
+				_sprite.setRotation(-180);
+			}
+		}
+		break;
+		case 2:
+		{
+			//TODO MEJORAR LOGICA DEL CASE 2
+			switch (optionCase)
+			{
+			case 0:
+				_sprite.move(_movement_speed, 0.f);
+				_sprite.setRotation(90);
+				break;
+			case 1:
+				_sprite.move(-_movement_speed, 0.f);
+				_sprite.setRotation(270);
+				break;
+			case 2:
+				_sprite.move(0.f, _movement_speed);
+				_sprite.setRotation(180);
+				break;
+			case 3:
+				_sprite.move(0.f, -_movement_speed);
+				_sprite.setRotation(0);
+				break;
+			}
+		}
+		break;
+		case 3:
+			//Se detiene
+			_sprite.move(0.f, 0.f);
+		break;
+	}
+
+
 }
 
 void Enemy::setMovementState(bool state)
@@ -94,4 +149,42 @@ bool Enemy::canMove()
 	}
 
 	return false;
+}
+
+void Enemy::updateTime() 
+{
+	//Incremente el tiempo para cambio de direccion
+	if (_time_direction < _max_time_direction)
+		_time_direction += 0.3f;
+
+}
+
+void Enemy::updateArmor()
+{
+	//Variables (PASAR A FUNCION QUE RETORNE UN VECTOR2F)
+	float player_positionX = _player_position.x;
+	float player_positionY = _player_position.y;
+	float enemy_positionX = _sprite.getPosition().x;
+	float enemy_positionY = _sprite.getPosition().y;
+	float nearPlayerX = player_positionX - enemy_positionX;
+	float nearPlayerY = player_positionY - enemy_positionY;
+
+	//Siestá yendo hacia el player
+	float armaCenterX = _armor->getPosition().x;
+	float armaCenterY = _armor->getPosition().y;
+	float atan = atan2(armaCenterX - player_positionX, player_positionY - armaCenterY);
+	float deg = (atan / 3.14159265358979323846 * 180) + (atan > 0 ? 0 : 360);
+	_armor->setRotation(abs(deg));
+
+	//Si está yendo hacia la base
+}
+
+void Enemy::updateMovement(sf::Vector2f player_position)
+{
+	//save player position
+	_player_position = player_position;
+
+	movement();
+	updateTime();
+	updateArmor();
 }
