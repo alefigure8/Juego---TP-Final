@@ -22,10 +22,12 @@ private:
 	Player* _player;
 	Enemy* _enemy;
 	std::vector<Bullet*> _bullet;
+	std::vector<Bullet*> _bullet_enemy;
 	Effect* _shoot;
 
 	//methods
 	sf::Vector2f _last_position_shoot;
+	sf::Vector2f _last_position_shoot_enemy;
 
 	//Test
 	Movable* _movable;
@@ -36,6 +38,7 @@ private:
 	void _initEnemy();
 	void _initBlock();
 	Bullet* _initBullet();
+	Bullet* _initBulletEnemy();
 	void _initEffect();
 	void _initLevel();
 	
