@@ -53,24 +53,6 @@ Bullet* Gameplay::_initBullet()
 	//return new BUllet(helper.amorPosition(_player), helper.vel(degree),degree-180,"Texture/bulletGreen1.png");
 }
 
-Bullet* Gameplay::_initBulletEnemy()
-{
-	// Init Enemy BUllet
-	float PI = 3.14;
-	float degree = _enemy->getArmor()->getRotationArmor();
-
-	// Angulo de la bala
-	float velx = sin((PI / 180) * -degree);
-	float vely = cos((PI / 180) * -degree);
-
-	// Posicion de la bala
-	float armorPositionX = _enemy->getArmor()->getPosition().x + (_enemy->getArmor()->getBounds().width / 2 * velx);
-	float armorPositionY = _enemy->getArmor()->getPosition().y + (_enemy->getArmor()->getBounds().height / 2 * vely);
-
-	return new Bullet(armorPositionX, armorPositionY, velx, vely, degree - 180, "Texture/bulletGreen1.png");
-	//return new BUllet(helper.amorPosition(_player), helper.vel(degree),degree-180,"Texture/bulletGreen1.png");
-}
-
 void Gameplay::_initBlock()
 {
 	_movable = new Movable("Texture/truck2b_destroyed.png", sf::Vector2u(1, 1));
@@ -94,7 +76,7 @@ Gameplay::Gameplay()
 	_nameGame = "FORCE TANK";
 	_rectHeight = 800;
 	_rectWidth = 700;
-
+	
 	//Init functiones
 	_initWindow();
 	_initLevel();
@@ -239,64 +221,57 @@ void Gameplay::updateBullet()
 				}
 			}
 
-			//Bullet Enemy
-			for (int i = 0; i < _bullet_enemy.size(); i++) // PLAYER BULLET
+			//Bullet Enemies
+			for (int i = 0; i < _enemy->getBullets().size(); i++)
 			{
 				// Movimiento bala
-				_bullet_enemy[i]->update();
+				_enemy->getBullets()[i]->update();
 
 				//Distancia de la bala
-				float balaXEnemy = _bullet_enemy[i]->getPosition().x; //Posicion X de la bala
-				float balaYEnemy = _bullet_enemy[i]->getPosition().y; //Posicion Y de la bala
-				float distxEnemy = _last_position_shoot_enemy.x - balaXEnemy;
-				float distyEnemy = _last_position_shoot_enemy.y - balaYEnemy;
+				float balaXEnemy = _enemy->getBullets()[i]->getPosition().x; //Posicion X de la bala
+				float balaYEnemy = _enemy->getBullets()[i]->getPosition().y; //Posicion Y de la bala
+				float distxEnemy = _enemy->getLastPositionShoot().x - balaXEnemy;
+				float distyEnemy = _enemy->getLastPositionShoot().y - balaYEnemy;
 				float distx2Enemy = distxEnemy * distxEnemy;
 				float disty2Enemy = distyEnemy * distyEnemy;
 				float dxy2Enemy = distx2Enemy + disty2Enemy;
 				float dxyEnemy = sqrt(dxy2Enemy);
 
 				if (
-					_bullet_enemy[i]->getBounds().intersects(_level->getTile(j, h)->getBounds()) &&
+					_enemy->getBullets()[i]->getBounds().intersects(_level->getTile(j, h)->getBounds()) &&
 					!deleteBullet2 &&
 					_level->getTile(j, h)->getLife() > 0
 					) // Colision Edificios
 				{
 					std::cout << "Disparo" << std::endl;
-					delete _bullet_enemy.at(i);
-					_bullet_enemy.erase(_bullet_enemy.begin() + i);
+					delete _enemy->getBullets().at(i);
+					_enemy->getBullets().erase(_enemy->getBullets().begin() + i);
 					deleteBullet2 = true;
 
 					_level->getTile(j, h)->setLife(_level->getTile(j, h)->getLife() - 1);
 				}
-				else if (_bullet_enemy[i]->getBounds().intersects(_movable->getBounds()) && !deleteBullet2) // Colision con caja
+				else if (_enemy->getBullets()[i]->getBounds().intersects(_movable->getBounds()) && !deleteBullet2) // Colision con caja
 				{
-					delete _bullet_enemy.at(i);
-					_bullet_enemy.erase(_bullet_enemy.begin() + i);
+					delete _enemy->getBullets().at(i);
+					_enemy->getBullets().erase(_enemy->getBullets().begin() + i);
 					deleteBullet2 = true;
 
 					_movable->setLife(_movable->getLife() - 1);
 				}
-				else if (_bullet_enemy[i]->getBounds().top > _window->getSize().y ||
-					_bullet_enemy[i]->getBounds().top + _bullet_enemy[i]->getBounds().height < 0.f ||
-					_bullet_enemy[i]->getBounds().left + _bullet_enemy[i]->getBounds().width > _window->getSize().x ||
-					_bullet_enemy[i]->getBounds().left + _bullet_enemy[i]->getBounds().width < 0.f ||
-					dxyEnemy > _bullet_enemy[i]->getMaxDistance()
+				else if (_enemy->getBullets()[i]->getBounds().top > _window->getSize().y ||
+					_enemy->getBullets()[i]->getBounds().top + _enemy->getBullets()[i]->getBounds().height < 0.f ||
+					_enemy->getBullets()[i]->getBounds().left + _enemy->getBullets()[i]->getBounds().width > _window->getSize().x ||
+					_enemy->getBullets()[i]->getBounds().left + _enemy->getBullets()[i]->getBounds().width < 0.f ||
+					dxyEnemy > _enemy->getBullets()[i]->getMaxDistance()
 					&& !deleteBullet2)
 				{
-					delete _bullet_enemy.at(i);
-					_bullet_enemy.erase(_bullet_enemy.begin() + i);
+					delete _enemy->getBullets().at(i);
+					_enemy->getBullets().erase(_enemy->getBullets().begin() + i);
 					deleteBullet2 = true;
 				}
-				
+
 			}
 		}
-	}
-
-	//Enemy Bulltes
-	if (_enemy->canAttack())
-	{
-		_bullet_enemy.push_back(_initBulletEnemy());
-		_last_position_shoot_enemy = { _enemy->getArmor()->getPosition().x, _enemy->getArmor()->getPosition().y };
 	}
 }
 
@@ -442,9 +417,9 @@ void Gameplay::render()
 		bullet->render(*_window);
 	}
 
-	for (auto* bulletEnemy : _bullet_enemy)
+	for (auto* bullet : _enemy->getBullets())
 	{
-		bulletEnemy->render(*_window);
+		bullet->render(*_window);
 	}
 
 	//Efectos
