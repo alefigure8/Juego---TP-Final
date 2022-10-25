@@ -21,6 +21,7 @@ Tank::Tank(std::string image, std::string armorTexture, sf::Vector2u imageCount)
 	_movement_speed = 1.0f;
 	_attack_max = 5.f;
 	_attack = _attack_max;
+	_weight = 3;
 }
 
 Tank::~Tank()
@@ -80,6 +81,11 @@ int Tank::getHP()
 	return _hp;
 }
 
+int Tank::getWeight()
+{
+	return _weight;
+}
+
 void Tank::setSpeedAttack(float speed)
 {
 	_speed_attack = speed;
@@ -93,6 +99,11 @@ void Tank::setSpeedMovement(float speed)
 void Tank::setHP(int hp)
 {
 	_hp = hp;
+}
+
+void Tank::setWeight(int weight)
+{
+	_weight = weight;
 }
 
 
@@ -142,6 +153,7 @@ void Tank::update(sf::RenderWindow& window)
 
 	updateAnimation();
 	_armor->update();
+	_armor->setPosition(_sprite.getPosition());
 	updateAttack();
 }
 

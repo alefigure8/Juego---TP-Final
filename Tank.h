@@ -12,6 +12,7 @@ protected:
 	Armor* _armor;
 	sf::Texture _armorTexture;
 	sf::Vector2f _last_position;
+	int _weight;
 	float _movement_speed;
 	float _attack;
 	float _attack_max;
@@ -36,12 +37,14 @@ public:
 	float getSpeedAttack();
 	float getSpeedMovement();
 	int getHP();
+	int getWeight();
 	
 	//setter
 	void setRotation(float degree);
 	void setSpeedAttack(float speed);
 	void setSpeedMovement(float speed);
 	void setHP(int hp);
+	void setWeight(int weight);
 	
 	//methods
 	bool canAttack();
