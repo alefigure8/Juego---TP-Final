@@ -20,6 +20,7 @@ void Gameplay::_initPlayer()
 	// Init Position
 	_player->getSprite().setPosition({ 200, 200 });
 	_player->getArmor()->setPosition(_player->getPosition());
+	_player->setWeight(1);
 }
 
 void Gameplay::_initEnemy()
@@ -29,7 +30,8 @@ void Gameplay::_initEnemy()
 	//Init Position
 	_enemy->getSprite().setPosition({ 400, 400 });
 	_enemy->getArmor()->setPosition(_enemy->getPosition());
-	
+	_enemy->setWeight(2);
+
 }
 
 Bullet* Gameplay::_initBullet()
@@ -224,7 +226,7 @@ void Gameplay::updateBullet()
 
 void Gameplay::updateColliders()
 {
-	Collider palyer = _player->getCollider();
+	Collider player = _player->getCollider();
 	Collider movable = _movable->getCollider();
 	Collider enemy = _enemy->getCollider();
 
@@ -234,10 +236,9 @@ void Gameplay::updateColliders()
 		{
 			if (_level->getTile(i, j)->getLife() > 0)
 			{
-				//Si la casa tiene vida
-				_level->getTile(i, j)->getCollider().CheckCollision(palyer, 1.f);
+				_level->getTile(i, j)->getCollider().CheckCollision(player, 1.f);
 				
-				// Cambiar estado a Enemigo si colisiona
+				// Cambiar direccion de enemigo si hay colision
 				if(_level->getTile(i, j)->getCollider().CheckCollision(enemy, 1.0f))
 				{
 					_enemy->setMovementState(true);
@@ -248,27 +249,37 @@ void Gameplay::updateColliders()
 					_enemy->setMovementState(false);
 				}
 				
-				_level->getTile(i, j)->getCollider().CheckCollision(enemy, 1.f);
-
+				//Detener movimiento de los elementos movible si la casa tiene vida, sino no frenar
 				if (_level->getTile(i, j)->getCollider().CheckCollision(movable, 1.f))
 				{
-					_movable->getCollider().CheckCollision(palyer, 1.f);
+					_movable->getCollider().CheckCollision(player, 1.f);
+					_movable->getCollider().CheckCollision(enemy, 1.f);
 				}
 				else
 				{
-					_movable->getCollider().CheckCollision(palyer, 0.5f);
+					_movable->getCollider().CheckCollision(player, 0.5f);
+					_movable->getCollider().CheckCollision(enemy, 0.5f);
 				}
 			}
 			else
 			{
-				_movable->getCollider().CheckCollision(palyer, 0.5f);
+				_movable->getCollider().CheckCollision(player, 0.5f);
+				_movable->getCollider().CheckCollision(enemy, 0.5f);
 			}
 		}
 	}
 	
 	// Colision de Player y Enemigo
-	_enemy->getCollider().CheckCollision(palyer, 1.0f);
-	_player->getCollider().CheckCollision(enemy, 1.0f);
+	if (_player->getWeight() > _enemy->getWeight())
+	{
+		_player->getCollider().CheckCollision(enemy, 0.5f);
+		_enemy->getCollider().CheckCollision(player, 0.1);
+	}
+	else
+	{
+		_enemy->getCollider().CheckCollision(player, 0.5f);
+		_player->getCollider().CheckCollision(enemy, 0.1);
+	}
 
 }
 
