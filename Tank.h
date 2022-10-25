@@ -33,15 +33,15 @@ public:
 	sf::Vector2f getLastPosition();
 	Armor* getArmor();
 	int getLife();
-	void setLife(int life);
 	float getSpeedAttack();
 	float getSpeedMovement();
 	int getHP();
 	int getWeight();
 	
 	//setter
+	void setLife(int life);
 	void setRotation(float degree);
-	void setSpeedAttack(float speed);
+	void setAttackMax(float speed);
 	void setSpeedMovement(float speed);
 	void setHP(int hp);
 	void setWeight(int weight);
@@ -51,7 +51,6 @@ public:
 	void move(float x, float y);
 	Collider getCollider();
 	void updateAttack();
-	void updateArmor(sf::RenderWindow& window);
 	void updateAnimation();
 	void update(sf::RenderWindow& window);
 	void render(sf::RenderWindow& window);

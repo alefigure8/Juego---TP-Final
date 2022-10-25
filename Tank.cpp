@@ -86,9 +86,9 @@ int Tank::getWeight()
 	return _weight;
 }
 
-void Tank::setSpeedAttack(float speed)
+void Tank::setAttackMax(float time)
 {
-	_speed_attack = speed;
+	_attack_max = time;
 }
 
 void Tank::setSpeedMovement(float speed)
@@ -122,17 +122,6 @@ bool Tank::canAttack()
 	}
 
 	return false;
-}
-
-void Tank::updateArmor(sf::RenderWindow& window)
-{
-	/*float armaCenterX = _armor->getPosition().x;
-	float armaCenterY = _armor->getPosition().y;
-	float mousePosX = sf::Mouse::getPosition(window).x;
-	float mousePosY = sf::Mouse::getPosition(window).y;
-	float atan = atan2(armaCenterX - mousePosX, mousePosY - armaCenterY);
-	float deg = (atan / 3.14159265358979323846 * 180) + (atan > 0 ? 0 : 360);
-	_armor->setRotation(abs(deg));*/
 }
 
 void Tank::updateAnimation()
