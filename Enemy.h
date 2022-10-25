@@ -18,6 +18,7 @@ public:
 	
 	//Methods
 	void movement();
+	bool canMove();
 	void updateMovement();
 	
 	void setMovementState(bool state);

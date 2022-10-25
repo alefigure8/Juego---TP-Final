@@ -5,12 +5,12 @@ Enemy::Enemy(std::string image, std::string armorTexture, sf::Vector2u imageCoun
 {
 	// Default values Enemies
 	_movement_state = false;
-	_movement_speed = 1.0f;
+	_movement_speed = 0.7f;
 	_attack_max = 5.f;
 	_attack = _attack_max;
 	_speed_attack = 0.2f;
 	_hp = 1;
-	_time_direction = 5.f;
+	_time_direction = 20.f;
 	_max_time_direction = _time_direction;
 
 	//armor config
@@ -25,11 +25,12 @@ void Enemy::movement()
 {
 	std::cout << _movement_state << std::endl;
 	
-	if (_movement_state)
+	if (_movement_state || canMove())
 	{
-		_direction = rand() % 4;
+		_direction = rand() % 4; //Todo: tomar direccion de player y moverse hacia el
 	
 	}
+	
 	switch(_direction)
 	{
 	case 0:
@@ -50,11 +51,18 @@ void Enemy::movement()
 		break;
 
 	}
+	
+	//Setea la rotación del arma enemiga. 
+	_armor->setRotation(_sprite.getRotation());
 }
 
 void Enemy::updateMovement()
 {
 	movement();
+
+	//Incremente el tiempo para cambio de direccion
+	if (_time_direction < _max_time_direction)
+		_time_direction += 0.3f;
 }
 
 void Enemy::setMovementState(bool state)
@@ -75,4 +83,15 @@ void Enemy::setTimeDirection(float time)
 float Enemy::getTimeDirection()
 {
 	return _time_direction;
+}
+
+bool Enemy::canMove()
+{
+	if (_time_direction >= _max_time_direction)
+	{
+		_time_direction = 0.f;
+		return true;
+	}
+
+	return false;
 }
