@@ -51,8 +51,6 @@ Block* Level::getTile(int i, int j)
 
 void Level::initLevel()
 {
-    srand(time(NULL));
-
     int cant = 0;
 
     for (int i = 0; i < HEIGHT_MAP; i++)
