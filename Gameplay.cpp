@@ -25,14 +25,61 @@ void Gameplay::_initPlayer()
 
 void Gameplay::_initEnemy()
 {
-	_enemy = new Enemy("Texture/tank1b_body.png", "Texture/tank1b_gun.png", sf::Vector2u(1, 1));
+	//TODO FORCE BULLET
+	// DITANCIA BULLET
+	//TIEMPO DE SALIDA DE CADA TANQUE
+	
+	switch(tanks[positionTankVector])
+	{
+	case 1:
+	{
+		//Init
+		_enemy = new Enemy("Texture/tank1b_body.png", "Texture/tank1b_gun.png", sf::Vector2u(1, 1));
 
-	//Init Position
-	_enemy->getSprite().setPosition({ 400, 400 });
-	_enemy->getArmor()->setPosition(_enemy->getPosition());
-	_enemy->setAttackMax(10.f);
-	_enemy->setWeight(2);
+		//Init Position
+		_enemy->getSprite().setPosition({ 400, 400 });
+		_enemy->getArmor()->setPosition(_enemy->getPosition());
+		_enemy->setAttackMax(15.f);
+		_enemy->setWeight(2);
+		
+		//Push
+		_enemies.push_back(_enemy);
+		positionTankVector++;
+	}
+		break;
+	case 2:
+	{
+		_enemy = new Enemy("Texture/tank3c_body.png", "Texture/tank3c_gun.png", sf::Vector2u(1, 1));
 
+		//Init Position
+		_enemy->getSprite().setPosition({ 400, 400 });
+		_enemy->getArmor()->setPosition(_enemy->getPosition());
+		_enemy->setAttackMax(10.f);
+		_enemy->setSpeedMovement(2.f);
+		_enemy->setWeight(1);
+		
+		//push
+		_enemies.push_back(_enemy);
+		positionTankVector++;
+		
+	}
+		break;
+	case 3:
+	{
+		_enemy = new Enemy("Texture/tank2b_body.png", "Texture/tank2b_gun.png", sf::Vector2u(1, 1));
+
+		//Init Position
+		_enemy->getSprite().setPosition({ 400, 400 });
+		_enemy->getArmor()->setPosition(_enemy->getPosition());
+		_enemy->setAttackMax(20.f);
+		_enemy->setSpeedMovement(0.5f);
+		_enemy->setWeight(3);
+		//Push
+		_enemies.push_back(_enemy);
+		positionTankVector++;
+	}
+		break;
+	}
 }
 
 Bullet* Gameplay::_initBullet()
@@ -55,7 +102,7 @@ Bullet* Gameplay::_initBullet()
 
 void Gameplay::_initBlock()
 {
-	_movable = new Movable("Texture/truck2b_destroyed.png", sf::Vector2u(1, 1));
+	_movable = new Movable("Texture/truck3b_body.png", sf::Vector2u(1, 1));
 	_movable->setPosition({ 200, 300 });
 	_movable->setScale({ 0.7, 0.7 });
 }
@@ -90,9 +137,14 @@ Gameplay::~Gameplay()
 {
 	delete _window;
 	delete _player;
-	delete _enemy;
+	//delete _enemy;
 
 	for (auto* i : _bullet)
+	{
+		delete i;
+	}
+
+	for (auto* i : _enemies)
 	{
 		delete i;
 	}
@@ -219,57 +271,81 @@ void Gameplay::updateBullet()
 					_bullet.erase(_bullet.begin() + i);
 					deleteBullet = true;
 				}
+				
+				//Enemies
+				for (auto* enemy : _enemies)
+				{
+					if (_bullet[i]->getBounds().intersects(enemy->getBounds()) && !deleteBullet2)
+					{
+						delete _bullet.at(i);
+						_bullet.erase(_bullet.begin() + i);
+						deleteBullet2 = true;
+
+						enemy->setLife(enemy->getLife() - 1);
+						
+						//Borrar enemigo si la vida llega a 0
+						if (enemy->getLife() <= 0)
+						{
+							_initEnemy();
+							delete _enemies.at(i);
+							_enemies.erase(_enemies.begin() + i);
+						}
+					}
+				}
 			}
 
 			//Bullet Enemies
-			for (int i = 0; i < _enemy->getBullets().size(); i++)
+			for (auto* enemy : _enemies)
 			{
-				// Movimiento bala
-				_enemy->getBullets()[i]->update();
 
-				//Distancia de la bala
-				float balaXEnemy = _enemy->getBullets()[i]->getPosition().x; //Posicion X de la bala
-				float balaYEnemy = _enemy->getBullets()[i]->getPosition().y; //Posicion Y de la bala
-				float distxEnemy = _enemy->getLastPositionShoot().x - balaXEnemy;
-				float distyEnemy = _enemy->getLastPositionShoot().y - balaYEnemy;
-				float distx2Enemy = distxEnemy * distxEnemy;
-				float disty2Enemy = distyEnemy * distyEnemy;
-				float dxy2Enemy = distx2Enemy + disty2Enemy;
-				float dxyEnemy = sqrt(dxy2Enemy);
-
-				if (
-					_enemy->getBullets()[i]->getBounds().intersects(_level->getTile(j, h)->getBounds()) &&
-					!deleteBullet2 &&
-					_level->getTile(j, h)->getLife() > 0
-					) // Colision Edificios
+				for (int i = 0; i < enemy->getBullets().size(); i++)
 				{
-					std::cout << "Disparo" << std::endl;
-					delete _enemy->getBullets().at(i);
-					_enemy->getBullets().erase(_enemy->getBullets().begin() + i);
-					deleteBullet2 = true;
+					// Movimiento bala
+					enemy->getBullets()[i]->update();
 
-					_level->getTile(j, h)->setLife(_level->getTile(j, h)->getLife() - 1);
-				}
-				else if (_enemy->getBullets()[i]->getBounds().intersects(_movable->getBounds()) && !deleteBullet2) // Colision con caja
-				{
-					delete _enemy->getBullets().at(i);
-					_enemy->getBullets().erase(_enemy->getBullets().begin() + i);
-					deleteBullet2 = true;
+					//Distancia de la bala
+					float balaXEnemy = enemy->getBullets()[i]->getPosition().x; //Posicion X de la bala
+					float balaYEnemy = enemy->getBullets()[i]->getPosition().y; //Posicion Y de la bala
+					float distxEnemy = enemy->getLastPositionShoot().x - balaXEnemy;
+					float distyEnemy = enemy->getLastPositionShoot().y - balaYEnemy;
+					float distx2Enemy = distxEnemy * distxEnemy;
+					float disty2Enemy = distyEnemy * distyEnemy;
+					float dxy2Enemy = distx2Enemy + disty2Enemy;
+					float dxyEnemy = sqrt(dxy2Enemy);
 
-					_movable->setLife(_movable->getLife() - 1);
-				}
-				else if (_enemy->getBullets()[i]->getBounds().top > _window->getSize().y ||
-					_enemy->getBullets()[i]->getBounds().top + _enemy->getBullets()[i]->getBounds().height < 0.f ||
-					_enemy->getBullets()[i]->getBounds().left + _enemy->getBullets()[i]->getBounds().width > _window->getSize().x ||
-					_enemy->getBullets()[i]->getBounds().left + _enemy->getBullets()[i]->getBounds().width < 0.f ||
-					dxyEnemy > _enemy->getBullets()[i]->getMaxDistance()
-					&& !deleteBullet2)
-				{
-					delete _enemy->getBullets().at(i);
-					_enemy->getBullets().erase(_enemy->getBullets().begin() + i);
-					deleteBullet2 = true;
-				}
+					if (
+						enemy->getBullets()[i]->getBounds().intersects(_level->getTile(j, h)->getBounds()) &&
+						!deleteBullet2 &&
+						_level->getTile(j, h)->getLife() > 0
+						) // Colision Edificios
+					{
+						std::cout << "Disparo" << std::endl;
+						delete enemy->getBullets().at(i);
+						enemy->getBullets().erase(enemy->getBullets().begin() + i);
+						deleteBullet2 = true;
 
+						_level->getTile(j, h)->setLife(_level->getTile(j, h)->getLife() - 1);
+					}
+					else if (enemy->getBullets()[i]->getBounds().intersects(_movable->getBounds()) && !deleteBullet2) // Colision con caja
+					{
+						delete enemy->getBullets().at(i);
+						enemy->getBullets().erase(enemy->getBullets().begin() + i);
+						deleteBullet2 = true;
+
+						_movable->setLife(_movable->getLife() - 1);
+					}
+					else if (enemy->getBullets()[i]->getBounds().top > _window->getSize().y ||
+						enemy->getBullets()[i]->getBounds().top + enemy->getBullets()[i]->getBounds().height < 0.f ||
+						enemy->getBullets()[i]->getBounds().left + enemy->getBullets()[i]->getBounds().width > _window->getSize().x ||
+						enemy->getBullets()[i]->getBounds().left + enemy->getBullets()[i]->getBounds().width < 0.f ||
+						dxyEnemy > enemy->getBullets()[i]->getMaxDistance()
+						&& !deleteBullet2)
+					{
+						delete enemy->getBullets().at(i);
+						enemy->getBullets().erase(enemy->getBullets().begin() + i);
+						deleteBullet2 = true;
+					}
+				}
 			}
 		}
 	}
@@ -280,7 +356,7 @@ void Gameplay::updateColliders()
 {
 	Collider player = _player->getCollider();
 	Collider movable = _movable->getCollider();
-	Collider enemy = _enemy->getCollider();
+	//Collider enemy = _enemy->getCollider();
 
 	for (int i = 0; i < _level->getHeight(); i++)
 	{
@@ -290,45 +366,73 @@ void Gameplay::updateColliders()
 			{
 				_level->getTile(i, j)->getCollider().CheckCollision(player, 1.f);
 				
-				// Cambiar direccion de enemigo si hay colision
-				if(_level->getTile(i, j)->getCollider().CheckCollision(enemy, 1.0f))
+				for (auto* enemy : _enemies)
 				{
-					_enemy->setMovementState(true);
-					_enemy->updateMovement(_player->getPosition());
+					Collider enemyC = enemy->getCollider();
+					// Cambiar direccion de enemigo si hay colision
+					if(_level->getTile(i, j)->getCollider().CheckCollision(enemyC, 1.0f))
+					{
+						enemy->setMovementState(true);
+						enemy->updateMovement(_player->getPosition());
+					}
 				}
 				
 				//Detener movimiento de los elementos movible si la casa tiene vida, sino no frenar
 				if (_level->getTile(i, j)->getCollider().CheckCollision(movable, 1.f))
 				{
 					_movable->getCollider().CheckCollision(player, 1.f);
-					_movable->getCollider().CheckCollision(enemy, 1.f);
+
+					for (auto* enemy : _enemies)
+					{
+						Collider enemyC = enemy->getCollider();
+						// Cambiar direccion de enemigo si hay colision
+						_movable->getCollider().CheckCollision(enemyC, 1.f);
+					}
 				}
 				else
 				{
 					_movable->getCollider().CheckCollision(player, 0.5f);
-					_movable->getCollider().CheckCollision(enemy, 0.5f);
+					for (auto* enemy : _enemies)
+					{
+						Collider enemyC = enemy->getCollider();
+						// Cambiar direccion de enemigo si hay colision
+						_movable->getCollider().CheckCollision(enemyC, 0.5);
+					}
 				}
 			}
 			else
 			{
 				_movable->getCollider().CheckCollision(player, 0.5f);
-				_movable->getCollider().CheckCollision(enemy, 0.5f);
+				
+				for (auto* enemy : _enemies)
+				{
+					Collider enemyC = enemy->getCollider();
+					// Cambiar direccion de enemigo si hay colision
+					_movable->getCollider().CheckCollision(enemyC, 0.5f);
+				}
 			}
 		}
 	}
 	
-	// Colision de Player y Enemigo
-	if (_player->getWeight() > _enemy->getWeight())
+	for (auto* enemy : _enemies)
 	{
-		_player->getCollider().CheckCollision(enemy, 0.5f);
-		_enemy->getCollider().CheckCollision(player, 0.1);
-	}
-	else
-	{
-		_enemy->getCollider().CheckCollision(player, 0.5f);
-		_player->getCollider().CheckCollision(enemy, 0.1);
-	}
+		Collider enemyC = enemy->getCollider();
+		
+		if (_player->getWeight() > enemy->getWeight())
+		{
 
+				_player->getCollider().CheckCollision(enemyC, 0.5f);
+				// Cambiar direccion de enemigo si hay colision
+				_movable->getCollider().CheckCollision(enemyC, 0.1f);
+
+		}
+		else
+		{
+				// Cambiar direccion de enemigo si hay colision
+				_movable->getCollider().CheckCollision(enemyC, 0.5f);
+				_player->getCollider().CheckCollision(enemyC, 0.1);
+		}
+	}
 }
 
 void Gameplay::updateEffect()
@@ -376,8 +480,15 @@ void Gameplay::update()
 	_player->update(*_window);
 
 	//Enemy
-	_enemy->updateMovement(_player->getPosition());
-	_enemy->update(*_window);
+	//_enemy->updateMovement(_player->getPosition());
+	//_enemy->update(*_window);
+
+	// Vector enemigos
+	for (auto* enemy : _enemies)
+	{
+		enemy->updateMovement(_player->getPosition());
+		enemy->update(*_window);
+	}
 	
 	//Bloque
 	_movable->update();
@@ -409,7 +520,13 @@ void Gameplay::render()
 	_player->render(*_window);
 
 	//Enemy
-	_enemy->render(*_window);
+	//_enemy->render(*_window);
+
+	// Vector enemigos
+	for (auto* enemy : _enemies)
+	{
+		enemy->render(*_window);
+	}
 
 	//Bullets
 	for (auto* bullet : _bullet)
@@ -417,9 +534,18 @@ void Gameplay::render()
 		bullet->render(*_window);
 	}
 
-	for (auto* bullet : _enemy->getBullets())
+	//for (auto* bullet : _enemy->getBullets())
+	//{
+	//	bullet->render(*_window);
+	//}
+
+	// Vector enemigos
+	for (auto* enemy : _enemies)
 	{
-		bullet->render(*_window);
+		for (auto* bullet : enemy->getBullets())
+		{
+			bullet->render(*_window);
+		}
 	}
 
 	//Efectos

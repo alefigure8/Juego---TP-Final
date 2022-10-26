@@ -20,6 +20,7 @@ private:
 	//objects compose
 	Level* _level;
 	Enemy* _enemy;
+	std::vector<Enemy*> _enemies;
 	Player* _player;
 	std::vector<Bullet*> _bullet;
 	Effect* _shoot;
@@ -29,6 +30,11 @@ private:
 
 	//Test
 	Movable* _movable;
+	
+	//FILE
+	int tanks[10] = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3};
+	int positionTankVector = 0;
+	
 	
 	// Init functions
 	void _initWindow();
