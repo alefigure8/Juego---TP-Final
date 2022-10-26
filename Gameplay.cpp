@@ -27,8 +27,6 @@ void Gameplay::_initEnemy()
 {
 	//TODO FORCE BULLET
 	// DITANCIA BULLET
-	//TIEMPO DE SALIDA DE CADA TANQUE
-	
 	switch(tanks[positionTankVector])
 	{
 	case 1:
@@ -54,8 +52,8 @@ void Gameplay::_initEnemy()
 		//Init Position
 		_enemy->getSprite().setPosition({ 400, 400 });
 		_enemy->getArmor()->setPosition(_enemy->getPosition());
-		_enemy->setAttackMax(10.f);
-		_enemy->setSpeedMovement(2.f);
+		_enemy->setAttackMax(20.f);
+		_enemy->setSpeedMovement(1.5f);
 		_enemy->setWeight(1);
 		
 		//push
@@ -71,7 +69,7 @@ void Gameplay::_initEnemy()
 		//Init Position
 		_enemy->getSprite().setPosition({ 400, 400 });
 		_enemy->getArmor()->setPosition(_enemy->getPosition());
-		_enemy->setAttackMax(20.f);
+		_enemy->setAttackMax(25.f);
 		_enemy->setSpeedMovement(0.5f);
 		_enemy->setWeight(3);
 		//Push
@@ -112,6 +110,13 @@ void Gameplay::_initLevel()
 	_level = new Level;
 }
 
+void Gameplay::_initHelpers()
+{
+	//Reloj de los Enemigos
+	_clockEnemy = new Helper;
+	_clockEnemy->setTime(100.f);
+}
+
 void Gameplay::_initEffect()
 {
 	_shoot = new Effect("Texture/shotThin.png");
@@ -131,6 +136,7 @@ Gameplay::Gameplay()
 	_initEnemy();
 	_initBlock();
 	_initEffect();
+	_initHelpers();
 }
 
 Gameplay::~Gameplay()
@@ -273,22 +279,21 @@ void Gameplay::updateBullet()
 				}
 				
 				//Enemies
-				for (auto* enemy : _enemies)
+				for (int j = 0; j < _enemies.size(); j++)
 				{
-					if (_bullet[i]->getBounds().intersects(enemy->getBounds()) && !deleteBullet2)
+					if (_bullet[i]->getBounds().intersects(_enemies[j]->getBounds()) && !deleteBullet2)
 					{
 						delete _bullet.at(i);
 						_bullet.erase(_bullet.begin() + i);
 						deleteBullet2 = true;
 
-						enemy->setLife(enemy->getLife() - 1);
+						_enemies[j]->setLife(_enemies[j]->getLife() - 1);
 						
 						//Borrar enemigo si la vida llega a 0
-						if (enemy->getLife() <= 0)
+						if (_enemies[j]->getLife() <= 0)
 						{
-							_initEnemy();
-							delete _enemies.at(i);
-							_enemies.erase(_enemies.begin() + i);
+							delete _enemies.at(j);
+							_enemies.erase(_enemies.begin() + j);
 						}
 					}
 				}
@@ -297,7 +302,6 @@ void Gameplay::updateBullet()
 			//Bullet Enemies
 			for (auto* enemy : _enemies)
 			{
-
 				for (int i = 0; i < enemy->getBullets().size(); i++)
 				{
 					// Movimiento bala
@@ -313,6 +317,8 @@ void Gameplay::updateBullet()
 					float dxy2Enemy = distx2Enemy + disty2Enemy;
 					float dxyEnemy = sqrt(dxy2Enemy);
 
+					//TODO: cambiar posicion de sprite de player a cada disparo del enemigo
+					
 					if (
 						enemy->getBullets()[i]->getBounds().intersects(_level->getTile(j, h)->getBounds()) &&
 						!deleteBullet2 &&
@@ -467,6 +473,24 @@ void Gameplay::updateEffect()
 	_shoot->setRotation(degree);
 }
 
+void Gameplay::updateEnemies()
+{
+	int enemiesWithLife = 0;
+	
+	for (auto* enemy : _enemies)
+	{
+		if (enemy->getLife() > 0)
+		{
+			enemiesWithLife++;
+		}
+	}
+		
+	if (enemiesWithLife < 2 || (_clockEnemy->isReady() && enemiesWithLife < 3))
+	{
+		_initEnemy();
+	}
+}
+
 void Gameplay::update()
 {
 	//Inputs
@@ -479,16 +503,15 @@ void Gameplay::update()
 	_player->updateArmor(*_window);
 	_player->update(*_window);
 
-	//Enemy
-	//_enemy->updateMovement(_player->getPosition());
-	//_enemy->update(*_window);
-
 	// Vector enemigos
 	for (auto* enemy : _enemies)
 	{
 		enemy->updateMovement(_player->getPosition());
 		enemy->update(*_window);
 	}
+
+	//Spawn de eneigos
+	updateEnemies();
 	
 	//Bloque
 	_movable->update();
@@ -499,7 +522,11 @@ void Gameplay::update()
 	//Efectos
 	updateEffect();
 
+	//level
 	_level->update();
+
+	//Helpers
+	_clockEnemy->updateClock();
 }
 
 void Gameplay::render()

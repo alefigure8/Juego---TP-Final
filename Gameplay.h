@@ -7,6 +7,7 @@
 #include "Bullet.h"
 #include "Effect.h"
 #include "Movable.h"
+#include "Helper.h"
 
 class Gameplay
 {
@@ -24,6 +25,7 @@ private:
 	Player* _player;
 	std::vector<Bullet*> _bullet;
 	Effect* _shoot;
+	Helper* _clockEnemy;
 
 	//methods
 	sf::Vector2f _last_position_shoot;
@@ -44,6 +46,7 @@ private:
 	Bullet* _initBullet();
 	void _initEffect();
 	void _initLevel();
+	void _initHelpers();
 	
 public:
 	//Constructor
@@ -55,6 +58,7 @@ public:
 	void updateInput();
 	void updateBullet();
 	void updateEffect();
+	void updateEnemies();
 	void updatePollevents();
 	void update();
 
