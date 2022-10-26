@@ -17,6 +17,15 @@ Enemy::Enemy(std::string image, std::string armorTexture, sf::Vector2u imageCoun
 	//armor config
 	_armor->getSprite().setScale(0.7f, -0.7f);
 
+	//Buffer Rotation
+	_buffer_size = 100;
+	_buffer = new int[_buffer_size];
+	_buffer_position = 0;
+	_buffer_position_aux = 0;
+
+	//clock rotation
+	_clock_rotation = new Helper();
+	_clock_rotation->setTime(0.4f);
 }
 
 Enemy::~Enemy()
@@ -190,6 +199,8 @@ void Enemy::updateTime()
 
 void Enemy::updateArmor()
 {
+	// TODO Retraso del arma :: Buffer de los grados a recorrer
+
 	//Variables (PASAR A FUNCION QUE RETORNE UN VECTOR2F)
 	float player_positionX = _player_position.x;
 	float player_positionY = _player_position.y;
@@ -198,14 +209,30 @@ void Enemy::updateArmor()
 	float nearPlayerX = player_positionX - enemy_positionX;
 	float nearPlayerY = player_positionY - enemy_positionY;
 
-	//Siestá yendo hacia el player
+	//Si está yendo hacia el player, le apunta
 	float armaCenterX = _armor->getPosition().x;
 	float armaCenterY = _armor->getPosition().y;
 	float atan = atan2(armaCenterX - player_positionX, player_positionY - armaCenterY);
 	float deg = (atan / 3.14159265358979323846 * 180) + (atan > 0 ? 0 : 360);
-	_armor->setRotation(abs(deg));
 
-	//Si está yendo hacia la base
+	//Buffer para Delay TODO: Mejorar
+	_buffer[_buffer_position] = deg;
+	_buffer_position++;
+
+	if (_buffer_position >= _buffer_size)
+		_buffer_position = 0;
+	
+	if (_clock_rotation->isReady())
+	{
+		_armor->setRotation(abs(_buffer[_buffer_position_aux]));
+
+		_buffer_position_aux++;
+
+		if (_buffer_position_aux >= _buffer_size)
+			_buffer_position_aux = 0;
+	}
+
+	//TODO Si está yendo hacia la base, le apunta
 }
 
 void Enemy::updateBullet()
@@ -222,6 +249,7 @@ void Enemy::updateMovement(sf::Vector2f player_position)
 {
 	//save player position
 	_player_position = player_position;
+	_clock_rotation->updateClock();
 
 	movement();
 	updateTime();
