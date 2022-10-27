@@ -17,7 +17,7 @@ Tank::Tank(std::string image, std::string armorTexture, sf::Vector2u imageCount)
 	
 	//Init Variables
 	_damage = imageCount.x;
-	_max_damage = imageCount.x;
+	_max_damage = _damage;
 	_movement_speed = 1.0f;
 	_attack_max = 5.f;
 	_attack = _attack_max;
@@ -118,7 +118,6 @@ void Tank::setWeight(int weight)
 void Tank::setDamage(int damage)
 {
 	_damage = damage;
-	_max_damage = _damage;
 	
 	//Actualizar vida
 	updateLife();
