@@ -16,12 +16,15 @@ Tank::Tank(std::string image, std::string armorTexture, sf::Vector2u imageCount)
 	_sprite.setScale(0.7f, 0.7f);
 	
 	//Init Variables
-	_life = imageCount.x;
-	_max_life = imageCount.x;
+	_damage = imageCount.x;
+	_max_damage = imageCount.x;
 	_movement_speed = 1.0f;
 	_attack_max = 5.f;
 	_attack = _attack_max;
 	_weight = 3;
+
+	//set Life
+	_life = 1;
 }
 
 Tank::~Tank()
@@ -47,6 +50,7 @@ int Tank::getLife()
 void Tank::setLife(int life)
 {
 	_life = life;
+	_max_life = _life;
 }
 
 void Tank::move(float x, float y)
@@ -86,6 +90,11 @@ int Tank::getWeight()
 	return _weight;
 }
 
+int Tank::getDamage()
+{
+	return _damage;
+}
+
 void Tank::setAttackMax(float time)
 {
 	_attack_max = time;
@@ -104,6 +113,15 @@ void Tank::setHP(int hp)
 void Tank::setWeight(int weight)
 {
 	_weight = weight;
+}
+
+void Tank::setDamage(int damage)
+{
+	_damage = damage;
+	_max_damage = _damage;
+	
+	//Actualizar vida
+	updateLife();
 }
 
 
@@ -126,11 +144,11 @@ bool Tank::canAttack()
 
 void Tank::updateAnimation()
 {
-	if (_life <= 0)
-		_life = 0;
+	if (_damage <= 0)
+		_damage = 0;
 	
 	sf::Vector2u currentImage = _animation.getCurrentImage();
-	currentImage.x = _max_life - _life;
+	currentImage.x = _max_damage - _damage;
 	_animation.setCurrentImage(currentImage);
 	_sprite.setTextureRect(_animation.uvRect);
 	_sprite.setOrigin(_animation.uvRect.width / 2, _animation.uvRect.height / 2);
@@ -139,7 +157,6 @@ void Tank::updateAnimation()
 
 void Tank::update(sf::RenderWindow& window)
 {
-
 	updateAnimation();
 	_armor->update();
 	_armor->setPosition(_sprite.getPosition());
@@ -150,4 +167,13 @@ void Tank::render(sf::RenderWindow& window)
 {
 	window.draw(_sprite);
 	window.draw(_armor->getArmor());
+}
+
+void Tank::updateLife() 
+{
+	if (_damage == 0)
+		_life--;
+	
+	if (_life < 0)
+		_life = 0;
 }

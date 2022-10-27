@@ -20,8 +20,9 @@ protected:
 	int _hp;
 
 	Animation _animation;
-	int _life;
-	int _max_life;
+	int _damage;
+	int _max_damage;
+	//int _max_life;
 
 	void _initArmor(std::string armorTexture);
 
@@ -37,6 +38,7 @@ public:
 	float getSpeedMovement();
 	int getHP();
 	int getWeight();
+	int getDamage();
 	
 	//setter
 	void setLife(int life);
@@ -45,6 +47,7 @@ public:
 	void setSpeedMovement(float speed);
 	void setHP(int hp);
 	void setWeight(int weight);
+	void setDamage(int damage);
 	
 	//methods
 	bool canAttack();
@@ -52,6 +55,7 @@ public:
 	Collider getCollider();
 	void updateAttack();
 	void updateAnimation();
+	void updateLife();
 	void update(sf::RenderWindow& window);
 	void render(sf::RenderWindow& window);
 };
