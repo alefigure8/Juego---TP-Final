@@ -32,7 +32,7 @@ void Gameplay::_initEnemy()
 	case 1:
 	{
 		//Init
-		_enemy = new Enemy("Texture/tank1b_body.png", "Texture/tank1b_gun.png", sf::Vector2u(1, 1));
+		_enemy = new Enemy("Texture/enemy_body1.png", "Texture/enemy_gun1.png", sf::Vector2u(2, 1));
 
 		//Init Position
 		_enemy->getSprite().setPosition({ 400, 400 });
@@ -48,7 +48,7 @@ void Gameplay::_initEnemy()
 		break;
 	case 2:
 	{
-		_enemy = new Enemy("Texture/tank3c_body.png", "Texture/tank3c_gun.png", sf::Vector2u(1, 1));
+		_enemy = new Enemy("Texture/enemy_body2.png", "Texture/tank3c_gun.png", sf::Vector2u(2, 1));
 
 		//Init Position
 		_enemy->getSprite().setPosition({ 400, 400 });
@@ -65,7 +65,7 @@ void Gameplay::_initEnemy()
 		break;
 	case 3:
 	{
-		_enemy = new Enemy("Texture/tank2b_body.png", "Texture/tank2b_gun.png", sf::Vector2u(1, 1));
+		_enemy = new Enemy("Texture/enemy_body3.png", "Texture/tank2b_gun.png", sf::Vector2u(2, 1));
 
 		//Init Position
 		_enemy->getSprite().setPosition({ 400, 400 });
@@ -102,7 +102,7 @@ Bullet* Gameplay::_initBullet()
 
 void Gameplay::_initBlock()
 {
-	_movable = new Movable("Texture/truck3b_body.png", sf::Vector2u(1, 1));
+	_movable = new Movable("Texture/truck_1.png", sf::Vector2u(2, 1));
 	_movable->setPosition({ 200, 300 });
 	_movable->setScale({ 0.7, 0.7 });
 }
@@ -537,10 +537,7 @@ void Gameplay::render()
 	_level->render(*_window);
 
 	//Bloque Caja
-	if (_movable->getLife() > 0) // PROVISORIO. TODO VECTOR CAJAS Y BORRAR OBJETOS
-	{
-		_movable->render(*_window);
-	}
+	_movable->render(*_window);
 
 	//Player
 	_player->render(*_window);
@@ -559,11 +556,6 @@ void Gameplay::render()
 	{
 		bullet->render(*_window);
 	}
-
-	//for (auto* bullet : _enemy->getBullets())
-	//{
-	//	bullet->render(*_window);
-	//}
 
 	// Vector enemigos
 	for (auto* enemy : _enemies)
