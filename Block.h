@@ -7,7 +7,7 @@
 class Block 
 	: public Base
 {
-private:
+protected:
 	Animation _animation;
 	int _life;
 	int _max_life;
@@ -19,6 +19,7 @@ public:
 	void setLife(int life);
 	void setScale(sf::Vector2f scale);
 	void setAngle(float deg);
+	virtual void updateLife(){};
 	void updateAnimation();
 	void update();
 };
