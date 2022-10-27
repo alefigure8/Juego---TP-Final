@@ -6,6 +6,8 @@
 #include "Brick.h"
 #include "Tree.h"
 #include "Movable.h"
+#include "Unbreakable.h"
+
 //#include "MilitaryBase.h"
 
 class Level
