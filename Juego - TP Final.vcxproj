@@ -150,6 +150,7 @@
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Tank.cpp" />
     <ClCompile Include="Tree.cpp" />
+    <ClCompile Include="Unbreakable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
@@ -171,6 +172,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Tank.h" />
     <ClInclude Include="Tree.h" />
+    <ClInclude Include="Unbreakable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

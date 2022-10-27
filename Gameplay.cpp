@@ -142,7 +142,6 @@ Gameplay::~Gameplay()
 {
 	delete _window;
 	delete _player;
-	//delete _enemy;
 
 	for (auto* i : _bullet)
 	{
@@ -248,7 +247,7 @@ void Gameplay::updateBullet()
 					_bullet[i]->getBounds().intersects(_level->getTile(j, h)->getBounds()) &&
 					!deleteBullet &&
 					_level->getTile(j, h)->getLife() > 0
-					) // Colision Edificios
+					) // Colision bloques
 				{
 					delete _bullet.at(i);
 					_bullet.erase(_bullet.begin() + i);
