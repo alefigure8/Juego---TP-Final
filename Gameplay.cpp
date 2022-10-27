@@ -21,12 +21,12 @@ void Gameplay::_initPlayer()
 	_player->getSprite().setPosition({ 200, 200 });
 	_player->getArmor()->setPosition(_player->getPosition());
 	_player->setWeight(1);
+	_player->setLife(3);
 }
 
 void Gameplay::_initEnemy()
 {
 	//TODO FORCE BULLET
-	// DITANCIA BULLET
 	switch(tanks[positionTankVector])
 	{
 	case 1:
@@ -39,6 +39,7 @@ void Gameplay::_initEnemy()
 		_enemy->getArmor()->setPosition(_enemy->getPosition());
 		_enemy->setAttackMax(15.f);
 		_enemy->setWeight(2);
+		_enemy->setSpeedMovement(0.5f);
 		
 		//Push
 		_enemies.push_back(_enemy);
@@ -53,7 +54,7 @@ void Gameplay::_initEnemy()
 		_enemy->getSprite().setPosition({ 400, 400 });
 		_enemy->getArmor()->setPosition(_enemy->getPosition());
 		_enemy->setAttackMax(20.f);
-		_enemy->setSpeedMovement(1.5f);
+		_enemy->setSpeedMovement(1.f);
 		_enemy->setWeight(1);
 		
 		//push
@@ -70,8 +71,9 @@ void Gameplay::_initEnemy()
 		_enemy->getSprite().setPosition({ 400, 400 });
 		_enemy->getArmor()->setPosition(_enemy->getPosition());
 		_enemy->setAttackMax(25.f);
-		_enemy->setSpeedMovement(0.5f);
+		_enemy->setSpeedMovement(0.3f);
 		_enemy->setWeight(3);
+		
 		//Push
 		_enemies.push_back(_enemy);
 		positionTankVector++;
@@ -251,7 +253,6 @@ void Gameplay::updateBullet()
 					_level->getTile(j, h)->getLife() > 0
 					) // Colision Edificios
 				{
-					std::cout << "Disparo" << std::endl;
 					delete _bullet.at(i);
 					_bullet.erase(_bullet.begin() + i);
 					deleteBullet = true;
@@ -287,10 +288,9 @@ void Gameplay::updateBullet()
 						_bullet.erase(_bullet.begin() + i);
 						deleteBullet2 = true;
 
-						_enemies[j]->setLife(_enemies[j]->getLife() - 1);
-						
+						_enemies[j]->setDamage(_enemies[j]->getDamage() - 1);
 						//Borrar enemigo si la vida llega a 0
-						if (_enemies[j]->getLife() <= 0)
+						if (_enemies[j]->getLife()==0)
 						{
 							delete _enemies.at(j);
 							_enemies.erase(_enemies.begin() + j);
@@ -325,7 +325,6 @@ void Gameplay::updateBullet()
 						_level->getTile(j, h)->getLife() > 0
 						) // Colision Edificios
 					{
-						std::cout << "Disparo" << std::endl;
 						delete enemy->getBullets().at(i);
 						enemy->getBullets().erase(enemy->getBullets().begin() + i);
 						deleteBullet2 = true;
@@ -368,7 +367,7 @@ void Gameplay::updateColliders()
 	{
 		for (int j = 0; j < _level->getWidth(); j++)
 		{
-			if (_level->getTile(i, j)->getLife() > 0)
+			if (_level->getTile(i, j)->getLife() > 1) //TODO MEJORAR 1 o 0
 			{
 				_level->getTile(i, j)->getCollider().CheckCollision(player, 1.f);
 				
