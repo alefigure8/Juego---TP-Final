@@ -9,7 +9,7 @@ Bullet::Bullet(float pos_x, float pos_y, float x, float y, float degree, std::st
 	_sprite.setRotation(degree);
 	_direction.x = x;
 	_direction.y = y;
-	_movement_speed = 0.05f;
+	_movement_speed = 0.01f;
 }
 
 Bullet::~Bullet()
@@ -29,5 +29,5 @@ void Bullet::setMaxDistance(float distance)
 
 void Bullet::update()
 {
-	_sprite.move(_movement_speed * _direction);
+	_sprite.move(_direction * _movement_speed);
 }
