@@ -18,12 +18,14 @@ protected:
 	float _attack_max;
 	float _speed_attack;
 	int _hp;
+	sf::Vector2f _spawn_position[3]{ sf::Vector2f(50.f, 100.f), sf::Vector2f(300.f, 100.f), sf::Vector2f(650.f, 100.f) };
 
+	//Animacion
 	Animation _animation;
 	int _damage;
 	int _max_damage;
-	//int _max_life;
 
+	//Init
 	void _initArmor(std::string armorTexture);
 
 public:

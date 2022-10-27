@@ -25,6 +25,10 @@ Tank::Tank(std::string image, std::string armorTexture, sf::Vector2u imageCount)
 
 	//set Life
 	_life = 1;
+
+	//Spawn
+	int random = rand() % 3;
+	_sprite.setPosition(_spawn_position[random]);
 }
 
 Tank::~Tank()
