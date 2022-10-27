@@ -31,7 +31,7 @@ void Gameplay::_initEnemy()
 	{
 	case 1:
 	{
-		//Init
+		//ENEMY 1
 		_enemy = new Enemy("Texture/enemy_body1.png", "Texture/enemy_gun1.png", sf::Vector2u(2, 1));
 
 		//Init Position
@@ -39,6 +39,7 @@ void Gameplay::_initEnemy()
 		_enemy->setAttackMax(15.f);
 		_enemy->setWeight(2);
 		_enemy->setSpeedMovement(0.8f);
+		_enemy->setHP(1);
 		
 		//Push
 		_enemies.push_back(_enemy);
@@ -47,6 +48,7 @@ void Gameplay::_initEnemy()
 		break;
 	case 2:
 	{
+		//ENEMY 2
 		_enemy = new Enemy("Texture/enemy_body2.png", "Texture/tank3c_gun.png", sf::Vector2u(2, 1));
 
 		//Init Position
@@ -54,6 +56,7 @@ void Gameplay::_initEnemy()
 		_enemy->setAttackMax(20.f);
 		_enemy->setSpeedMovement(1.3f);
 		_enemy->setWeight(1);
+		_enemy->setHP(2);
 		
 		//push
 		_enemies.push_back(_enemy);
@@ -63,6 +66,7 @@ void Gameplay::_initEnemy()
 		break;
 	case 3:
 	{
+		//ENEMY 3
 		_enemy = new Enemy("Texture/enemy_body3.png", "Texture/tank2b_gun.png", sf::Vector2u(2, 1));
 
 		//Init Position
@@ -70,7 +74,8 @@ void Gameplay::_initEnemy()
 		_enemy->setAttackMax(25.f);
 		_enemy->setSpeedMovement(0.5f);
 		_enemy->setWeight(3);
-		
+		_enemy->setHP(3);
+
 		//Push
 		_enemies.push_back(_enemy);
 		positionTankVector++;
@@ -300,6 +305,7 @@ void Gameplay::updateBullet()
 			{
 				for (int i = 0; i < enemy->getBullets().size(); i++)
 				{
+					
 					// Movimiento bala
 					enemy->getBullets()[i]->update();
 
@@ -345,6 +351,16 @@ void Gameplay::updateBullet()
 						delete enemy->getBullets().at(i);
 						enemy->getBullets().erase(enemy->getBullets().begin() + i);
 						deleteBullet2 = true;
+					}
+					else if (enemy->getBullets()[i]->getBounds().intersects(_player->getBounds()) && !deleteBullet2) // Colision con player
+					{
+						delete enemy->getBullets().at(i);
+						enemy->getBullets().erase(enemy->getBullets().begin() + i);
+						deleteBullet2 = true;
+
+						_player->setDamage(_player->getDamage() - 1);//TODO: Logica de Damage y Life
+
+						//if Life es 0, Game Over
 					}
 				}
 			}
