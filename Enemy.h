@@ -17,7 +17,8 @@ private:
 	float _max_time_direction;
 	sf::Vector2f _player_position;
 	sf::Vector2f _last_position_shoot;
-	Helper* _clock_rotation;
+
+	//Buffer
 	int* _buffer;
 	int _buffer_size;
 	int _buffer_position;

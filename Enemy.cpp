@@ -18,14 +18,10 @@ Enemy::Enemy(std::string image, std::string armorTexture, sf::Vector2u imageCoun
 	_armor->getSprite().setScale(0.7f, -0.7f);
 
 	//Buffer Rotation
-	_buffer_size = 100;
-	_buffer = new int[_buffer_size];
-	_buffer_position = 0;
+	_buffer_size = 400;
+	_buffer = new int[_buffer_size] {0};
+	_buffer_position = 50;
 	_buffer_position_aux = 0;
-
-	//clock rotation
-	_clock_rotation = new Helper();
-	_clock_rotation->setTime(0.4f);
 }
 
 Enemy::~Enemy()
@@ -47,7 +43,7 @@ Bullet* Enemy::initBullet()
 	float armorPositionY = this->getArmor()->getPosition().y + (this->getArmor()->getBounds().height / 2 * vely);
 
 	return new Bullet(armorPositionX, armorPositionY, velx, vely, degree - 180, "Texture/bulletGreen1.png");
-	//return new BUllet(helper.amorPosition(_player), helper.vel(degree),degree-180,"Texture/bulletGreen1.png");
+	//return new BUllet(helper.amorPosition(_player), helper.vel(degree),degree-180,"Texture/bulletGreen1.png"); TODO agregar al helper
 }
 
 std::vector<Bullet*>& Enemy::getBullets()
@@ -83,7 +79,7 @@ void Enemy::movement()
 	}
 
 	//Si el tanque está a menos de 60 X y 60 Y del player, se detiene.
-	if (abs(nearPlayerX) < STOPMOVING && abs(nearPlayerY) < STOPMOVING)
+	if (abs(nearPlayerX) < STOPMOVING && abs(nearPlayerY) < STOPMOVING /*|| !visibility */) //TODO agragar visibilidad si player se pone bajo un arbol
 	{
 		_direction = 3;
 	}
@@ -222,15 +218,12 @@ void Enemy::updateArmor()
 	if (_buffer_position >= _buffer_size)
 		_buffer_position = 0;
 	
-	if (_clock_rotation->isReady())
-	{
-		_armor->setRotation(abs(_buffer[_buffer_position_aux]));
+	_armor->setRotation(abs(_buffer[_buffer_position_aux]));
+	_buffer_position_aux++;
 
-		_buffer_position_aux++;
+	if (_buffer_position_aux >= _buffer_size)
+		_buffer_position_aux = 0;
 
-		if (_buffer_position_aux >= _buffer_size)
-			_buffer_position_aux = 0;
-	}
 
 	//TODO Si está yendo hacia la base, le apunta
 }
@@ -249,7 +242,6 @@ void Enemy::updateMovement(sf::Vector2f player_position)
 {
 	//save player position
 	_player_position = player_position;
-	_clock_rotation->updateClock();
 
 	movement();
 	updateTime();
