@@ -18,7 +18,7 @@ void Gameplay::_initPlayer()
 	_player = new Player("Texture/tank1_body.png", "Texture/tank1_gun.png", sf::Vector2u(1, 1));
 
 	// Init Position
-	_player->getSprite().setPosition({ 200, 200 });
+	_player->getSprite().setPosition({ _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().x - 150, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().y - 50});
 	_player->getArmor()->setPosition(_player->getPosition());
 	_player->setWeight(1);
 	_player->setLife(3);
@@ -32,7 +32,7 @@ void Gameplay::_initEnemy()
 	case 1:
 	{
 		//ENEMY 1
-		_enemy = new Enemy("Texture/enemy_body1.png", "Texture/enemy_gun1.png", sf::Vector2u(2, 1));
+		_enemy = new Enemy("Texture/enemy_body1.png", "Texture/enemy_gun1.png", "Texture/bullet_tank_1.png", sf::Vector2u(2, 1));
 
 		//Init Position
 		_enemy->getArmor()->setPosition(_enemy->getPosition());
@@ -49,7 +49,7 @@ void Gameplay::_initEnemy()
 	case 2:
 	{
 		//ENEMY 2
-		_enemy = new Enemy("Texture/enemy_body2.png", "Texture/tank3c_gun.png", sf::Vector2u(2, 1));
+		_enemy = new Enemy("Texture/enemy_body2.png", "Texture/tank3c_gun.png", "Texture/bullet_tank_2.png", sf::Vector2u(2, 1));
 
 		//Init Position
 		_enemy->getArmor()->setPosition(_enemy->getPosition());
@@ -67,7 +67,7 @@ void Gameplay::_initEnemy()
 	case 3:
 	{
 		//ENEMY 3
-		_enemy = new Enemy("Texture/enemy_body3.png", "Texture/tank2b_gun.png", sf::Vector2u(2, 1));
+		_enemy = new Enemy("Texture/enemy_body3.png", "Texture/tank2b_gun.png", "Texture/bullet_tank_3.png", sf::Vector2u(2, 1));
 
 		//Init Position
 		_enemy->getArmor()->setPosition(_enemy->getPosition());
@@ -98,7 +98,7 @@ Bullet* Gameplay::_initBullet()
 	float armorPositionX = _player->getArmor()->getPosition().x + (_player->getArmor()->getBounds().width / 2 * velx);
 	float armorPositionY = _player->getArmor()->getPosition().y + (_player->getArmor()->getBounds().height / 2 * vely);
 
-	return new Bullet(armorPositionX, armorPositionY, velx, vely, degree - 180, "Texture/bulletGreen1.png");
+	return new Bullet(armorPositionX, armorPositionY, velx, vely, degree - 180, "Texture/bullet_player_1.png");
 	//return new BUllet(helper.amorPosition(_player), helper.vel(degree),degree-180,"Texture/bulletGreen1.png");
 }
 
@@ -318,9 +318,7 @@ void Gameplay::updateBullet()
 					float disty2Enemy = distyEnemy * distyEnemy;
 					float dxy2Enemy = distx2Enemy + disty2Enemy;
 					float dxyEnemy = sqrt(dxy2Enemy);
-
-					//TODO: cambiar posicion de sprite de player a cada disparo del enemigo
-					
+				
 					if (
 						enemy->getBullets()[i]->getBounds().intersects(_level->getTile(j, h)->getBounds()) &&
 						!deleteBullet2 &&
@@ -331,7 +329,7 @@ void Gameplay::updateBullet()
 						enemy->getBullets().erase(enemy->getBullets().begin() + i);
 						deleteBullet2 = true;
 
-						_level->getTile(j, h)->setLife(_level->getTile(j, h)->getLife() - 1);
+						_level->getTile(j, h)->setLife(_level->getTile(j, h)->getLife() - enemy->getHP());
 					}
 					else if (enemy->getBullets()[i]->getBounds().intersects(_movable->getBounds()) && !deleteBullet2) // Colision con caja
 					{
@@ -339,7 +337,7 @@ void Gameplay::updateBullet()
 						enemy->getBullets().erase(enemy->getBullets().begin() + i);
 						deleteBullet2 = true;
 
-						_movable->setLife(_movable->getLife() - 1);
+						_movable->setLife(_movable->getLife() - enemy->getHP());
 					}
 					else if (enemy->getBullets()[i]->getBounds().top > _window->getSize().y ||
 						enemy->getBullets()[i]->getBounds().top + enemy->getBullets()[i]->getBounds().height < 0.f ||
@@ -361,6 +359,8 @@ void Gameplay::updateBullet()
 						_player->setDamage(_player->getDamage() - 1);//TODO: Logica de Damage y Life
 
 						//if Life es 0, Game Over
+
+						//Check Base Life. Si llega a 0, Game Over
 					}
 				}
 			}
@@ -390,7 +390,7 @@ void Gameplay::updateColliders()
 					if(_level->getTile(i, j)->getCollider().CheckCollision(enemyC, 1.0f))
 					{
 						enemy->setMovementState(true);
-						enemy->updateMovement(_player->getPosition());
+						enemy->updateMovement(_player->getPosition(), _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition());
 					}
 				}
 				
@@ -517,7 +517,7 @@ void Gameplay::update()
 	// Vector enemigos
 	for (auto* enemy : _enemies)
 	{
-		enemy->updateMovement(_player->getPosition());
+		enemy->updateMovement(_player->getPosition(), _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition());
 		enemy->update(*_window);
 	}
 
