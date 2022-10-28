@@ -5,6 +5,7 @@ Block::Block(std::string image, sf::Vector2u imageCount) : _animation(image, ima
 {
 	_life = imageCount.x;
 	_max_life = imageCount.x;
+	_is_target = false;
 }
 
 Block::~Block()
@@ -17,6 +18,11 @@ int Block::getLife()
 	return _life;
 }
 
+bool Block::getTarget()
+{
+	return _is_target;
+}
+
 void Block::setLife(int life)
 {
 	_life = life;
@@ -25,6 +31,11 @@ void Block::setLife(int life)
 void Block::setAngle(float deg)
 {
 	_sprite.rotate(deg);
+}
+
+void Block::setTarget(bool target)
+{
+	_is_target = target;
 }
 
 void Block::updateAnimation()

@@ -9,16 +9,23 @@ class Block
 {
 protected:
 	Animation _animation;
-	int _life;
-	int _max_life;
+
 
 public:
 	Block(std::string image, sf::Vector2u imageCount);
 	~Block();
+	
+	//getter
 	int getLife();
+	bool getTarget();
+	
+	//setter
 	void setLife(int life);
 	void setScale(sf::Vector2f scale);
 	void setAngle(float deg);
+	void setTarget(bool target);
+	
+	//update
 	virtual void updateLife(){};
 	void updateAnimation();
 	void update();
