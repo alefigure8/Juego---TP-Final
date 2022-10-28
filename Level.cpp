@@ -223,7 +223,8 @@ void Level::initLevel()
                 {
                     _tile[i][j] = new Target("Texture/military_base.png", sf::Vector2u(5, 1));
                     _tile[i][j]->getSprite().setColor(sf::Color(255, 255, 255, rand() % 20 + 205));
-
+                    _targetIndex.x = i;
+                    _targetIndex.y = j;
                 }
                     break;
                 default:
@@ -252,24 +253,15 @@ void Level::update()
 
 void Level::render(sf::RenderWindow& window)
 {
-    int targetIndexI = 0;
-    int targetIndexJ = 0;
-	
     for (int i = 0; i < HEIGHT_MAP; i++)
     {
         for (int j = 0; j < WIDTH_MAP; j++)
         {
-            if (_tile[i][j]->getTarget())
-            {
-                targetIndexI = i;
-                targetIndexJ = j;
-
-            }
             _tile[i][j]->render(window);
         }
     }
 
-    _tile[targetIndexI][targetIndexJ]->render(window);
+    _tile[_targetIndex.x][_targetIndex.y]->render(window);
 }
 
 int Level::getHeight()
@@ -280,5 +272,10 @@ int Level::getHeight()
 int Level::getWidth()
 {
     return WIDTH_MAP;
+}
+
+sf::Vector2i Level::getTargetIndex()
+{
+    return _targetIndex;
 }
 

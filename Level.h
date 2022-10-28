@@ -17,6 +17,8 @@ private:
 	static const int HEIGHT_MAP = 23;
 	static const int WIDTH_MAP = 20;
 	Block* _tile[HEIGHT_MAP][WIDTH_MAP];
+	sf::Vector2f _grid;
+	sf::Vector2i _targetIndex;
 	char _map[HEIGHT_MAP][WIDTH_MAP]{
 		 { '9','9','9','9','9','9','9','8','9','9','9','9','9','9','9','8','9','9','9','9' },
 		 { 'W','W','W','W','W','W','W','8','W','W','W','W','W','W','W','8','W','W','W','W' },
@@ -42,16 +44,20 @@ private:
 		 { '0',' ',' ',' ',' ',' ',' ','¡',' ','$',' ','!',' ',' ',' ',' ',' ',' ',' ','0' },
 		 { '6','7','7','7','7','7','8','7','7','7','7','7','7','7','8','7','7','7','7','6' },
 	};
-	sf::Vector2f _grid;
 
 public:
 	Level();
 	~Level();
+	
+	//getter
 	Block* getTile(int i, int j);
+	int getHeight();
+	int getWidth();
+	sf::Vector2i getTargetIndex();
+	
+	//Methods
 	void initLevel();
 	void update();
 	void render(sf::RenderWindow& window);
-	int getHeight();
-	int getWidth();
 };
 
