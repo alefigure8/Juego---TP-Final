@@ -65,6 +65,9 @@
     <ClCompile Include="Unbreakable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Target.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
@@ -119,6 +122,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Unbreakable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Target.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
