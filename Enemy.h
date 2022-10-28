@@ -11,11 +11,13 @@ class Enemy
 {
 private:
 	std::vector<Bullet*> _bullet;
+	std::string _bulletImage;
 	bool _movement_state;
 	int _direction;
 	float _time_direction;
 	float _max_time_direction;
 	sf::Vector2f _player_position;
+	sf::Vector2f _target_position;
 	sf::Vector2f _last_position_shoot;
 
 	//Buffer
@@ -25,7 +27,7 @@ private:
 	int _buffer_position_aux;
 	
 public:
-	Enemy(std::string image, std::string armorTexture, sf::Vector2u imageCount);
+	Enemy(std::string image, std::string armorTexture, std::string bullet, sf::Vector2u imageCount);
 	~Enemy();
 
 	Bullet* initBullet();
@@ -49,7 +51,7 @@ public:
 	void updateTime();
 	void updateArmor();
 	void updateBullet();
-	void updateMovement(sf::Vector2f player_position);
+	void updateMovement(sf::Vector2f player_position, sf::Vector2f target_position);
 	
 };
 
