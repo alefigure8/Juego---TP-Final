@@ -15,6 +15,17 @@ Player::Player(std::string image, std::string armorTexture, sf::Vector2u imageCo
 
 Player::~Player()
 {
+	_visibility = false;
+}
+
+bool Player::getVisibility()
+{
+	return _visibility;
+}
+
+void Player::setVisibility(bool visibility)
+{
+	_visibility = visibility;
 }
 
 
