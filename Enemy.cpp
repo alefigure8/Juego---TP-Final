@@ -68,7 +68,7 @@ void Enemy::movement()
 
 	float nearTargetX = target_positionX - enemy_positionX;
 	float nearTargetY = target_positionY - enemy_positionY;
-	float STOPMOVING = 60;
+	float STOPMOVING = 30;
 
 	int optionCase = 0;
 
@@ -86,7 +86,7 @@ void Enemy::movement()
 		_time_direction = 0.f;
 	}
 	
-	if (abs(nearPlayerX) < abs(nearTargetX) && abs(nearPlayerY) < abs(nearTargetY))
+	if (abs(nearPlayerX) <= abs(nearTargetX) && abs(nearPlayerY) <= abs(nearTargetY) && _player_visibility)
 	{
 		if (abs(nearPlayerX) < STOPMOVING && abs(nearPlayerY) < STOPMOVING)
 		{
@@ -289,7 +289,7 @@ void Enemy::updateArmor()
 	float nearTargetY = target_positionY - enemy_positionY;
 	
 	//Si está yendo hacia el player, le apunta
-	if (abs(nearPlayerX) < abs(nearTargetX) && abs(nearPlayerY) < abs(nearTargetY))
+	if (abs(nearPlayerX) <= abs(nearTargetX) && abs(nearPlayerY) <= abs(nearTargetY) && _player_visibility)
 	{
 		float armaCenterX = _armor->getPosition().x;
 		float armaCenterY = _armor->getPosition().y;
@@ -309,7 +309,8 @@ void Enemy::updateArmor()
 		if (_buffer_position_aux >= _buffer_size)
 			_buffer_position_aux = 0;
 		
-	} else 
+	} 
+	else 
 	{
 		float armaCenterX = _armor->getPosition().x;
 		float armaCenterY = _armor->getPosition().y;
@@ -345,10 +346,11 @@ void Enemy::updateBullet()
 	}
 }
 
-void Enemy::updateMovement(sf::Vector2f player_position, sf::Vector2f target_position)
+void Enemy::updateMovement(Player *_player, sf::Vector2f target_position)
 {
 	//save player position
-	_player_position = player_position;
+	_player_position = _player->getPosition();
+	_player_visibility = _player->getVisibility();
 	_target_position = target_position;
 
 	movement();

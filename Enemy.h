@@ -5,6 +5,8 @@
 #include "Bullet.h"
 #include <time.h>
 #include "Helper.h"
+#include "Player.h"
+#include "Target.h"
 
 class Enemy
 	: public Tank
@@ -18,6 +20,7 @@ private:
 	float _max_time_direction;
 	sf::Vector2f _player_position;
 	sf::Vector2f _target_position;
+	bool _player_visibility;
 	sf::Vector2f _last_position_shoot;
 
 	//Buffer
@@ -51,7 +54,7 @@ public:
 	void updateTime();
 	void updateArmor();
 	void updateBullet();
-	void updateMovement(sf::Vector2f player_position, sf::Vector2f target_position);
+	void updateMovement(Player *_player, sf::Vector2f target_position);
 	
 };
 
