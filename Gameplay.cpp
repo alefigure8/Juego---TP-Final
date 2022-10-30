@@ -18,7 +18,7 @@ void Gameplay::_initPlayer()
 	_player = new Player("Texture/tank1_body.png", "Texture/tank1_gun.png", sf::Vector2u(1, 1));
 
 	// Init Position
-	_player->getSprite().setPosition({ _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().x - 150, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().y - 50});
+	_player->getSprite().setPosition({ _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().x - 50, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().y - 150 });
 	_player->getArmor()->setPosition(_player->getPosition());
 	_player->setWeight(1);
 	_player->setLife(3);
@@ -107,6 +107,14 @@ void Gameplay::_initBlock()
 	_movable = new Movable("Texture/truck_1.png", sf::Vector2u(2, 1));
 	_movable->setPosition({ 200, 300 });
 	_movable->setScale({ 0.7, 0.7 });
+
+
+	for (int i = 0; i < 1; i++)
+	{
+		_tree = new Tree("Texture/tree_1.png", sf::Vector2u(1, 1));
+		_tree->setPosition(tree[i]);
+		_trees.push_back(_tree);
+	}
 }
 
 void Gameplay::_initLevel()
@@ -390,7 +398,7 @@ void Gameplay::updateColliders()
 					if(_level->getTile(i, j)->getCollider().CheckCollision(enemyC, 1.0f))
 					{
 						enemy->setMovementState(true);
-						enemy->updateMovement(_player->getPosition(), _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition());
+						enemy->updateMovement( _player, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition());
 					}
 				}
 				
@@ -500,6 +508,44 @@ void Gameplay::updateEnemies()
 	{
 		_initEnemy();
 	}
+
+	for (auto* enemy : _enemies)
+	{
+		enemy->updateMovement(_player, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition());
+		enemy->update(*_window);
+	}
+}
+
+void Gameplay::updatePlayer()
+{
+	_player->updateArmor(*_window);
+	_player->update(*_window);
+}
+
+void Gameplay::updateBlock()
+{
+	_movable->update();
+	
+	//trees
+	for (int i = 0; i < _trees.size(); i++)
+	{
+		_trees[i]->update();
+		
+		if (_trees[i]->getPosition().x + 10 < _player->getPosition().x ||
+			_trees[i]->getPosition().x - 10 > _player->getPosition().x ||
+			_trees[i]->getPosition().y + 10 < _player->getPosition().y ||
+			_trees[i]->getPosition().y - 10 > _player->getPosition().y)
+		{
+			_player->setVisibility(true);
+			std::cout << "Visibilidad true" << std::endl;
+		}
+		else
+		{
+			_player->setVisibility(false);
+			std::cout << "Visibilidad false" << std::endl;
+			
+		}
+	}
 }
 
 void Gameplay::update()
@@ -510,22 +556,14 @@ void Gameplay::update()
 	//Balas
 	updateBullet();
 
-	//Player
-	_player->updateArmor(*_window);
-	_player->update(*_window);
-
-	// Vector enemigos
-	for (auto* enemy : _enemies)
-	{
-		enemy->updateMovement(_player->getPosition(), _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition());
-		enemy->update(*_window);
-	}
-
 	//Spawn de eneigos
 	updateEnemies();
+
+	//player
+	updatePlayer();
 	
 	//Bloque
-	_movable->update();
+	updateBlock();
 
 	//Colliders
 	updateColliders();
@@ -554,9 +592,13 @@ void Gameplay::render()
 	//Player
 	_player->render(*_window);
 
-	//Enemy
-	//_enemy->render(*_window);
+	//trees
+	for (auto* tree : _trees)
+	{
+		tree->render(*_window);
+	}
 
+	//Enemy
 	// Vector enemigos
 	for (auto* enemy : _enemies)
 	{

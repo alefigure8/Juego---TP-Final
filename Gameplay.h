@@ -8,6 +8,7 @@
 #include "Effect.h"
 #include "Movable.h"
 #include "Helper.h"
+#include "Tree.h"
 
 class Gameplay
 {
@@ -32,9 +33,12 @@ private:
 
 	//Test
 	Movable* _movable;
+	Tree* _tree;
+	std::vector<Tree*>  _trees;
 	
 	//FILE
 	int tanks[10] = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3};
+	sf::Vector2f tree[1] = { {100, 500} };
 	int positionTankVector = 0;
 	
 	
@@ -58,7 +62,9 @@ public:
 	void updateInput();
 	void updateBullet();
 	void updateEffect();
+	void updateBlock();
 	void updateEnemies();
+	void updatePlayer();
 	void updatePollevents();
 	void update();
 
