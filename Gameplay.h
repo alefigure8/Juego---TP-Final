@@ -25,8 +25,10 @@ private:
 	std::vector<Enemy*> _enemies;
 	Player* _player;
 	std::vector<Bullet*> _bullet;
-	Effect* _shoot;
 	Helper* _clockEnemy;
+
+	//efectos
+	Effect* _shoot;
 
 	//methods
 	sf::Vector2f _last_position_shoot;

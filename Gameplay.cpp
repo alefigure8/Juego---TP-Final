@@ -33,7 +33,7 @@ void Gameplay::_initEnemy()
 	{
 		//ENEMY 1
 		_enemy = new Enemy("Texture/enemy_body1.png", "Texture/enemy_gun1.png", "Texture/bullet_tank_1.png", sf::Vector2u(2, 1));
-
+		
 		//Init Position
 		_enemy->getArmor()->setPosition(_enemy->getPosition());
 		_enemy->setAttackMax(15.f);
@@ -50,7 +50,7 @@ void Gameplay::_initEnemy()
 	{
 		//ENEMY 2
 		_enemy = new Enemy("Texture/enemy_body2.png", "Texture/tank3c_gun.png", "Texture/bullet_tank_2.png", sf::Vector2u(2, 1));
-
+		
 		//Init Position
 		_enemy->getArmor()->setPosition(_enemy->getPosition());
 		_enemy->setAttackMax(20.f);
@@ -131,7 +131,7 @@ void Gameplay::_initHelpers()
 
 void Gameplay::_initEffect()
 {
-	_shoot = new Effect("Texture/shotThin.png");
+	_shoot = new Effect("Texture/shoot_1.png", sf::Vector2u(4, 1));
 }
 
 Gameplay::Gameplay()
@@ -462,21 +462,9 @@ void Gameplay::updateColliders()
 
 void Gameplay::updateEffect()
 {
+	//BALAS PLAYER
+	
 	// Manejar tiempo de efecto
-	float _time_shoot = _shoot->getTime();
-
-	if (_shoot->getTime() < _shoot->getTimeMax())
-	{
-		_time_shoot += 1.f;
-		_shoot->setTime(_time_shoot);
-	}
-
-	if (_shoot->getTime() >= _shoot->getTimeMax())
-	{
-		_shoot->setTime(0.f);
-		_shoot->setState(false);
-	}
-
 	float PI = 3.14;
 	float degree = _player->getArmor()->getRotationArmor();
 
@@ -488,8 +476,14 @@ void Gameplay::updateEffect()
 	float armaPosicionx = _player->getArmor()->getPosition().x + (_player->getArmor()->getBounds().width / 2 * velx);
 	float armaPosiciony = _player->getArmor()->getPosition().y + (_player->getArmor()->getBounds().height / 2 * vely);
 
-	_shoot->setPosition({ armaPosicionx, armaPosiciony });
-	_shoot->setRotation(degree);
+	
+	if (_shoot->getState())
+	{
+		_shoot->setPosition({ armaPosicionx, armaPosiciony });
+		_shoot->setRotation(degree);
+		_shoot->update();
+	}
+	
 }
 
 void Gameplay::updateEnemies()
@@ -537,13 +531,10 @@ void Gameplay::updateBlock()
 			_trees[i]->getPosition().y - 10 > _player->getPosition().y)
 		{
 			_player->setVisibility(true);
-			std::cout << "Visibilidad true" << std::endl;
 		}
 		else
 		{
 			_player->setVisibility(false);
-			std::cout << "Visibilidad false" << std::endl;
-			
 		}
 	}
 }
@@ -603,6 +594,7 @@ void Gameplay::render()
 	for (auto* enemy : _enemies)
 	{
 		enemy->render(*_window);
+		enemy->renderEffect(*_window);
 	}
 
 	//Bullets
