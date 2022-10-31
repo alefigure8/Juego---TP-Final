@@ -23,10 +23,18 @@ Enemy::Enemy(std::string image, std::string armorTexture, std::string bullet, sf
 	_buffer = new int[_buffer_size] {0};
 	_buffer_position = 50;
 	_buffer_position_aux = 0;
+
+	//effect
+	initEffect();
 }
 
 Enemy::~Enemy()
 {
+}
+
+void Enemy::initEffect()
+{
+	_shoot = new Effect("Texture/shoot_1.png", sf::Vector2u(4, 1));
 }
 
 Bullet* Enemy::initBullet()
@@ -342,7 +350,31 @@ void Enemy::updateBullet()
 	if (this->canAttack())
 	{
 		_bullet.push_back(initBullet());
+		_shoot->setState(true);
 		_last_position_shoot = { this->getArmor()->getPosition().x, this->getArmor()->getPosition().y };
+	}
+}
+
+void Enemy::updateEffect()
+{
+// Manejar tiempo de efecto
+	float PI = 3.14;
+	float degree = _armor->getRotationArmor();
+
+	// Angulo del arma
+	float velx = sin((PI / 180) * -degree);
+	float vely = cos((PI / 180) * -degree);
+
+	// Posicion del arma
+	float armaPosicionx = _armor->getPosition().x + (_armor->getBounds().width / 2 * velx);
+	float armaPosiciony = _armor->getPosition().y + (_armor->getBounds().height / 2 * vely);
+
+
+	if (_shoot->getState())
+	{
+		_shoot->setPosition({ armaPosicionx, armaPosiciony });
+		_shoot->setRotation(degree);
+		_shoot->update();
 	}
 }
 
@@ -357,4 +389,13 @@ void Enemy::updateMovement(Player *_player, sf::Vector2f target_position)
 	updateTime();
 	updateArmor();
 	updateBullet();
+	updateEffect();
+}
+
+void Enemy::renderEffect(sf::RenderWindow& window)
+{
+	if (_shoot->getState())
+	{
+		_shoot->render(window);
+	}
 }

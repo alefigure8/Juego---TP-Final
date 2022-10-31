@@ -6,11 +6,19 @@ Block::Block(std::string image, sf::Vector2u imageCount) : _animation(image, ima
 	_life = imageCount.x;
 	_max_life = imageCount.x;
 	_is_target = false;
+	_alreadyDead = false;
+	_haveEffect = false;
 }
 
 Block::~Block()
 {
 
+}
+
+void Block::initEffect()
+{
+	_explotion = new Effect("Texture/explotion_1.png", sf::Vector2u(10, 1));
+	_explotion->getSprite().setScale({0.4f, 0.4f});
 }
 
 int Block::getLife()
@@ -21,6 +29,11 @@ int Block::getLife()
 bool Block::getTarget()
 {
 	return _is_target;
+}
+
+bool Block::getHAveEffect()
+{
+	return _haveEffect;
 }
 
 void Block::setLife(int life)
@@ -38,6 +51,16 @@ void Block::setTarget(bool target)
 	_is_target = target;
 }
 
+void Block::setHaveEffect(bool haveEffect)
+{
+	_haveEffect = haveEffect;
+	
+	if (_haveEffect)
+		initEffect();;
+}
+
+
+
 void Block::updateAnimation()
 {
 	if (_life <= 0)
@@ -51,9 +74,39 @@ void Block::updateAnimation()
 	_animation.update();
 }
 
+void Block::updateEffect()
+{
+	if (_haveEffect)
+	{
+		if (_life <= 1 && !_alreadyDead)
+		{
+			_explotion->setState(true);
+		}
+	
+		if (_explotion->getState())
+		{
+			_explotion->setPosition(_sprite.getPosition());
+			_explotion->update();
+			
+			if(_explotion->getCurrentImage()==_explotion->getCurrentImageMax())
+				_alreadyDead = true;
+		}
+	}
+}
+
 void Block::update()
 {
+	updateEffect();
 	updateAnimation();
+}
+
+void Block::renderEffect(sf::RenderWindow& window)
+{
+	if (_haveEffect)
+	{
+		if (_explotion->getState() && !_alreadyDead)
+			_explotion->render(window);
+	}
 }
 
 void Block::setScale(sf::Vector2f scale)

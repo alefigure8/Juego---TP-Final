@@ -7,12 +7,14 @@
 #include "Helper.h"
 #include "Player.h"
 #include "Target.h"
+#include "Effect.h"
 
 class Enemy
 	: public Tank
 {
 private:
 	std::vector<Bullet*> _bullet;
+	Effect* _shoot;
 	std::string _bulletImage;
 	bool _movement_state;
 	int _direction;
@@ -34,6 +36,7 @@ public:
 	~Enemy();
 
 	Bullet* initBullet();
+	void initEffect();
 	std::vector<Bullet*>& getBullets();
 	
 	//getters
@@ -54,7 +57,8 @@ public:
 	void updateTime();
 	void updateArmor();
 	void updateBullet();
+	void updateEffect();
 	void updateMovement(Player *_player, sf::Vector2f target_position);
-	
+	void renderEffect(sf::RenderWindow& window);
 };
 
