@@ -127,6 +127,7 @@ void Level::initLevel()
                     break;
                 case '8':
                     _tile[i][j] = new Brick("Texture/target_bridge.png", sf::Vector2u(1, 1));
+					_tile[i][j]->setHaveEffect(true);
                     break;
 					
 				//AGUA
@@ -149,184 +150,233 @@ void Level::initLevel()
 				//CASA 1
                 case 'a':
                     _tile[i][j] = new Brick("Texture/house_1_a.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'b':
                     _tile[i][j] = new Brick("Texture/house_1_b.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'c':
                     _tile[i][j] = new Brick("Texture/house_1_c.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'd':
                     _tile[i][j] = new Brick("Texture/house_1_d.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
 
                 //CASA 2
                 case 'e':
                     _tile[i][j] = new Brick("Texture/house_2_a.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'f':
                     _tile[i][j] = new Brick("Texture/house_2_b.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'g':
                     _tile[i][j] = new Brick("Texture/house_2_c.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'h':
                     _tile[i][j] = new Brick("Texture/house_2_d.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
 					
 				//CASA 3    
                 case 'i':
                     _tile[i][j] = new Brick("Texture/house_3_a.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'j':
                     _tile[i][j] = new Brick("Texture/house_3_b.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'k':
                     _tile[i][j] = new Brick("Texture/house_3_c.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
 					
 				//CASA 4
                 case 'l':
                     _tile[i][j] = new Brick("Texture/house_4_a.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'm':
                     _tile[i][j] = new Brick("Texture/house_4_b.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
-					
-				//CASA 5
+
+                    //CASA 5
                 case 'n':
                     _tile[i][j] = new Brick("Texture/house_5_a.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'o':
                     _tile[i][j] = new Brick("Texture/house_5_b.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'p':
                     _tile[i][j] = new Brick("Texture/house_5_c.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'q':
                     _tile[i][j] = new Brick("Texture/house_5_d.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
-					
-				//CASA 7
+
+                    //CASA 7
                 case 'r':
                     _tile[i][j] = new Brick("Texture/house_7_a.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 's':
                     _tile[i][j] = new Brick("Texture/house_7_b.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
-					
-				//CASA 8
+
+                    //CASA 8
                 case 't':
                     _tile[i][j] = new Brick("Texture/house_8_a.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'u':
                     _tile[i][j] = new Brick("Texture/house_8_b.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'v':
                     _tile[i][j] = new Brick("Texture/house_8_c.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'x':
                     _tile[i][j] = new Brick("Texture/house_8_d.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
-					
-                //CASA 9
+
+                    //CASA 9
                 case 'P':
                     _tile[i][j] = new Brick("Texture/house_9.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
-					
-               //CASA 10	
+
+                    //CASA 10	
                 case 'A':
                     _tile[i][j] = new Brick("Texture/house_10_a.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'B':
                     _tile[i][j] = new Brick("Texture/house_10_b.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'C':
                     _tile[i][j] = new Brick("Texture/house_10_c.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'D':
                     _tile[i][j] = new Brick("Texture/house_10_d.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
-					
-                //CASA 11
+
+                    //CASA 11
                 case 'E':
                     _tile[i][j] = new Brick("Texture/house_11_a.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'F':
                     _tile[i][j] = new Brick("Texture/house_11_b.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'G':
                     _tile[i][j] = new Brick("Texture/house_11_c.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
-                
-                //CASA 12
+
+                    //CASA 12
                 case 'H':
                     _tile[i][j] = new Brick("Texture/house_12_a.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'I':
                     _tile[i][j] = new Brick("Texture/house_12_b.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'J':
                     _tile[i][j] = new Brick("Texture/house_12_c.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'K':
                     _tile[i][j] = new Brick("Texture/house_12_d.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
-					
-                //CASA 13
+
+                    //CASA 13
                 case 'L':
                     _tile[i][j] = new Brick("Texture/house_13_a.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'M':
                     _tile[i][j] = new Brick("Texture/house_13_b.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'N':
                     _tile[i][j] = new Brick("Texture/house_13_c.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
-				case 'O':
+                case 'O':
                     _tile[i][j] = new Brick("Texture/house_13_d.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
 
-                //CASA 14
+                    //CASA 14
                 case 'Q':
                     _tile[i][j] = new Brick("Texture/house_14_a.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'R':
                     _tile[i][j] = new Brick("Texture/house_14_b.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'S':
                     _tile[i][j] = new Brick("Texture/house_14_c.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case 'T':
                     _tile[i][j] = new Brick("Texture/house_14_d.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
 
                 //BARRICADA
                 case '-':
                     _tile[i][j] = new Brick("Texture/barricade_wall.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     break;
                 case '¡':
                     _tile[i][j] = new Brick("Texture/barricade_wall_2.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     _tile[i][j]->getSprite().setColor(sf::Color(255, 255, 255, rand() % 20 + 205));
                     break;
                 case '!':
                     _tile[i][j] = new Brick("Texture/barricade_wall_2.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     _tile[i][j]->setScale({ -1.0f, 1.0f });
                     _tile[i][j]->getSprite().setColor(sf::Color(255, 255, 255, rand() % 20 + 205));
                     break;
                 case '>':
                     _tile[i][j] = new Brick("Texture/barricade_corner.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     _tile[i][j]->setScale({ -1.0f, 1.0f });
                     _tile[i][j]->getSprite().setColor(sf::Color(255, 255, 255, rand() % 20 + 205));
                     break;
                 case '<':
                     _tile[i][j] = new Brick("Texture/barricade_corner.png", sf::Vector2u(3, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     _tile[i][j]->getSprite().setColor(sf::Color(255, 255, 255, rand() % 20 + 205));
                     break;
 
-			    //SANDBAG
+                    //SANDBAG
                 case 'U':
                     _tile[i][j] = new Brick("Texture/sandbag.png", sf::Vector2u(1, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     _tile[i][j]->getSprite().setColor(sf::Color(255, 255, 255, rand() % 20 + 205));
                     break;
 
@@ -340,6 +390,7 @@ void Level::initLevel()
                 case '$':
                 {
                     _tile[i][j] = new Target("Texture/target_bridge.png", sf::Vector2u(1, 1));
+                    _tile[i][j]->setHaveEffect(true);
                     _tile[i][j]->getSprite().setColor(sf::Color(255, 255, 255, rand() % 20 + 205));
 					_tile[i][j]->setLife(5);
                     _targetIndex.x = i;
@@ -390,6 +441,7 @@ void Level::render(sf::RenderWindow& window)
         for (int j = 0; j < WIDTH_MAP; j++)
         {
             _tile[i][j]->render(window);
+            _tile[i][j]->renderEffect(window);
         }
     }
 
