@@ -2,30 +2,38 @@
 #include <iostream>
 #include "SFML/Graphics.hpp"
 #include "Base.h"
+#include "Animation.h"
+#include "Helper.h"
 
 class Effect
 	: public Base
 {
 private:
-	float _timeMax;
-	float _time;
 	bool _state;
+	float _currentImage;
+	float _currentImageMax;
+	Animation _animation;
+	Helper* _effect_clock;
+	
 	void _initTexture(std::string texture);
+	void _initClock();
 
 public:
-	Effect(std::string texture);
+	Effect(std::string texture, sf::Vector2u imageCount);
 	~Effect();
 
 	//getter
-	float getTime();
-	float getTimeMax();
 	bool getState();
 	float getRotation();
+	float getCurrentImage();
+	float getCurrentImageMax();
 	
 	//setter
-	void setTime(float time);
-	void setTimeMax(float time);
 	void setState(bool state);
 	void setRotation(float deg);
+
+	//Methods
+	void updateAnimation();
+	void update();
 };
 
