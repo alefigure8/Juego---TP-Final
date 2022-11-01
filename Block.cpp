@@ -18,7 +18,7 @@ Block::~Block()
 void Block::initEffect()
 {
 	_explotion = new Effect("Texture/explotion_1.png", sf::Vector2u(10, 1));
-	_explotion->getSprite().setScale({0.4f, 0.4f});
+	_explotion->getSprite().setScale({0.3f, 0.3f});
 }
 
 int Block::getLife()

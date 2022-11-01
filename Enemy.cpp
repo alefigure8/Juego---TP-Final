@@ -93,140 +93,142 @@ void Enemy::movement()
 		_movement_state = false;
 		_time_direction = 0.f;
 	}
-	
-	if (abs(nearPlayerX) <= abs(nearTargetX) && abs(nearPlayerY) <= abs(nearTargetY) && _player_visibility)
+	if (_life >= 1)
 	{
-		if (abs(nearPlayerX) < STOPMOVING && abs(nearPlayerY) < STOPMOVING)
+		if (abs(nearPlayerX) <= abs(nearTargetX) && abs(nearPlayerY) <= abs(nearTargetY) && _player_visibility)
 		{
-			_direction = 3;
-		}
+			if (abs(nearPlayerX) < STOPMOVING && abs(nearPlayerY) < STOPMOVING)
+			{
+				_direction = 3;
+			}
 
-		switch (_direction)
-		{
-		case 0:
-		{
-			if (player_positionX > _sprite.getPosition().x)
-			{
-				_sprite.move(_movement_speed, 0.f);
-				_sprite.setRotation(90);
-			}
-			else
-			{
-				_sprite.move(-_movement_speed, 0.f);
-				_sprite.setRotation(270);
-			}
-		}
-		break;
-		case 1:
-		{
-
-			if (player_positionY > _sprite.getPosition().y)
-			{
-				_sprite.move(0.f, _movement_speed);
-				_sprite.setRotation(180);
-			}
-			else
-			{
-				_sprite.move(0.f, -_movement_speed);
-				_sprite.setRotation(-180);
-			}
-		}
-		break;
-		case 2:
-		{
-			switch (optionCase)
+			switch (_direction)
 			{
 			case 0:
-				_sprite.move(_movement_speed, 0.f);
-				_sprite.setRotation(90);
-				break;
-			case 1:
-				_sprite.move(-_movement_speed, 0.f);
-				_sprite.setRotation(270);
-				break;
-			case 2:
-				_sprite.move(0.f, _movement_speed);
-				_sprite.setRotation(180);
-				break;
-			case 3:
-				_sprite.move(0.f, -_movement_speed);
-				_sprite.setRotation(0);
-				break;
+			{
+				if (player_positionX > _sprite.getPosition().x)
+				{
+					_sprite.move(_movement_speed, 0.f);
+					_sprite.setRotation(90);
+				}
+				else
+				{
+					_sprite.move(-_movement_speed, 0.f);
+					_sprite.setRotation(270);
+				}
 			}
-		}
-		break;
-		case 3:
-			_sprite.move(0.f, 0.f);
 			break;
-		}
-	}
-	else
-	{
-		//Si el tanque está a menos de 60 X y 60 Y del player, se detiene.
-		if (abs(nearTargetX) < STOPMOVING && abs(nearTargetY) < STOPMOVING /*|| !visibility */) //TODO agragar visibilidad si player se pone bajo un arbol
-		{
-			_direction = 3;
-		}
+			case 1:
+			{
 
-		switch (_direction)
-		{
-		case 0:
-		{
-			if (target_positionX > _sprite.getPosition().x)
-			{
-				_sprite.move(_movement_speed, 0.f);
-				_sprite.setRotation(90);
+				if (player_positionY > _sprite.getPosition().y)
+				{
+					_sprite.move(0.f, _movement_speed);
+					_sprite.setRotation(180);
+				}
+				else
+				{
+					_sprite.move(0.f, -_movement_speed);
+					_sprite.setRotation(-180);
+				}
 			}
-			else
+			break;
+			case 2:
 			{
-				_sprite.move(-_movement_speed, 0.f);
-				_sprite.setRotation(270);
+				switch (optionCase)
+				{
+				case 0:
+					_sprite.move(_movement_speed, 0.f);
+					_sprite.setRotation(90);
+					break;
+				case 1:
+					_sprite.move(-_movement_speed, 0.f);
+					_sprite.setRotation(270);
+					break;
+				case 2:
+					_sprite.move(0.f, _movement_speed);
+					_sprite.setRotation(180);
+					break;
+				case 3:
+					_sprite.move(0.f, -_movement_speed);
+					_sprite.setRotation(0);
+					break;
+				}
+			}
+			break;
+			case 3:
+				_sprite.move(0.f, 0.f);
+				break;
 			}
 		}
-		break;
-		case 1:
+		else
 		{
+			//Si el tanque está a menos de 60 X y 60 Y del player, se detiene.
+			if (abs(nearTargetX) < STOPMOVING && abs(nearTargetY) < STOPMOVING /*|| !visibility */) //TODO agragar visibilidad si player se pone bajo un arbol
+			{
+				_direction = 3;
+			}
 
-			if (target_positionY > _sprite.getPosition().y)
-			{
-				_sprite.move(0.f, _movement_speed);
-				_sprite.setRotation(180);
-			}
-			else
-			{
-				_sprite.move(0.f, -_movement_speed);
-				_sprite.setRotation(-180);
-			}
-		}
-		break;
-		case 2:
-		{
-			//TODO MEJORAR LOGICA DEL CASE 2
-			switch (optionCase)
+			switch (_direction)
 			{
 			case 0:
-				_sprite.move(_movement_speed, 0.f);
-				_sprite.setRotation(90);
-				break;
+			{
+				if (target_positionX > _sprite.getPosition().x)
+				{
+					_sprite.move(_movement_speed, 0.f);
+					_sprite.setRotation(90);
+				}
+				else
+				{
+					_sprite.move(-_movement_speed, 0.f);
+					_sprite.setRotation(270);
+				}
+			}
+			break;
 			case 1:
-				_sprite.move(-_movement_speed, 0.f);
-				_sprite.setRotation(270);
-				break;
+			{
+
+				if (target_positionY > _sprite.getPosition().y)
+				{
+					_sprite.move(0.f, _movement_speed);
+					_sprite.setRotation(180);
+				}
+				else
+				{
+					_sprite.move(0.f, -_movement_speed);
+					_sprite.setRotation(-180);
+				}
+			}
+			break;
 			case 2:
-				_sprite.move(0.f, _movement_speed);
-				_sprite.setRotation(180);
-				break;
+			{
+				//TODO MEJORAR LOGICA DEL CASE 2
+				switch (optionCase)
+				{
+				case 0:
+					_sprite.move(_movement_speed, 0.f);
+					_sprite.setRotation(90);
+					break;
+				case 1:
+					_sprite.move(-_movement_speed, 0.f);
+					_sprite.setRotation(270);
+					break;
+				case 2:
+					_sprite.move(0.f, _movement_speed);
+					_sprite.setRotation(180);
+					break;
+				case 3:
+					_sprite.move(0.f, -_movement_speed);
+					_sprite.setRotation(0);
+					break;
+				}
+			}
+			break;
 			case 3:
-				_sprite.move(0.f, -_movement_speed);
-				_sprite.setRotation(0);
+				//Se detiene
+				_sprite.move(0.f, 0.f);
 				break;
 			}
-		}
-		break;
-		case 3:
-			//Se detiene
-			_sprite.move(0.f, 0.f);
-			break;
 		}
 	}
 }
@@ -296,58 +298,58 @@ void Enemy::updateArmor()
 	float nearTargetX = target_positionX - enemy_positionX;
 	float nearTargetY = target_positionY - enemy_positionY;
 	
-	//Si está yendo hacia el player, le apunta
-	if (abs(nearPlayerX) <= abs(nearTargetX) && abs(nearPlayerY) <= abs(nearTargetY) && _player_visibility)
+	if (_life >= 1)
 	{
-		float armaCenterX = _armor->getPosition().x;
-		float armaCenterY = _armor->getPosition().y;
-		float atan = atan2(armaCenterX - player_positionX, player_positionY - armaCenterY);
-		float deg = (atan / 3.14159265358979323846 * 180) + (atan > 0 ? 0 : 360);
+		//APUNTA ENEMIGO
+		if (abs(nearPlayerX) <= abs(nearTargetX) && abs(nearPlayerY) <= abs(nearTargetY) && _player_visibility)
+		{
+			float armaCenterX = _armor->getPosition().x;
+			float armaCenterY = _armor->getPosition().y;
+			float atan = atan2(armaCenterX - player_positionX, player_positionY - armaCenterY);
+			float deg = (atan / 3.14159265358979323846 * 180) + (atan > 0 ? 0 : 360);
 
-		//Buffer para Delay TODO: Mejorar
-		_buffer[_buffer_position] = deg;
-		_buffer_position++;
+			//Buffer para Delay TODO: Mejorar
+			_buffer[_buffer_position] = deg;
+			_buffer_position++;
 
-		if (_buffer_position >= _buffer_size)
-			_buffer_position = 0;
+			if (_buffer_position >= _buffer_size)
+				_buffer_position = 0;
 
-		_armor->setRotation(abs(_buffer[_buffer_position_aux]));
-		_buffer_position_aux++;
+			_armor->setRotation(abs(_buffer[_buffer_position_aux]));
+			_buffer_position_aux++;
 
-		if (_buffer_position_aux >= _buffer_size)
-			_buffer_position_aux = 0;
-		
-	} 
-	else 
-	{
-		float armaCenterX = _armor->getPosition().x;
-		float armaCenterY = _armor->getPosition().y;
-		float atan = atan2(armaCenterX - target_positionX, target_positionY - armaCenterY);
-		float deg = (atan / 3.14159265358979323846 * 180) + (atan > 0 ? 0 : 360);
+			if (_buffer_position_aux >= _buffer_size)
+				_buffer_position_aux = 0;
 
-		//Buffer para Delay TODO: Mejorar
-		_buffer[_buffer_position] = deg;
-		_buffer_position++;
+		}
+		else //APUNTA BASE
+		{
+			float armaCenterX = _armor->getPosition().x;
+			float armaCenterY = _armor->getPosition().y;
+			float atan = atan2(armaCenterX - target_positionX, target_positionY - armaCenterY);
+			float deg = (atan / 3.14159265358979323846 * 180) + (atan > 0 ? 0 : 360);
 
-		if (_buffer_position >= _buffer_size)
-			_buffer_position = 0;
+			//Buffer para Delay TODO: Mejorar
+			_buffer[_buffer_position] = deg;
+			_buffer_position++;
 
-		_armor->setRotation(abs(_buffer[_buffer_position_aux]));
-		_buffer_position_aux++;
+			if (_buffer_position >= _buffer_size)
+				_buffer_position = 0;
 
-		if (_buffer_position_aux >= _buffer_size)
-			_buffer_position_aux = 0;
+			_armor->setRotation(abs(_buffer[_buffer_position_aux]));
+			_buffer_position_aux++;
+
+			if (_buffer_position_aux >= _buffer_size)
+				_buffer_position_aux = 0;
+		}
+
 	}
-	
-
-
-	//TODO Si está yendo hacia la base, le apunta
 }
 
 void Enemy::updateBullet()
 {
 	//Enemy Bulltes
-	if (this->canAttack())
+	if (this->canAttack() && _life >=1)
 	{
 		_bullet.push_back(initBullet());
 		_shoot->setState(true);
