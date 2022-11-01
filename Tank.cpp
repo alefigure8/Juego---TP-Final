@@ -1,16 +1,22 @@
 #include "Tank.h"
 
 
-void Tank::_initArmor(std::string armorTexture)
+void Tank::_initArmor(std::string armorTexture, sf::Vector2u imagecount)
 {
-	_armor = new Armor(armorTexture);
+	_armor = new Armor(armorTexture,imagecount);
 	_armor->setPosition(_sprite.getPosition());
+}
+
+void Tank::initEffect()
+{
+	_explotion = new Effect("Texture/explotion_1.png", sf::Vector2u(10, 1));
+	_explotion->getSprite().setScale({ 0.3f, 0.3f });
 }
 
 Tank::Tank(std::string image, std::string armorTexture, sf::Vector2u imageCount) : _animation(image, imageCount), Base(image)
 {
 	//Init Armor
-	_initArmor(armorTexture);
+	_initArmor(armorTexture, imageCount);
 
 	//Tank Config
 	_sprite.setScale(0.7f, 0.7f);
@@ -29,6 +35,10 @@ Tank::Tank(std::string image, std::string armorTexture, sf::Vector2u imageCount)
 	//Spawn
 	int random = rand() % 3;
 	_sprite.setPosition(_spawn_position[random]);
+
+	//Effect
+	_alreadyDead = false;
+	initEffect();
 }
 
 Tank::~Tank()
@@ -153,9 +163,30 @@ void Tank::updateAnimation()
 	sf::Vector2u currentImage = _animation.getCurrentImage();
 	currentImage.x = _max_damage - _damage;
 	_animation.setCurrentImage(currentImage);
+	_armor->updateAnimation(currentImage);
 	_sprite.setTextureRect(_animation.uvRect);
 	_sprite.setOrigin(_animation.uvRect.width / 2, _animation.uvRect.height / 2);
 	_animation.update();
+}
+
+void Tank::updateEffect()
+{
+	if (_life == 0 && !_alreadyDead)
+	{
+		_explotion->setState(true);
+	}
+
+	if (_explotion->getState())
+	{
+		_explotion->setPosition(_sprite.getPosition());
+		_explotion->update();
+
+		if (_explotion->getCurrentImage() == _explotion->getCurrentImageMax())
+		{
+			_alreadyDead = true;
+			_explotion->setState(false);
+		}
+	}
 }
 
 void Tank::update(sf::RenderWindow& window)
@@ -164,19 +195,37 @@ void Tank::update(sf::RenderWindow& window)
 	_armor->update();
 	_armor->setPosition(_sprite.getPosition());
 	updateAttack();
+	updateEffect();
+}
+
+void Tank::renderEffectExplotion(sf::RenderWindow& window)
+{
+	if (_explotion->getState() && !_alreadyDead)
+		_explotion->render(window);
 }
 
 void Tank::render(sf::RenderWindow& window)
 {
 	window.draw(_sprite);
 	window.draw(_armor->getArmor());
+	renderEffectExplotion(window);
 }
 
 void Tank::updateLife() 
 {
-	if (_damage == 0)
-		_life--;
-	
+	if (_damage == 0) {
+		if (_life >= 1)
+		{
+			_life--;
+			_damage = _max_damage;
+		}
+		
+		if (_life == 0)
+		{
+			_damage = 0;
+		}
+	}
+		
 	if (_life < 0)
 		_life = 0;
 }

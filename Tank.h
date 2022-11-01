@@ -4,12 +4,14 @@
 #include "Base.h"
 #include "Animation.h"
 #include "Armor.h"
+#include "Effect.h"
 
 class Tank
 	: public Base
 {
 protected:
 	Armor* _armor;
+	Effect* _explotion;
 	sf::Texture _armorTexture;
 	sf::Vector2f _last_position;
 	int _weight;
@@ -18,6 +20,7 @@ protected:
 	float _attack_max;
 	float _speed_attack;
 	int _hp;
+	bool _alreadyDead;
 	sf::Vector2f _spawn_position[3]{ sf::Vector2f(50.f, 100.f), sf::Vector2f(300.f, 100.f), sf::Vector2f(650.f, 100.f) };
 
 	//Animacion
@@ -26,7 +29,8 @@ protected:
 	int _max_damage;
 
 	//Init
-	void _initArmor(std::string armorTexture);
+	void _initArmor(std::string armorTexture, sf::Vector2u imageCount);
+	void initEffect();
 
 public:
 	Tank(std::string image, std::string armorTexture, sf::Vector2u imageCount);
@@ -57,8 +61,10 @@ public:
 	Collider getCollider();
 	void updateAttack();
 	void updateAnimation();
+	void updateEffect();
 	void updateLife();
 	void update(sf::RenderWindow& window);
+	void renderEffectExplotion(sf::RenderWindow& window);
 	void render(sf::RenderWindow& window);
 };
 
