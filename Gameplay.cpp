@@ -15,7 +15,7 @@ void Gameplay::_initWindow()
 
 void Gameplay::_initPlayer()
 {
-	_player = new Player("Texture/tank1_body.png", "Texture/tank1_gun.png", sf::Vector2u(1, 1));
+	_player = new Player("Texture/tank1_body_2.png", "Texture/tank1_gun_2.png", sf::Vector2u(3, 1));
 
 	// Init Position
 	_player->getSprite().setPosition({ _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().x - 50, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().y - 150 });
@@ -32,7 +32,7 @@ void Gameplay::_initEnemy()
 	case 1:
 	{
 		//ENEMY 1
-		_enemy = new Enemy("Texture/enemy_body1.png", "Texture/enemy_gun1.png", "Texture/bullet_tank_1.png", sf::Vector2u(2, 1));
+		_enemy = new Enemy("Texture/enemy_body1.png", "Texture/tank1b_gun_2.png", "Texture/bullet_tank_1.png", sf::Vector2u(2, 1));
 		
 		//Init Position
 		_enemy->getArmor()->setPosition(_enemy->getPosition());
@@ -49,7 +49,7 @@ void Gameplay::_initEnemy()
 	case 2:
 	{
 		//ENEMY 2
-		_enemy = new Enemy("Texture/enemy_body2.png", "Texture/tank3c_gun.png", "Texture/bullet_tank_2.png", sf::Vector2u(2, 1));
+		_enemy = new Enemy("Texture/enemy_body2.png", "Texture/tank3c_gun_2.png", "Texture/bullet_tank_2.png", sf::Vector2u(2, 1));
 		
 		//Init Position
 		_enemy->getArmor()->setPosition(_enemy->getPosition());
@@ -67,7 +67,7 @@ void Gameplay::_initEnemy()
 	case 3:
 	{
 		//ENEMY 3
-		_enemy = new Enemy("Texture/enemy_body3.png", "Texture/tank2b_gun.png", "Texture/bullet_tank_3.png", sf::Vector2u(2, 1));
+		_enemy = new Enemy("Texture/enemy_body3.png", "Texture/tank2b_gun_4.png", "Texture/bullet_tank_3.png", sf::Vector2u(3, 1));
 
 		//Init Position
 		_enemy->getArmor()->setPosition(_enemy->getPosition());
@@ -298,12 +298,13 @@ void Gameplay::updateBullet()
 						deleteBullet2 = true;
 
 						_enemies[j]->setDamage(_enemies[j]->getDamage() - 1);
+						
 						//Borrar enemigo si la vida llega a 0
-						if (_enemies[j]->getLife()==0)
-						{
-							delete _enemies.at(j);
-							_enemies.erase(_enemies.begin() + j);
-						}
+						//if (_enemies[j]->getLife()==0)
+						//{
+						//	delete _enemies.at(j);
+						//	_enemies.erase(_enemies.begin() + j);
+						//}
 					}
 				}
 			}
@@ -365,6 +366,11 @@ void Gameplay::updateBullet()
 						deleteBullet2 = true;
 
 						_player->setDamage(_player->getDamage() - 1);//TODO: Logica de Damage y Life
+						
+						if (_player->getDamage() == 3)
+						{
+							_player->getSprite().setPosition({ _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().x - 50, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().y - 150 });
+						}
 
 						//if Life es 0, Game Over
 
