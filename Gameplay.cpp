@@ -296,7 +296,6 @@ void Gameplay::updateBullet()
 						delete _bullet.at(i);
 						_bullet.erase(_bullet.begin() + i);
 						deleteBullet2 = true;
-
 						_enemies[j]->setDamage(_enemies[j]->getDamage() - 1);
 						
 						//Borrar enemigo si la vida llega a 0
@@ -380,10 +379,12 @@ void Gameplay::updateBullet()
 					//Si la bala del enemigo golpea a otro enemigo
 					for (int j = 0; j < _enemies.size(); j++)
 					{
-						if (enemy->getBullets()[i]->getBounds().intersects(_enemies[j]->getBounds()) && enemy != _enemies[j])
+						if (enemy->getBullets()[i]->getBounds().intersects(_enemies[j]->getBounds()) && enemy != _enemies[j] && !deleteBullet2)
 						{
 							delete enemy->getBullets()[i];
+							deleteBullet2 = true;
 							enemy->getBullets().erase(enemy->getBullets().begin() + i);
+							_enemies[j]->setDamage(_enemies[j]->getDamage() - enemy->getHP());
 						}
 					}
 				}
