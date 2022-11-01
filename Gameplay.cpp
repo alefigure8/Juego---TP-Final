@@ -376,6 +376,16 @@ void Gameplay::updateBullet()
 
 						//Check Base Life. Si llega a 0, Game Over
 					}
+
+					//Si la bala del enemigo golpea a otro enemigo
+					for (int j = 0; j < _enemies.size(); j++)
+					{
+						if (enemy->getBullets()[i]->getBounds().intersects(_enemies[j]->getBounds()) && enemy != _enemies[j])
+						{
+							delete enemy->getBullets()[i];
+							enemy->getBullets().erase(enemy->getBullets().begin() + i);
+						}
+					}
 				}
 			}
 		}
