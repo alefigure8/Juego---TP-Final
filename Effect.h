@@ -31,6 +31,7 @@ public:
 	//setter
 	void setState(bool state);
 	void setRotation(float deg);
+	void setCurrentImage(float currentImage);
 
 	//Methods
 	void updateAnimation();

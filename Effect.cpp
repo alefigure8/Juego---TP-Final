@@ -55,6 +55,11 @@ void Effect::setRotation(float deg)
 	_sprite.setRotation(deg);
 }
 
+void Effect::setCurrentImage(float currentImage)
+{
+	_currentImage = currentImage;
+}
+
 void Effect::setState(bool state)
 {
 	_state = state;
