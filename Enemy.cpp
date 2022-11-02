@@ -26,6 +26,9 @@ Enemy::Enemy(std::string image, std::string armorTexture, std::string bullet, sf
 
 	//effect
 	initEffect();
+
+	//helper
+	initHelper();
 }
 
 Enemy::~Enemy()
@@ -35,6 +38,11 @@ Enemy::~Enemy()
 void Enemy::initEffect()
 {
 	_shoot = new Effect("Texture/shoot_1.png", sf::Vector2u(4, 1));
+}
+
+void Enemy::initHelper()
+{
+	_distance = new Helper;
 }
 
 Bullet* Enemy::initBullet()
@@ -51,7 +59,7 @@ Bullet* Enemy::initBullet()
 	float armorPositionX = this->getArmor()->getPosition().x + (this->getArmor()->getBounds().width / 2 * velx);
 	float armorPositionY = this->getArmor()->getPosition().y + (this->getArmor()->getBounds().height / 2 * vely);
 
-	return new Bullet(armorPositionX, armorPositionY, velx, vely, degree - 180, _bulletImage);
+	return new Bullet({ armorPositionX, armorPositionY }, { velx, vely }, degree - 180, _bulletImage);
 	//return new BUllet(helper.amorPosition(_player), helper.vel(degree),degree-180,"Texture/bulletGreen1.png"); TODO agregar al helper
 }
 
@@ -62,22 +70,8 @@ std::vector<Bullet*>& Enemy::getBullets()
 
 void Enemy::movement()
 {
-	float player_positionX = _player_position.x;
-	float player_positionY = _player_position.y;
-
-	float target_positionX = _target_position.x;
-	float target_positionY = _target_position.y;
-
-	float enemy_positionX = _sprite.getPosition().x;
-	float enemy_positionY = _sprite.getPosition().y;
-
-	float nearPlayerX = player_positionX - enemy_positionX;
-	float nearPlayerY = player_positionY - enemy_positionY;
-
-	float nearTargetX = target_positionX - enemy_positionX;
-	float nearTargetY = target_positionY - enemy_positionY;
-	float STOPMOVING = 30;
-
+	float distancePlayer = _distance->distance(_player_position, _sprite.getPosition());
+	float distanceTarget = _distance->distance(_target_position, _sprite.getPosition());
 	int optionCase = 0;
 
 	if (_movement_state || canMove())
@@ -95,18 +89,13 @@ void Enemy::movement()
 	}
 	if (_life >= 1)
 	{
-		if (abs(nearPlayerX) <= abs(nearTargetX) && abs(nearPlayerY) <= abs(nearTargetY) && _player_visibility)
+		if (distancePlayer < distanceTarget && _player_visibility)
 		{
-			if (abs(nearPlayerX) < STOPMOVING && abs(nearPlayerY) < STOPMOVING)
-			{
-				_direction = 3;
-			}
-
 			switch (_direction)
 			{
 			case 0:
 			{
-				if (player_positionX > _sprite.getPosition().x)
+				if (_player_position.x > _sprite.getPosition().x)
 				{
 					_sprite.move(_movement_speed, 0.f);
 					_sprite.setRotation(90);
@@ -121,7 +110,7 @@ void Enemy::movement()
 			case 1:
 			{
 
-				if (player_positionY > _sprite.getPosition().y)
+				if (_player_position.y > _sprite.getPosition().y)
 				{
 					_sprite.move(0.f, _movement_speed);
 					_sprite.setRotation(180);
@@ -156,24 +145,15 @@ void Enemy::movement()
 				}
 			}
 			break;
-			case 3:
-				_sprite.move(0.f, 0.f);
-				break;
 			}
 		}
 		else
 		{
-			//Si el tanque está a menos de 60 X y 60 Y del player, se detiene.
-			if (abs(nearTargetX) < STOPMOVING && abs(nearTargetY) < STOPMOVING /*|| !visibility */) //TODO agragar visibilidad si player se pone bajo un arbol
-			{
-				_direction = 3;
-			}
-
 			switch (_direction)
 			{
 			case 0:
 			{
-				if (target_positionX > _sprite.getPosition().x)
+				if (_target_position.x > _sprite.getPosition().x)
 				{
 					_sprite.move(_movement_speed, 0.f);
 					_sprite.setRotation(90);
@@ -188,7 +168,7 @@ void Enemy::movement()
 			case 1:
 			{
 
-				if (target_positionY > _sprite.getPosition().y)
+				if (_target_position.y > _sprite.getPosition().y)
 				{
 					_sprite.move(0.f, _movement_speed);
 					_sprite.setRotation(180);
@@ -202,7 +182,6 @@ void Enemy::movement()
 			break;
 			case 2:
 			{
-				//TODO MEJORAR LOGICA DEL CASE 2
 				switch (optionCase)
 				{
 				case 0:
@@ -224,10 +203,6 @@ void Enemy::movement()
 				}
 			}
 			break;
-			case 3:
-				//Se detiene
-				_sprite.move(0.f, 0.f);
-				break;
 			}
 		}
 	}
@@ -279,34 +254,16 @@ void Enemy::updateTime()
 
 void Enemy::updateArmor()
 {
-	// TODO Retraso del arma :: Buffer de los grados a recorrer
-
-	//Variables (PASAR A FUNCION QUE RETORNE UN VECTOR2F)
-	
-	float player_positionX = _player_position.x;
-	float player_positionY = _player_position.y;
-	
-	float target_positionX = _target_position.x;
-	float target_positionY = _target_position.y;
-	
-	float enemy_positionX = _sprite.getPosition().x;
-	float enemy_positionY = _sprite.getPosition().y;
-	
-	float nearPlayerX = player_positionX - enemy_positionX;
-	float nearPlayerY = player_positionY - enemy_positionY;
-	
-	float nearTargetX = target_positionX - enemy_positionX;
-	float nearTargetY = target_positionY - enemy_positionY;
+	float distancePlayer = _distance->distance(_player_position, _sprite.getPosition());
+	float distanceTarget = _distance->distance(_target_position, _sprite.getPosition());
 	
 	if (_life >= 1)
 	{
 		//APUNTA ENEMIGO
-		if (abs(nearPlayerX) <= abs(nearTargetX) && abs(nearPlayerY) <= abs(nearTargetY) && _player_visibility)
+		if (distancePlayer < distanceTarget && _player_visibility)
 		{
-			float armaCenterX = _armor->getPosition().x;
-			float armaCenterY = _armor->getPosition().y;
-			float atan = atan2(armaCenterX - player_positionX, player_positionY - armaCenterY);
-			float deg = (atan / 3.14159265358979323846 * 180) + (atan > 0 ? 0 : 360);
+			//armor´s degree
+			float deg = _distance->degree(_player_position, _armor->getPosition());
 
 			//Buffer para Delay TODO: Mejorar
 			_buffer[_buffer_position] = deg;
@@ -324,10 +281,8 @@ void Enemy::updateArmor()
 		}
 		else //APUNTA BASE
 		{
-			float armaCenterX = _armor->getPosition().x;
-			float armaCenterY = _armor->getPosition().y;
-			float atan = atan2(armaCenterX - target_positionX, target_positionY - armaCenterY);
-			float deg = (atan / 3.14159265358979323846 * 180) + (atan > 0 ? 0 : 360);
+			//armor´s degree
+			float deg = _distance->degree(_target_position, _armor->getPosition());
 
 			//Buffer para Delay TODO: Mejorar
 			_buffer[_buffer_position] = deg;
@@ -359,23 +314,13 @@ void Enemy::updateBullet()
 
 void Enemy::updateEffect()
 {
-// Manejar tiempo de efecto
-	float PI = 3.14;
-	float degree = _armor->getRotationArmor();
-
-	// Angulo del arma
-	float velx = sin((PI / 180) * -degree);
-	float vely = cos((PI / 180) * -degree);
-
-	// Posicion del arma
-	float armaPosicionx = _armor->getPosition().x + (_armor->getBounds().width / 2 * velx);
-	float armaPosiciony = _armor->getPosition().y + (_armor->getBounds().height / 2 * vely);
-
+	//Armor position
+	sf::Vector2f armorPosition = _distance->armorPosition(_armor->getRotationArmor(), _armor->getBounds(), _armor->getPosition());
 
 	if (_shoot->getState())
 	{
-		_shoot->setPosition({ armaPosicionx, armaPosiciony });
-		_shoot->setRotation(degree);
+		_shoot->setPosition({ armorPosition.x, armorPosition.y });
+		_shoot->setRotation(_armor->getRotationArmor());
 		_shoot->update();
 	}
 }

@@ -24,6 +24,7 @@ private:
 	sf::Vector2f _target_position;
 	bool _player_visibility;
 	sf::Vector2f _last_position_shoot;
+	Helper* _distance;
 
 	//Buffer
 	int* _buffer;
@@ -37,6 +38,7 @@ public:
 
 	Bullet* initBullet();
 	void initEffect();
+	void initHelper();
 	std::vector<Bullet*>& getBullets();
 	
 	//getters
