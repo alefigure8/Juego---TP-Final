@@ -40,6 +40,7 @@ void Gameplay::_initEnemy()
 		_enemy->setWeight(2);
 		_enemy->setSpeedMovement(0.8f);
 		_enemy->setHP(1);
+		_enemy->setLifePost(3);
 		
 		//Push
 		_enemies.push_back(_enemy);
@@ -57,6 +58,7 @@ void Gameplay::_initEnemy()
 		_enemy->setSpeedMovement(1.3f);
 		_enemy->setWeight(1);
 		_enemy->setHP(2);
+		_enemy->setLifePost(3);
 		
 		//push
 		_enemies.push_back(_enemy);
@@ -75,6 +77,8 @@ void Gameplay::_initEnemy()
 		_enemy->setSpeedMovement(0.5f);
 		_enemy->setWeight(3);
 		_enemy->setHP(3);
+		_enemy->setLifePost(4);
+
 
 		//Push
 		_enemies.push_back(_enemy);
@@ -98,7 +102,7 @@ Bullet* Gameplay::_initBullet()
 	float armorPositionX = _player->getArmor()->getPosition().x + (_player->getArmor()->getBounds().width / 2 * velx);
 	float armorPositionY = _player->getArmor()->getPosition().y + (_player->getArmor()->getBounds().height / 2 * vely);
 
-	return new Bullet(armorPositionX, armorPositionY, velx, vely, degree - 180, "Texture/bullet_player_1.png");
+	return new Bullet({ armorPositionX, armorPositionY }, { velx, vely }, degree - 180, "Texture/bullet_player_1.png");
 	//return new BUllet(helper.amorPosition(_player), helper.vel(degree),degree-180,"Texture/bulletGreen1.png");
 }
 
@@ -127,6 +131,9 @@ void Gameplay::_initHelpers()
 	//Reloj de los Enemigos
 	_clockEnemy = new Helper;
 	_clockEnemy->setTime(100.f);
+
+	//Distancias
+	_distance = new Helper;
 }
 
 void Gameplay::_initEffect()
@@ -246,15 +253,9 @@ void Gameplay::updateBullet()
 				// Movimiento bala
 				_bullet[i]->update();
 
-				//Distancia de la bala
-				float balaX = _bullet[i]->getPosition().x; //Posicion X de la bala
-				float balaY = _bullet[i]->getPosition().y; //Posicion Y de la bala
-				float distx = _last_position_shoot.x - balaX;
-				float disty = _last_position_shoot.y - balaY;
-				float distx2 = distx * distx;
-				float disty2 = disty * disty;
-				float dxy2 = distx2 + disty2;
-				float dxy = sqrt(dxy2);
+				//Distancia de la bala		
+				float dxy = _distance->distance(_bullet[i]->getPosition(), _last_position_shoot);
+				
 
 				if (
 					_bullet[i]->getBounds().intersects(_level->getTile(j, h)->getBounds()) &&
@@ -293,17 +294,19 @@ void Gameplay::updateBullet()
 				{
 					if (_bullet[i]->getBounds().intersects(_enemies[j]->getBounds()) && !deleteBullet2)
 					{
-						delete _bullet.at(i);
-						_bullet.erase(_bullet.begin() + i);
-						deleteBullet2 = true;
+						// Damage
 						_enemies[j]->setDamage(_enemies[j]->getDamage() - 1);
 						
 						//Borrar enemigo si la vida llega a 0
-						//if (_enemies[j]->getLife()==0)
-						//{
-						//	delete _enemies.at(j);
-						//	_enemies.erase(_enemies.begin() + j);
-						//}
+						if (_enemies[j]->getLife() == 0)
+						{
+							_enemies[j]->setLifePost(_enemies[j]->getLifePost() - 1);
+						}
+
+						delete _bullet.at(i);
+						_bullet.erase(_bullet.begin() + i);
+						deleteBullet2 = true;
+						
 					}
 				}
 			}
@@ -317,15 +320,8 @@ void Gameplay::updateBullet()
 					// Movimiento bala
 					enemy->getBullets()[i]->update();
 
-					//Distancia de la bala
-					float balaXEnemy = enemy->getBullets()[i]->getPosition().x; //Posicion X de la bala
-					float balaYEnemy = enemy->getBullets()[i]->getPosition().y; //Posicion Y de la bala
-					float distxEnemy = enemy->getLastPositionShoot().x - balaXEnemy;
-					float distyEnemy = enemy->getLastPositionShoot().y - balaYEnemy;
-					float distx2Enemy = distxEnemy * distxEnemy;
-					float disty2Enemy = distyEnemy * distyEnemy;
-					float dxy2Enemy = distx2Enemy + disty2Enemy;
-					float dxyEnemy = sqrt(dxy2Enemy);
+					//Distancia de la bala		
+					float dxyEnemy = _distance->distance(enemy->getBullets()[i]->getPosition(), enemy->getLastPositionShoot());
 				
 					if (
 						enemy->getBullets()[i]->getBounds().intersects(_level->getTile(j, h)->getBounds()) &&
@@ -364,9 +360,11 @@ void Gameplay::updateBullet()
 						enemy->getBullets().erase(enemy->getBullets().begin() + i);
 						deleteBullet2 = true;
 
-						_player->setDamage(_player->getDamage() - 1);//TODO: Logica de Damage y Life
+						//Saca puntos de damage
+						_player->setDamage(_player->getDamage() - 1);
 						
-						if (_player->getDamage() == 3)
+						//Respawn
+						if (_player->getDamage() == 0)
 						{
 							_player->getSprite().setPosition({ _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().x - 50, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().y - 150 });
 						}
@@ -384,7 +382,18 @@ void Gameplay::updateBullet()
 							delete enemy->getBullets()[i];
 							deleteBullet2 = true;
 							enemy->getBullets().erase(enemy->getBullets().begin() + i);
-							_enemies[j]->setDamage(_enemies[j]->getDamage() - enemy->getHP());
+							
+							//Borrar enemigo si la vida llega a 0
+							if (_enemies[j]->getLife() == 0)
+							{
+								_enemies[j]->setLifePost(_enemies[j]->getLifePost() - 1);
+							}
+							
+							//Se sacan puntos hasta quedar a 1 punto, pero no se matan entre si
+							if (_enemies[j]->getDamage() > 1)
+							{
+								_enemies[j]->setDamage(_enemies[j]->getDamage() - 1);
+							}
 						}
 					}
 				}
@@ -411,11 +420,22 @@ void Gameplay::updateColliders()
 				for (auto* enemy : _enemies)
 				{
 					Collider enemyC = enemy->getCollider();
+					
 					// Cambiar direccion de enemigo si hay colision
 					if(_level->getTile(i, j)->getCollider().CheckCollision(enemyC, 1.0f))
 					{
 						enemy->setMovementState(true);
 						enemy->updateMovement( _player, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition());
+					}
+
+					// Colision entre los mismos enemigos
+					for (auto* enemy2 : _enemies)
+					{
+						if (enemy != enemy2)
+						{
+							Collider enemyC2 = enemy2->getCollider();
+							enemyC.CheckCollision(enemyC2, 1.0f);
+						}
 					}
 				}
 				
@@ -525,6 +545,15 @@ void Gameplay::updateEnemies()
 		enemy->updateMovement(_player, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition());
 		enemy->update(*_window);
 	}
+
+	for (int i = 0; i < _enemies.size(); i++)
+	{
+		if (_enemies[i]->getLifePost() == 0 && _enemies[i]->getCanDelete())
+		{
+			delete _enemies.at(i);
+			_enemies.erase(_enemies.begin() + i);
+		}
+	}
 }
 
 void Gameplay::updatePlayer()
@@ -561,6 +590,9 @@ void Gameplay::update()
 	//Inputs
 	updateInput();
 
+	//Efectos
+	updateEffect();
+
 	//Balas
 	updateBullet();
 
@@ -575,9 +607,6 @@ void Gameplay::update()
 
 	//Colliders
 	updateColliders();
-
-	//Efectos
-	updateEffect();
 
 	//level
 	_level->update();

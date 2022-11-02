@@ -26,6 +26,7 @@ private:
 	Player* _player;
 	std::vector<Bullet*> _bullet;
 	Helper* _clockEnemy;
+	Helper* _distance;
 
 	//efectos
 	Effect* _shoot;
