@@ -1,14 +1,14 @@
 #include "Bullet.h"
 
-Bullet::Bullet(float pos_x, float pos_y, float x, float y, float degree, std::string texture) : Base(texture)
+Bullet::Bullet(sf::Vector2f pos, sf::Vector2f direction, float degree, std::string texture) : Base(texture)
 {
 	_max_distance = 120.f;
 	_sprite.setOrigin(_sprite.getLocalBounds().width / 2, _sprite.getLocalBounds().top);
-	_sprite.setPosition(pos_x, pos_y);
+	_sprite.setPosition(pos.x, pos.y);
 	_sprite.setScale(0.5f, 0.5f);
 	_sprite.setRotation(degree);
-	_direction.x = x;
-	_direction.y = y;
+	_direction.x = direction.x;
+	_direction.y = direction.y;
 	_movement_speed = 0.01f;
 }
 
