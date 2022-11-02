@@ -1,8 +1,28 @@
 #include "Level.h"
 
-Level::Level()
+void Level::initFile() {
+	
+	//Read Register _level
+    if (fileLevel.loadLevels(_level))
+    {
+        char mapFile[460];
+        int k = 0;
+
+        for (int i = 0; i < HEIGHT_MAP; i++)
+        {
+            for (int j = 0; j < WIDTH_MAP; j++)
+            {
+                _map[i][j] = fileLevel.getLevel()[k++];
+            }
+        }
+    }
+}
+
+Level::Level(int level)
 {
     _grid = sf::Vector2f(40, 30);
+	_level = level;
+    initFile();
     initLevel();
 }
 
