@@ -12,8 +12,10 @@ class Tank
 protected:
 	Armor* _armor;
 	Effect* _explotion;
+	Effect* _bigger_explotion;
 	sf::Texture _armorTexture;
 	sf::Vector2f _last_position;
+	int _life_post;
 	int _weight;
 	float _movement_speed;
 	float _attack;
@@ -21,6 +23,7 @@ protected:
 	float _speed_attack;
 	int _hp;
 	bool _alreadyDead;
+	bool _canDelete;
 	sf::Vector2f _spawn_position[3]{ sf::Vector2f(50.f, 100.f), sf::Vector2f(300.f, 100.f), sf::Vector2f(650.f, 100.f) };
 
 	//Animacion
@@ -45,6 +48,8 @@ public:
 	int getHP();
 	int getWeight();
 	int getDamage();
+	int getLifePost();
+	bool getCanDelete();
 	
 	//setter
 	void setLife(int life);
@@ -54,7 +59,8 @@ public:
 	void setHP(int hp);
 	void setWeight(int weight);
 	void setDamage(int damage);
-	
+	void setLifePost(int life_post);
+
 	//methods
 	bool canAttack();
 	void move(float x, float y);

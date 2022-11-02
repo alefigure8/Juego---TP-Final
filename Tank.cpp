@@ -9,8 +9,13 @@ void Tank::_initArmor(std::string armorTexture, sf::Vector2u imagecount)
 
 void Tank::initEffect()
 {
-	_explotion = new Effect("Texture/explotion_1.png", sf::Vector2u(10, 1));
-	_explotion->getSprite().setScale({ 0.3f, 0.3f });
+	_explotion = new Effect("Texture/smoke_1.png", sf::Vector2u(24, 1));
+	_explotion->getSprite().setScale({0.6f, 0.6f });
+	_explotion->getSprite().setColor(sf::Color(255, 255, 255, rand() % 20 + 205));
+	
+	
+	_bigger_explotion = new Effect("Texture/explotion_1.png", sf::Vector2u(10, 1));
+	_bigger_explotion->getSprite().setScale({ 0.6f, 0.6f });
 }
 
 Tank::Tank(std::string image, std::string armorTexture, sf::Vector2u imageCount) : _animation(image, imageCount), Base(image)
@@ -31,6 +36,7 @@ Tank::Tank(std::string image, std::string armorTexture, sf::Vector2u imageCount)
 
 	//set Life
 	_life = 1;
+	_life_post = 3;
 
 	//Spawn
 	int random = rand() % 3;
@@ -38,6 +44,7 @@ Tank::Tank(std::string image, std::string armorTexture, sf::Vector2u imageCount)
 
 	//Effect
 	_alreadyDead = false;
+	_canDelete = false;
 	initEffect();
 }
 
@@ -61,10 +68,26 @@ int Tank::getLife()
 	return _life;
 }
 
+int Tank::getLifePost()
+{
+	return _life_post;
+}
+
+bool Tank::getCanDelete()
+{
+	return _canDelete;
+}
+
 void Tank::setLife(int life)
 {
 	_life = life;
 	_max_life = _life;
+}
+
+void Tank::setLifePost(int life_post)
+{
+	
+	_life_post = life_post;
 }
 
 void Tank::move(float x, float y)
@@ -132,9 +155,6 @@ void Tank::setWeight(int weight)
 void Tank::setDamage(int damage)
 {
 	_damage = damage;
-	
-	//Actualizar vida
-	updateLife();
 }
 
 
@@ -174,17 +194,35 @@ void Tank::updateEffect()
 	if (_life == 0 && !_alreadyDead)
 	{
 		_explotion->setState(true);
+		
+		if (_explotion->getState())
+		{
+			_explotion->setPosition(_sprite.getPosition());
+			_explotion->update();
+
+			if (_explotion->getCurrentImage() == _explotion->getCurrentImageMax())
+			{
+				_explotion->setCurrentImage(0);
+				//_alreadyDead = true;
+				//_explotion->setState(false);
+			}
+		}
 	}
 
-	if (_explotion->getState())
+	if (_life_post == 0 && !_canDelete)
 	{
-		_explotion->setPosition(_sprite.getPosition());
-		_explotion->update();
-
-		if (_explotion->getCurrentImage() == _explotion->getCurrentImageMax())
+		_bigger_explotion->setState(true);
+		
+		if (_bigger_explotion->getState())
 		{
-			_alreadyDead = true;
-			_explotion->setState(false);
+			_bigger_explotion->setPosition(_sprite.getPosition());
+			_bigger_explotion->update();
+
+			if (_bigger_explotion->getCurrentImage() == _bigger_explotion->getCurrentImageMax())
+			{
+				_canDelete = true;
+				_bigger_explotion->setState(false);
+			}
 		}
 	}
 }
@@ -196,12 +234,16 @@ void Tank::update(sf::RenderWindow& window)
 	_armor->setPosition(_sprite.getPosition());
 	updateAttack();
 	updateEffect();
+	updateLife();
 }
 
 void Tank::renderEffectExplotion(sf::RenderWindow& window)
 {
 	if (_explotion->getState() && !_alreadyDead)
 		_explotion->render(window);
+		
+	if (_bigger_explotion->getState() && !_canDelete)
+		_bigger_explotion->render(window);
 }
 
 void Tank::render(sf::RenderWindow& window)
@@ -216,16 +258,24 @@ void Tank::updateLife()
 	if (_damage == 0) {
 		if (_life >= 1)
 		{
+			//saca vida si damaege es 0
 			_life--;
+			
+			//restablece damage a su maximo
 			_damage = _max_damage;
 		}
 		
 		if (_life == 0)
 		{
+			//Vida cero, el damage queda en cero
 			_damage = 0;
 		}
 	}
+
+	//Life Post no puede bajar de 0
+	if (_life_post <= 0)
+	{
+		_life_post = 0;
+	}
 		
-	if (_life < 0)
-		_life = 0;
 }
