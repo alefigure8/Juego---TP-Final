@@ -13,6 +13,26 @@ void Gameplay::_initWindow()
 	_window->setView(view);
 }
 
+void Gameplay::_initFile()
+{
+	if (_fileLevel.loadLevels(_levelNumber))
+	{
+		//Enemies
+		_tanksNumber = _fileLevel.getEnemiesNumber();
+		_tanks = new int[_tanksNumber];
+
+		for (int i = 0; i < _tanksNumber; i++)
+		{
+			_tanks[i] = _fileLevel.getEnemies()[i];
+		}
+	}
+
+	//Movales
+
+
+	//Trees
+}
+
 void Gameplay::_initPlayer()
 {
 	_player = new Player("Texture/tank1_body_2.png", "Texture/tank1_gun_2.png", sf::Vector2u(3, 1));
@@ -26,65 +46,67 @@ void Gameplay::_initPlayer()
 
 void Gameplay::_initEnemy()
 {
-	//TODO: Definir HP de Tanques
-	switch(tanks[positionTankVector])
+	if (_positionTankVector < _tanksNumber)
 	{
-	case 1:
-	{
-		//ENEMY 1
-		_enemy = new Enemy("Texture/enemy_body1.png", "Texture/tank1b_gun_2.png", "Texture/bullet_tank_1.png", sf::Vector2u(2, 1));
-		
-		//Init Position
-		_enemy->getArmor()->setPosition(_enemy->getPosition());
-		_enemy->setAttackMax(15.f);
-		_enemy->setWeight(2);
-		_enemy->setSpeedMovement(0.8f);
-		_enemy->setHP(1);
-		_enemy->setLifePost(3);
-		
-		//Push
-		_enemies.push_back(_enemy);
-		positionTankVector++;
-	}
-		break;
-	case 2:
-	{
-		//ENEMY 2
-		_enemy = new Enemy("Texture/enemy_body2.png", "Texture/tank3c_gun_2.png", "Texture/bullet_tank_2.png", sf::Vector2u(2, 1));
-		
-		//Init Position
-		_enemy->getArmor()->setPosition(_enemy->getPosition());
-		_enemy->setAttackMax(20.f);
-		_enemy->setSpeedMovement(1.3f);
-		_enemy->setWeight(1);
-		_enemy->setHP(2);
-		_enemy->setLifePost(3);
-		
-		//push
-		_enemies.push_back(_enemy);
-		positionTankVector++;
-		
-	}
-		break;
-	case 3:
-	{
-		//ENEMY 3
-		_enemy = new Enemy("Texture/enemy_body3.png", "Texture/tank2b_gun_4.png", "Texture/bullet_tank_3.png", sf::Vector2u(3, 1));
+		switch (_tanks[_positionTankVector])
+		{
+		case 1:
+		{
+			//ENEMY 1
+			_enemy = new Enemy("Texture/enemy_body1.png", "Texture/tank1b_gun_2.png", "Texture/bullet_tank_1.png", sf::Vector2u(2, 1));
 
-		//Init Position
-		_enemy->getArmor()->setPosition(_enemy->getPosition());
-		_enemy->setAttackMax(25.f);
-		_enemy->setSpeedMovement(0.5f);
-		_enemy->setWeight(3);
-		_enemy->setHP(3);
-		_enemy->setLifePost(4);
+			//Init Position
+			_enemy->getArmor()->setPosition(_enemy->getPosition());
+			_enemy->setAttackMax(15.f);
+			_enemy->setWeight(2);
+			_enemy->setSpeedMovement(0.7f);
+			_enemy->setHP(1);
+			_enemy->setLifePost(3);
 
-
-		//Push
-		_enemies.push_back(_enemy);
-		positionTankVector++;
-	}
+			//Push
+			_enemies.push_back(_enemy);
+			_positionTankVector++;
+		}
 		break;
+		case 2:
+		{
+			//ENEMY 2
+			_enemy = new Enemy("Texture/enemy_body2.png", "Texture/tank3c_gun_2.png", "Texture/bullet_tank_2.png", sf::Vector2u(2, 1));
+
+			//Init Position
+			_enemy->getArmor()->setPosition(_enemy->getPosition());
+			_enemy->setAttackMax(20.f);
+			_enemy->setSpeedMovement(1.1f);
+			_enemy->setWeight(1);
+			_enemy->setHP(2);
+			_enemy->setLifePost(3);
+
+			//push
+			_enemies.push_back(_enemy);
+			_positionTankVector++;
+
+		}
+		break;
+		case 3:
+		{
+			//ENEMY 3
+			_enemy = new Enemy("Texture/enemy_body3.png", "Texture/tank2b_gun_4.png", "Texture/bullet_tank_3.png", sf::Vector2u(3, 1));
+
+			//Init Position
+			_enemy->getArmor()->setPosition(_enemy->getPosition());
+			_enemy->setAttackMax(25.f);
+			_enemy->setSpeedMovement(0.5f);
+			_enemy->setWeight(3);
+			_enemy->setHP(3);
+			_enemy->setLifePost(3);
+
+
+			//Push
+			_enemies.push_back(_enemy);
+			_positionTankVector++;
+		}
+		break;
+		}
 	}
 }
 
@@ -103,7 +125,6 @@ Bullet* Gameplay::_initBullet()
 	float armorPositionY = _player->getArmor()->getPosition().y + (_player->getArmor()->getBounds().height / 2 * vely);
 
 	return new Bullet({ armorPositionX, armorPositionY }, { velx, vely }, degree - 180, "Texture/bullet_player_1.png");
-	//return new BUllet(helper.amorPosition(_player), helper.vel(degree),degree-180,"Texture/bulletGreen1.png");
 }
 
 void Gameplay::_initBlock()
@@ -123,7 +144,7 @@ void Gameplay::_initBlock()
 
 void Gameplay::_initLevel()
 {
-	_level = new Level;
+	_level = new Level(_levelNumber);
 }
 
 void Gameplay::_initHelpers()
@@ -147,9 +168,12 @@ Gameplay::Gameplay()
 	_nameGame = "FORCE TANK";
 	_rectHeight = 800;
 	_rectWidth = 700;
+	_levelNumber = 1;
+	_positionTankVector = 0;
 	
 	//Init functiones
 	_initWindow();
+	_initFile();
 	_initLevel();
 	_initPlayer();
 	_initEnemy();
@@ -194,7 +218,6 @@ void Gameplay::updatePollevents()
 	{
 		if (event.type == sf::Event::Closed)
 			_window->close();
-
 	}
 }
 

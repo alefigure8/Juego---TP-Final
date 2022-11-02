@@ -9,10 +9,15 @@
 #include "Movable.h"
 #include "Helper.h"
 #include "Tree.h"
+#include "FileLevel.h"
 
 class Gameplay
 {
 private:
+	//Variables
+	int _levelNumber;
+	//int _points;
+	
 	//window config
 	sf::RenderWindow* _window;
 	float _rectWidth;
@@ -39,14 +44,18 @@ private:
 	Tree* _tree;
 	std::vector<Tree*>  _trees;
 	
-	//FILE
-	int tanks[10] = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3};
-	sf::Vector2f tree[1] = { {100, 500} };
-	int positionTankVector = 0;
+	//File Level
+	FileLevel _fileLevel;
+	int* _tanks;
+	int _tanksNumber;
+	int _positionTankVector;
 	
+	sf::Vector2f tree[1] = { {100, 500} };
 	
 	// Init functions
 	void _initWindow();
+	void _initLevel2();
+	void _initFile();
 	void _initPlayer();
 	void _initEnemy();
 	void _initBlock();
