@@ -409,10 +409,9 @@ void Level::initLevel()
 				//TARGET
                 case '$':
                 {
-                    _tile[i][j] = new Target("Texture/target_bridge.png", sf::Vector2u(1, 1));
+                    _tile[i][j] = new Target("Texture/target_bridge_x_5.png", sf::Vector2u(5, 1));
                     _tile[i][j]->setHaveEffect(true);
                     _tile[i][j]->getSprite().setColor(sf::Color(255, 255, 255, rand() % 20 + 205));
-					_tile[i][j]->setLife(5);
                     _targetIndex.x = i;
                     _targetIndex.y = j;
                 }
