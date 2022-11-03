@@ -13,6 +13,11 @@ void Gameplay::_initWindow()
 	_window->setView(view);
 }
 
+void Gameplay::_initPowerUp()
+{
+	_powerUp = new PowerUp;
+}
+
 void Gameplay::_initFile()
 {
 	if (_fileLevel.loadLevels(_levelNumber))
@@ -180,6 +185,7 @@ Gameplay::Gameplay()
 	_initBlock();
 	_initEffect();
 	_initHelpers();
+	_initPowerUp();
 }
 
 Gameplay::~Gameplay()
@@ -436,7 +442,7 @@ void Gameplay::updateColliders()
 	{
 		for (int j = 0; j < _level->getWidth(); j++)
 		{
-			if (_level->getTile(i, j)->getLife() > 1) //TODO MEJORAR 1 o 0
+			if (_level->getTile(i, j)->getLife() > 1)
 			{
 				_level->getTile(i, j)->getCollider().CheckCollision(player, 1.f);
 				
@@ -499,23 +505,42 @@ void Gameplay::updateColliders()
 		}
 	}
 	
+
+	//ENEMIES
 	for (auto* enemy : _enemies)
 	{
 		Collider enemyC = enemy->getCollider();
 		
-		if (_player->getWeight() > enemy->getWeight())
+		enemy->getCollider().CheckCollision(player, 0.8f);
+		_player->getCollider().CheckCollision(enemyC, 0.5f);
+
+		for (auto* enemy2 : _enemies)
 		{
-
-				_player->getCollider().CheckCollision(enemyC, 0.5f);
-				// Cambiar direccion de enemigo si hay colision
-				_movable->getCollider().CheckCollision(enemyC, 0.1f);
-
+			if (enemy != enemy2)
+			{
+				Collider enemyC2 = enemy2->getCollider();
+				
+				if (enemyC.CheckCollision(enemyC2, 0.9f))
+				{
+					enemy->setMovementState(true);
+					enemy->updateMovement(_player, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition());
+				}
+			}
 		}
-		else
+	}
+
+	//POWERUPS
+	if (_powerUp->isVisible())
+	{
+		if (_player->getBounds().intersects(_powerUp->getBounds()))
 		{
-				// Cambiar direccion de enemigo si hay colision
-				_movable->getCollider().CheckCollision(enemyC, 0.5f);
-				_player->getCollider().CheckCollision(enemyC, 0.1);
+			_powerUp->setCanDelete(true);
+			_player->setDamage(_powerUp->getDamage());
+			_player->setLife(_player->getLife() + _powerUp->getLife());
+			_player->setHP(_player->getHP() + _powerUp->getHP());
+			_player->setSpeedMovement(_player->getSpeedMovement() + _powerUp->getSpeed());
+			//shield
+			//bullet
 		}
 	}
 }
@@ -636,6 +661,9 @@ void Gameplay::update()
 
 	//Helpers
 	_clockEnemy->updateClock();
+
+	//PowerUps
+	_powerUp->update();
 }
 
 void Gameplay::render()
@@ -686,6 +714,9 @@ void Gameplay::render()
 	{
 		_shoot->render(*_window);
 	}
+
+	//PowerUps
+	_powerUp->render(*_window);
 
 	//Display
 	_window->display();

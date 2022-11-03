@@ -10,6 +10,7 @@
 #include "Helper.h"
 #include "Tree.h"
 #include "FileLevel.h"
+#include "PowerUp.h"
 
 class Gameplay
 {
@@ -49,12 +50,15 @@ private:
 	int* _tanks;
 	int _tanksNumber;
 	int _positionTankVector;
+
+	//PowerUp
+	PowerUp* _powerUp;
 	
 	sf::Vector2f tree[1] = { {100, 500} };
 	
 	// Init functions
 	void _initWindow();
-	void _initLevel2();
+	void _initPowerUp();
 	void _initFile();
 	void _initPlayer();
 	void _initEnemy();
