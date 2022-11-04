@@ -10,7 +10,7 @@ void PowerUp::initPowerUp()
 			//DISTANCE
 			if (!_texture.loadFromFile("Texture/pu_distance.png"))
 				std::cout << "ERROR::PLAYER::INITTEXTURE::Could not load texture." << std::endl;
-			_distance = 130;
+			_distance = 50.f;
 			_life = 0;
 			_damage = 0;
 			_speed = 0.f;
@@ -163,7 +163,6 @@ void PowerUp::updateSpawn()
 
 	if(_clock_spawn->isReady())
 	{
-		std::cout << "SPAWN" << std::endl;
 		initPowerUp();
 		_sprite.setPosition(rand() % 700 + 50, rand() % 500 + 5);
 		_sprite.setScale({ 0.5f, 0.5f });
@@ -179,19 +178,20 @@ void PowerUp::updateVisibility()
 		_clock_duration->updateClock();
 		if (_clock_duration->isReady())
 		{
-			std::cout << "DURATION" << std::endl;
 			_isVisible = false;
 		}
 	}
 
-	
+	if (_canDelete)
+	{
+		_isVisible = false;
+	}
 }
 
 void PowerUp::render(sf::RenderWindow& window)
 {
 	if (_isVisible && !_canDelete)
 	{
-		std::cout << "RENDER" << std::endl;
 		window.draw(_sprite);
 	}
 }
