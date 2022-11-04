@@ -14,6 +14,7 @@ Enemy::Enemy(std::string image, std::string armorTexture, std::string bullet, sf
 	_max_time_direction = _time_direction;
 	_direction = NULL;
 	_bulletImage = bullet;
+	_bulletDistance = 120.f;
 
 	//armor config
 	_armor->getSprite().setScale(0.7f, -0.7f);
@@ -59,7 +60,7 @@ Bullet* Enemy::initBullet()
 	float armorPositionX = this->getArmor()->getPosition().x + (this->getArmor()->getBounds().width / 2 * velx);
 	float armorPositionY = this->getArmor()->getPosition().y + (this->getArmor()->getBounds().height / 2 * vely);
 
-	return new Bullet({ armorPositionX, armorPositionY }, { velx, vely }, degree - 180, _bulletImage);
+	return new Bullet({ armorPositionX, armorPositionY }, { velx, vely }, degree - 180, _bulletDistance, _bulletImage);
 	//return new BUllet(helper.amorPosition(_player), helper.vel(degree),degree-180,"Texture/bulletGreen1.png"); TODO agregar al helper
 }
 
@@ -72,8 +73,13 @@ void Enemy::movement()
 {
 	float distancePlayer = _distance->distance(_player_position, _sprite.getPosition());
 	float distanceTarget = _distance->distance(_target_position, _sprite.getPosition());
+	float distanceEnemyTarget = _distance->distance(_sprite.getPosition(), _target_position);
+	float distanceEnemyPlayer = _distance->distance(_sprite.getPosition(), _player_position);
+	
 	int optionCase = 0;
+	float distance = 50.f;
 
+	//Generar Random direction
 	if (_movement_state || canMove())
 	{
 		_direction = rand() % 3;
@@ -87,6 +93,13 @@ void Enemy::movement()
 		_movement_state = false;
 		_time_direction = 0.f;
 	}
+
+	// Frenar movimiento
+	if (distanceEnemyTarget  <= distance || distanceEnemyPlayer  <= distance)
+	{
+		_direction = 3;
+	}
+	
 	if (_life >= 1)
 	{
 		if (distancePlayer < distanceTarget && _player_visibility)
@@ -143,6 +156,11 @@ void Enemy::movement()
 					_sprite.setRotation(0);
 					break;
 				}
+			}
+			break;
+			case 3:
+			{
+				_sprite.move(0.f, 0.f);
 			}
 			break;
 			}
@@ -203,6 +221,11 @@ void Enemy::movement()
 				}
 			}
 			break;
+			case 3:
+			{
+				_sprite.move(0.f, 0.f);
+			}
+			break;
 			}
 		}
 	}
@@ -211,6 +234,11 @@ void Enemy::movement()
 void Enemy::setMovementState(bool state)
 {
 	_movement_state = state;
+}
+
+void Enemy::setBulletDistance(float distance)
+{
+	_bulletDistance = distance;
 }
 
 bool Enemy::getMovementState()
@@ -281,10 +309,8 @@ void Enemy::updateArmor()
 		}
 		else //APUNTA BASE
 		{
-			//armor´s degree
 			float deg = _distance->degree(_target_position, _armor->getPosition());
 
-			//Buffer para Delay TODO: Mejorar
 			_buffer[_buffer_position] = deg;
 			_buffer_position++;
 

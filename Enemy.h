@@ -13,6 +13,7 @@ class Enemy
 	: public Tank
 {
 private:
+	float _bulletDistance;
 	std::vector<Bullet*> _bullet;
 	Effect* _shoot;
 	std::string _bulletImage;
@@ -50,6 +51,7 @@ public:
 	//setters
 	void setTimeDirection(float time);
 	void setMovementState(bool state);
+	void setBulletDistance(float distance);
 	
 	//Methods
 	void movement();
