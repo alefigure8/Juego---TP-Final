@@ -1,8 +1,8 @@
 #include "Bullet.h"
 
-Bullet::Bullet(sf::Vector2f pos, sf::Vector2f direction, float degree, std::string texture) : Base(texture)
+Bullet::Bullet(sf::Vector2f pos, sf::Vector2f direction, float degree, float distance, std::string texture) : Base(texture)
 {
-	_max_distance = 120.f;
+	_max_distance = distance;
 	_sprite.setOrigin(_sprite.getLocalBounds().width / 2, _sprite.getLocalBounds().top);
 	_sprite.setPosition(pos.x, pos.y);
 	_sprite.setScale(0.5f, 0.5f);

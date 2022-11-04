@@ -12,7 +12,7 @@ private:
 	float _max_distance;
 
 public:
-	Bullet(sf::Vector2f pos, sf::Vector2f direction, float degree, std::string texture);
+	Bullet(sf::Vector2f pos, sf::Vector2f direction, float degree, float distance, std::string texture);
 	~Bullet();
 	
 	//getter
