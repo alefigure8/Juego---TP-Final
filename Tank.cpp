@@ -193,6 +193,7 @@ void Tank::updateEffect()
 {
 	if (_life == 0 && !_alreadyDead)
 	{
+		//Iniciar sprite Humo
 		_explotion->setState(true);
 		
 		if (_explotion->getState())
@@ -202,15 +203,15 @@ void Tank::updateEffect()
 
 			if (_explotion->getCurrentImage() == _explotion->getCurrentImageMax())
 			{
+				//LOOP HUMO
 				_explotion->setCurrentImage(0);
-				//_alreadyDead = true;
-				//_explotion->setState(false);
 			}
 		}
 	}
 
 	if (_life_post == 0 && !_canDelete)
 	{
+		// Iniciar sprite Explosion
 		_bigger_explotion->setState(true);
 		
 		if (_bigger_explotion->getState())
