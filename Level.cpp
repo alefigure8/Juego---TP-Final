@@ -395,8 +395,7 @@ void Level::initLevel()
 
                     //SANDBAG
                 case 'U':
-                    _tile[i][j] = new Brick("Texture/sandbag.png", sf::Vector2u(1, 1));
-                    _tile[i][j]->setHaveEffect(true);
+                    _tile[i][j] = new Brick("Texture/sandbag.png", sf::Vector2u(2, 1));
                     _tile[i][j]->getSprite().setColor(sf::Color(255, 255, 255, rand() % 20 + 205));
                     break;
 
