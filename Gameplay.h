@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include "SFML/Graphics.hpp"
+#include "SFML/Audio.hpp"
 #include "Level.h"
 #include "Player.h"
 #include "Enemy.h"
@@ -17,6 +18,7 @@ class Gameplay
 private:
 	//Variables
 	int _levelNumber;
+	float _bulletDistance;
 	//int _points;
 	
 	//window config
@@ -53,6 +55,11 @@ private:
 
 	//PowerUp
 	PowerUp* _powerUp;
+
+	// Sounds
+	sf::SoundBuffer _bullet_s;
+	sf::SoundBuffer _hit_s;
+	sf::Sound _sound;
 	
 	sf::Vector2f tree[1] = { {100, 500} };
 	
@@ -67,6 +74,7 @@ private:
 	void _initEffect();
 	void _initLevel();
 	void _initHelpers();
+	void _initSounds();
 	
 public:
 	//Constructor

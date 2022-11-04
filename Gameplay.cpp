@@ -67,6 +67,7 @@ void Gameplay::_initEnemy()
 			_enemy->setSpeedMovement(0.7f);
 			_enemy->setHP(1);
 			_enemy->setLifePost(3);
+			_enemy->setBulletDistance(90.f);
 
 			//Push
 			_enemies.push_back(_enemy);
@@ -85,6 +86,7 @@ void Gameplay::_initEnemy()
 			_enemy->setWeight(1);
 			_enemy->setHP(2);
 			_enemy->setLifePost(3);
+			_enemy->setBulletDistance(120.f);
 
 			//push
 			_enemies.push_back(_enemy);
@@ -104,7 +106,7 @@ void Gameplay::_initEnemy()
 			_enemy->setWeight(3);
 			_enemy->setHP(3);
 			_enemy->setLifePost(3);
-
+			_enemy->setBulletDistance(200.f);
 
 			//Push
 			_enemies.push_back(_enemy);
@@ -129,7 +131,7 @@ Bullet* Gameplay::_initBullet()
 	float armorPositionX = _player->getArmor()->getPosition().x + (_player->getArmor()->getBounds().width / 2 * velx);
 	float armorPositionY = _player->getArmor()->getPosition().y + (_player->getArmor()->getBounds().height / 2 * vely);
 
-	return new Bullet({ armorPositionX, armorPositionY }, { velx, vely }, degree - 180, "Texture/bullet_player_1.png");
+	return new Bullet({ armorPositionX, armorPositionY }, { velx, vely }, degree - 180, _bulletDistance, "Texture/bullet_player_1.png");
 }
 
 void Gameplay::_initBlock()
@@ -162,6 +164,18 @@ void Gameplay::_initHelpers()
 	_distance = new Helper;
 }
 
+void Gameplay::_initSounds()
+{
+
+	//Bullet Player
+	if (!_bullet_s.loadFromFile("Sound/bullet_player.wav"))
+		std::cout << "Gameplay::Error sound" << std::endl;
+
+	//Bullet Hit Tank
+	if (!_hit_s.loadFromFile("Sound/hitTank.wav"))
+		std::cout << "Gameplay::Error sound" << std::endl;
+}
+
 void Gameplay::_initEffect()
 {
 	_shoot = new Effect("Texture/shoot_1.png", sf::Vector2u(4, 1));
@@ -175,6 +189,7 @@ Gameplay::Gameplay()
 	_rectWidth = 700;
 	_levelNumber = 1;
 	_positionTankVector = 0;
+	_bulletDistance = 120.f;
 	
 	//Init functiones
 	_initWindow();
@@ -186,6 +201,7 @@ Gameplay::Gameplay()
 	_initEffect();
 	_initHelpers();
 	_initPowerUp();
+	_initSounds();
 }
 
 Gameplay::~Gameplay()
@@ -259,6 +275,13 @@ void Gameplay::updateInput()
 	{
 		_bullet.push_back(_initBullet());
 
+		// Sonido de disparo
+		_sound.setBuffer(_bullet_s);
+		_sound.play();
+
+			
+		_sound.setVolume(75.f);
+
 		// Posicion desde la que disparo el tanque
 		_last_position_shoot = { _player->getArmor()->getPosition().x, _player->getArmor()->getPosition().y };
 
@@ -325,6 +348,10 @@ void Gameplay::updateBullet()
 					{
 						// Damage
 						_enemies[j]->setDamage(_enemies[j]->getDamage() - 1);
+
+						//Sonido
+						_sound.setBuffer(_hit_s);
+						_sound.play();
 						
 						//Borrar enemigo si la vida llega a 0
 						if (_enemies[j]->getLife() == 0)
@@ -535,12 +562,12 @@ void Gameplay::updateColliders()
 		if (_player->getBounds().intersects(_powerUp->getBounds()))
 		{
 			_powerUp->setCanDelete(true);
-			_player->setDamage(_powerUp->getDamage());
+			_player->setDamage(_powerUp->getDamage() == 0 ? _player->getDamage() : _powerUp->getDamage());
 			_player->setLife(_player->getLife() + _powerUp->getLife());
-			_player->setHP(_player->getHP() + _powerUp->getHP());
-			_player->setSpeedMovement(_player->getSpeedMovement() + _powerUp->getSpeed());
+			_player->setHP(_player->getHP() + _powerUp->getHP() >= 3 ? 3 : _player->getHP() + _powerUp->getHP());
+			_player->setSpeedMovement(_player->getSpeedMovement() + _powerUp->getSpeed() >= 1.4 ? 1.4 : _player->getSpeedMovement() + _powerUp->getSpeed());
+			_bulletDistance + _powerUp->getDistance() >= 250.f ? 250.f : _powerUp->getDistance() + _bulletDistance;
 			//shield
-			//bullet
 		}
 	}
 }
