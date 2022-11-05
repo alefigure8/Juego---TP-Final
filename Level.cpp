@@ -369,28 +369,34 @@ void Level::initLevel()
                 case '-':
                     _tile[i][j] = new Brick("Texture/barricade_wall.png", sf::Vector2u(3, 1));
                     _tile[i][j]->setHaveEffect(true);
+                    _tile[i][j]->setIsShield(true);
+
                     break;
                 case '¡':
                     _tile[i][j] = new Brick("Texture/barricade_wall_2.png", sf::Vector2u(3, 1));
                     _tile[i][j]->setHaveEffect(true);
                     _tile[i][j]->getSprite().setColor(sf::Color(255, 255, 255, rand() % 20 + 205));
+                    _tile[i][j]->setIsShield(true);
                     break;
                 case '!':
                     _tile[i][j] = new Brick("Texture/barricade_wall_2.png", sf::Vector2u(3, 1));
                     _tile[i][j]->setHaveEffect(true);
                     _tile[i][j]->setScale({ -1.0f, 1.0f });
                     _tile[i][j]->getSprite().setColor(sf::Color(255, 255, 255, rand() % 20 + 205));
+                    _tile[i][j]->setIsShield(true);
                     break;
                 case '>':
                     _tile[i][j] = new Brick("Texture/barricade_corner.png", sf::Vector2u(3, 1));
                     _tile[i][j]->setHaveEffect(true);
                     _tile[i][j]->setScale({ -1.0f, 1.0f });
                     _tile[i][j]->getSprite().setColor(sf::Color(255, 255, 255, rand() % 20 + 205));
+                    _tile[i][j]->setIsShield(true);
                     break;
                 case '<':
                     _tile[i][j] = new Brick("Texture/barricade_corner.png", sf::Vector2u(3, 1));
                     _tile[i][j]->setHaveEffect(true);
                     _tile[i][j]->getSprite().setColor(sf::Color(255, 255, 255, rand() % 20 + 205));
+                    _tile[i][j]->setIsShield(true);
                     break;
 
                     //SANDBAG
