@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include "SFML/Graphics.hpp"
-#include "SFML/Audio.hpp"
 #include "Level.h"
 #include "Player.h"
 #include "Enemy.h"
@@ -12,6 +11,8 @@
 #include "Tree.h"
 #include "FileLevel.h"
 #include "PowerUp.h"
+#include "Sound.h"
+#include "Graphic.h"
 
 class Gameplay
 {
@@ -35,6 +36,8 @@ private:
 	std::vector<Bullet*> _bullet;
 	Helper* _clockEnemy;
 	Helper* _distance;
+	Sound* _sound;
+	Graphic* _GUI;
 
 	//efectos
 	Effect* _shoot;
@@ -49,6 +52,7 @@ private:
 	
 	//File Level
 	FileLevel _fileLevel;
+	int _tanksDeleted;
 	int* _tanks;
 	int _tanksNumber;
 	int _positionTankVector;
@@ -56,11 +60,6 @@ private:
 	//PowerUp
 	PowerUp* _powerUp;
 
-	// Sounds
-	sf::SoundBuffer _bullet_s;
-	sf::SoundBuffer _hit_s;
-	sf::Sound _sound;
-	
 	sf::Vector2f tree[1] = { {100, 500} };
 	
 	// Init functions
@@ -75,6 +74,7 @@ private:
 	void _initLevel();
 	void _initHelpers();
 	void _initSounds();
+	void _initGraphic();
 	
 public:
 	//Constructor
@@ -90,6 +90,7 @@ public:
 	void updateEnemies();
 	void updatePlayer();
 	void updatePollevents();
+	void updateGUI();
 	void update();
 
 	//Render

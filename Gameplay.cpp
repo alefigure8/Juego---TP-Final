@@ -166,14 +166,12 @@ void Gameplay::_initHelpers()
 
 void Gameplay::_initSounds()
 {
+	_sound = new Sound;
+}
 
-	//Bullet Player
-	if (!_bullet_s.loadFromFile("Sound/bullet_player.wav"))
-		std::cout << "Gameplay::Error sound" << std::endl;
-
-	//Bullet Hit Tank
-	if (!_hit_s.loadFromFile("Sound/hitTank.wav"))
-		std::cout << "Gameplay::Error sound" << std::endl;
+void Gameplay::_initGraphic()
+{
+	_GUI = new Graphic;
 }
 
 void Gameplay::_initEffect()
@@ -190,6 +188,7 @@ Gameplay::Gameplay()
 	_levelNumber = 1;
 	_positionTankVector = 0;
 	_bulletDistance = 120.f;
+	_tanksDeleted = 0;
 	
 	//Init functiones
 	_initWindow();
@@ -202,6 +201,7 @@ Gameplay::Gameplay()
 	_initHelpers();
 	_initPowerUp();
 	_initSounds();
+	_initGraphic();
 }
 
 Gameplay::~Gameplay()
@@ -243,6 +243,11 @@ void Gameplay::updatePollevents()
 	}
 }
 
+void Gameplay::updateGUI()
+{
+	_GUI->update(_player, _tanksNumber -  _tanksDeleted);
+}
+
 void Gameplay::updateInput()
 {
 	//Player
@@ -276,11 +281,7 @@ void Gameplay::updateInput()
 		_bullet.push_back(_initBullet());
 
 		// Sonido de disparo
-		_sound.setBuffer(_bullet_s);
-		_sound.play();
-
-			
-		_sound.setVolume(75.f);
+		_sound->playBullet();
 
 		// Posicion desde la que disparo el tanque
 		_last_position_shoot = { _player->getArmor()->getPosition().x, _player->getArmor()->getPosition().y };
@@ -320,6 +321,11 @@ void Gameplay::updateBullet()
 					deleteBullet = true;
 
 					_level->getTile(j, h)->setLife(_level->getTile(j, h)->getLife() - 1);
+
+					if (_level->getTile(j, h)->getLife() == 1)
+					{
+						_sound->playExplosion();
+					}
 				}
 				else if (_bullet[i]->getBounds().intersects(_movable->getBounds()) && !deleteBullet) // Colision con caja
 				{
@@ -346,12 +352,17 @@ void Gameplay::updateBullet()
 				{
 					if (_bullet[i]->getBounds().intersects(_enemies[j]->getBounds()) && !deleteBullet2)
 					{
+						//Sonido
+						_sound->playHit();
+
 						// Damage
 						_enemies[j]->setDamage(_enemies[j]->getDamage() - 1);
 
-						//Sonido
-						_sound.setBuffer(_hit_s);
-						_sound.play();
+						// Sumar enemigo eliminado
+						if (_enemies[j]->getDamage() == 0)
+						{
+							_tanksDeleted++;
+						}
 						
 						//Borrar enemigo si la vida llega a 0
 						if (_enemies[j]->getLife() == 0)
@@ -359,6 +370,7 @@ void Gameplay::updateBullet()
 							_enemies[j]->setLifePost(_enemies[j]->getLifePost() - 1);
 						}
 
+						//Borrar bala
 						delete _bullet.at(i);
 						_bullet.erase(_bullet.begin() + i);
 						deleteBullet2 = true;
@@ -390,6 +402,12 @@ void Gameplay::updateBullet()
 						deleteBullet2 = true;
 
 						_level->getTile(j, h)->setLife(_level->getTile(j, h)->getLife() - enemy->getHP());
+
+
+						if (_level->getTile(j, h)->getLife() == 1)
+						{
+							_sound->playExplosion();
+						}
 					}
 					else if (enemy->getBullets()[i]->getBounds().intersects(_movable->getBounds()) && !deleteBullet2) // Colision con caja
 					{
@@ -422,6 +440,7 @@ void Gameplay::updateBullet()
 						//Respawn
 						if (_player->getDamage() == 0)
 						{
+							_player->reset();
 							_player->getSprite().setPosition({ _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().x - 50, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().y - 150 });
 						}
 
@@ -463,7 +482,6 @@ void Gameplay::updateColliders()
 {
 	Collider player = _player->getCollider();
 	Collider movable = _movable->getCollider();
-	//Collider enemy = _enemy->getCollider();
 
 	for (int i = 0; i < _level->getHeight(); i++)
 	{
@@ -532,7 +550,6 @@ void Gameplay::updateColliders()
 		}
 	}
 	
-
 	//ENEMIES
 	for (auto* enemy : _enemies)
 	{
@@ -561,13 +578,41 @@ void Gameplay::updateColliders()
 	{
 		if (_player->getBounds().intersects(_powerUp->getBounds()))
 		{
+			//Sonido
+			_sound->PlayPowerup();
+
 			_powerUp->setCanDelete(true);
+
+			//Daño del palyer
 			_player->setDamage(_powerUp->getDamage() == 0 ? _player->getDamage() : _powerUp->getDamage());
-			_player->setLife(_player->getLife() + _powerUp->getLife());
+			
+			//Vida del Player
+			_player->setLife(_player->getLife() + _powerUp->getLife() >= 5 ? 5 : _player->getLife() + _powerUp->getLife());
+			
+			//Fuerza de Player
 			_player->setHP(_player->getHP() + _powerUp->getHP() >= 3 ? 3 : _player->getHP() + _powerUp->getHP());
+
+			//Velocidad Player
 			_player->setSpeedMovement(_player->getSpeedMovement() + _powerUp->getSpeed() >= 1.4 ? 1.4 : _player->getSpeedMovement() + _powerUp->getSpeed());
+
+			//Distancia de disparo
 			_bulletDistance + _powerUp->getDistance() >= 250.f ? 250.f : _powerUp->getDistance() + _bulletDistance;
-			//shield
+			
+			//Escudo en base
+			if (_powerUp->getShield())
+			{
+				for (int i = 0; i < _level->getHeight(); i++)
+				{
+					for (int j = 0; j < _level->getWidth(); j++)
+					{
+						if (_level->getTile(i, j)->getIsShield())
+						{
+							_level->getTile(i, j)->setLife(3);
+						}
+							
+					}
+				}
+			}
 		}
 	}
 }
@@ -621,10 +666,45 @@ void Gameplay::updateEnemies()
 		enemy->update(*_window);
 	}
 
+	//Borrar enemigo si llega a post life 0
 	for (int i = 0; i < _enemies.size(); i++)
 	{
 		if (_enemies[i]->getLifePost() == 0 && _enemies[i]->getCanDelete())
 		{
+			//Sacar vida a los enemigos cerca
+			for (auto* enemy : _enemies)
+			{
+				float distanciaEnemigo = _distance->distance(_enemies[i]->getPosition(), enemy->getPosition());
+				
+				if(distanciaEnemigo < 40.f)
+				{
+					enemy->setDamage(enemy->getDamage() - 2 <=0 ? 0 : enemy->getDamage() - 2);
+				}
+				else if (distanciaEnemigo < 60.f)
+				{
+					enemy->setDamage(enemy->getDamage() - 1 <= 0 ? 0 : enemy->getDamage() - 1);
+				}
+			}
+
+			//Sacar vida a player cerca
+			float distanciaPlayer = _distance->distance(_enemies[i]->getPosition(), _player->getPosition());
+		
+			if (distanciaPlayer < 40.f)
+			{
+				_player->setDamage(_player->getDamage() - 2 <= 0 ? 0 : _player->getDamage() - 2);
+
+				if (_player->getDamage() == 0)
+				{
+					_player->getSprite().setPosition({ _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().x - 50, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().y - 150 });
+				}
+			}
+			else if (distanciaPlayer < 60.f)
+			{
+				_player->setDamage(_player->getDamage() - 1 <= 0 ? 0 : _player->getDamage() - 1);
+				_player->getSprite().setPosition({ _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().x - 50, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().y - 150 });
+			}
+			
+			//Borrar enemigo
 			delete _enemies.at(i);
 			_enemies.erase(_enemies.begin() + i);
 		}
@@ -691,6 +771,9 @@ void Gameplay::update()
 
 	//PowerUps
 	_powerUp->update();
+
+	//GUI
+	updateGUI();
 }
 
 void Gameplay::render()
@@ -744,6 +827,9 @@ void Gameplay::render()
 
 	//PowerUps
 	_powerUp->render(*_window);
+
+	//GUI
+	_GUI->render(*_window);
 
 	//Display
 	_window->display();
