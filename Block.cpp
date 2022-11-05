@@ -8,6 +8,7 @@ Block::Block(std::string image, sf::Vector2u imageCount) : _animation(image, ima
 	_is_target = false;
 	_alreadyDead = false;
 	_haveEffect = false;
+	_isShield = false;
 }
 
 Block::~Block()
@@ -24,6 +25,16 @@ void Block::initEffect()
 int Block::getLife()
 {
 	return _life;
+}
+
+int Block::getMaxLife()
+{
+	return _max_life;
+}
+
+bool Block::getIsShield()
+{
+	return _isShield;
 }
 
 bool Block::getTarget()
@@ -57,6 +68,11 @@ void Block::setHaveEffect(bool haveEffect)
 	
 	if (_haveEffect)
 		initEffect();;
+}
+
+void Block::setIsShield(bool isShield)
+{
+	_isShield = isShield;
 }
 
 

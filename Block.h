@@ -14,6 +14,7 @@ protected:
 	Effect* _explotion;
 	bool _alreadyDead;
 	bool _haveEffect;
+	bool _isShield;
 
 public:
 	Block(std::string image, sf::Vector2u imageCount);
@@ -25,6 +26,8 @@ public:
 	int getLife();
 	bool getTarget();
 	bool getHAveEffect();
+	int getMaxLife();
+	bool getIsShield();
 	
 	//setter
 	void setLife(int life);
@@ -32,6 +35,7 @@ public:
 	void setAngle(float deg);
 	void setTarget(bool target);
 	void setHaveEffect(bool haveEffect);
+	void setIsShield(bool isShield);
 	
 	//update
 	virtual void updateLife(){};
