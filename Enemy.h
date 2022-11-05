@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "Target.h"
 #include "Effect.h"
+#include "Sound.h"
 
 class Enemy
 	: public Tank
@@ -26,6 +27,7 @@ private:
 	bool _player_visibility;
 	sf::Vector2f _last_position_shoot;
 	Helper* _distance;
+	Sound* _sound;
 
 	//Buffer
 	int* _buffer;
@@ -40,6 +42,7 @@ public:
 	Bullet* initBullet();
 	void initEffect();
 	void initHelper();
+	void initSound();
 	std::vector<Bullet*>& getBullets();
 	
 	//getters

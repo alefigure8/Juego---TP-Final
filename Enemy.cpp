@@ -30,6 +30,9 @@ Enemy::Enemy(std::string image, std::string armorTexture, std::string bullet, sf
 
 	//helper
 	initHelper();
+
+	//sound
+	initSound();
 }
 
 Enemy::~Enemy()
@@ -44,6 +47,11 @@ void Enemy::initEffect()
 void Enemy::initHelper()
 {
 	_distance = new Helper;
+}
+
+void Enemy::initSound()
+{
+	_sound = new Sound;
 }
 
 Bullet* Enemy::initBullet()
@@ -333,6 +341,7 @@ void Enemy::updateBullet()
 	if (this->canAttack() && _life >=1)
 	{
 		_bullet.push_back(initBullet());
+		_sound->playeBulletEnemies();
 		_shoot->setState(true);
 		_last_position_shoot = { this->getArmor()->getPosition().x, this->getArmor()->getPosition().y };
 	}
