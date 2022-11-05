@@ -19,6 +19,7 @@ public:
 	void setVisibility(bool visibility);
 	
 	//Methods
+	void reset();
 	void updateArmor(sf::RenderWindow& window);
 };
 

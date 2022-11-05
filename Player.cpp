@@ -29,6 +29,12 @@ void Player::setVisibility(bool visibility)
 }
 
 
+void Player::reset()
+{
+	_movement_speed = 1.0f;
+	_hp = 1;
+}
+
 void Player::updateArmor(sf::RenderWindow& window)
 {
 	float armaCenterX = _armor->getPosition().x;
