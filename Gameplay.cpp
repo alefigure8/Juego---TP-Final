@@ -13,6 +13,23 @@ void Gameplay::_initWindow()
 	_window->setView(view);
 }
 
+void Gameplay::_initGame()
+{
+	_positionTankVector = 0;
+	_tanksDeleted = 0;
+	//_points = 0;
+	_initFile();
+	_initLevel();
+	_initPlayer();
+	_initEnemy();
+	_initBlock();
+	_initEffect();
+	_initHelpers();
+	_initPowerUp();
+	_initSounds();
+	_initGraphic();
+}
+
 void Gameplay::_initPowerUp()
 {
 	_powerUp = new PowerUp;
@@ -174,6 +191,19 @@ void Gameplay::_initGraphic()
 	_GUI = new Graphic;
 }
 
+void Gameplay::_initMenu()
+{
+	_menu = new Menu(_window->getSize().x, _window->getSize().y);
+}
+
+void Gameplay::_deleteGame()
+{
+	delete _player;
+	_bullet.clear();
+	_enemies.clear();
+	delete _shoot;
+}
+
 void Gameplay::_initEffect()
 {
 	_shoot = new Effect("Texture/shoot_1.png", sf::Vector2u(4, 1));
@@ -186,40 +216,18 @@ Gameplay::Gameplay()
 	_rectHeight = 800;
 	_rectWidth = 700;
 	_levelNumber = 1;
-	_positionTankVector = 0;
 	_bulletDistance = 120.f;
 	_tanksDeleted = 0;
+	_isMenu = true;
 	
 	//Init functiones
 	_initWindow();
-	_initFile();
-	_initLevel();
-	_initPlayer();
-	_initEnemy();
-	_initBlock();
-	_initEffect();
-	_initHelpers();
-	_initPowerUp();
-	_initSounds();
-	_initGraphic();
+	_initMenu();
 }
 
 Gameplay::~Gameplay()
 {
 	delete _window;
-	delete _player;
-
-	for (auto* i : _bullet)
-	{
-		delete i;
-	}
-
-	for (auto* i : _enemies)
-	{
-		delete i;
-	}
-
-	delete _shoot;
 }
 
 void Gameplay::run()
@@ -238,8 +246,87 @@ void Gameplay::updatePollevents()
 	sf::Event event;
 	while (_window->pollEvent(event))
 	{
-		if (event.type == sf::Event::Closed)
-			_window->close();
+
+		if (_isMenu) {
+			switch (event.type)
+			{
+			case sf::Event::KeyPressed:
+				switch (event.key.code)
+				{
+				case sf::Keyboard::Up:
+					_menu->MoveUp();
+					break;
+
+				case sf::Keyboard::Down:
+					_menu->MoveDown();
+					break;
+				case sf::Keyboard::Enter:
+				{
+					if (_menu->getContinue()) {
+
+						if (_menu->GetPressedItem() == 0)
+						{
+							_isMenu = false;
+						}
+						else if (_menu->GetPressedItem() == 1)
+						{
+							_deleteGame();
+							_initGame();
+							_isMenu = false;
+						}
+						else if (_menu->GetPressedItem() == 2)
+						{
+							// hanlde Ranking
+						}
+						else if (_menu->GetPressedItem() == 3)
+						{
+							_window->close();
+						}
+					}
+					else
+					{
+						if (_menu->GetPressedItem() == 0)
+						{
+							_isMenu = false;
+							_initGame();
+						}
+						else if (_menu->GetPressedItem() == 1)
+						{
+							// hanlde Ranking
+						}
+						else if (_menu->GetPressedItem() == 2)
+						{
+							_window->close();
+						}
+					}
+
+				}
+				break;
+				}
+				break;
+			case sf::Event::Closed:
+				_window->close();
+				break;
+			}
+		}
+		else
+		{
+			switch (event.type)
+			{
+			case sf::Event::KeyPressed:
+				switch (event.key.code)
+				{
+				case sf::Keyboard::Escape:
+					_isMenu = true;
+					_menu->restart();
+					break;
+				}
+				break;
+			case sf::Event::Closed:
+				_window->close();
+				break;
+			}
+		}
 	}
 }
 
@@ -357,7 +444,7 @@ void Gameplay::updateBullet()
 
 						// Damage
 						_enemies[j]->setDamage(_enemies[j]->getDamage() - 1);
-
+						
 						// Sumar enemigo eliminado
 						if (_enemies[j]->getDamage() == 0)
 						{
@@ -679,11 +766,13 @@ void Gameplay::updateEnemies()
 				if(distanciaEnemigo < 40.f)
 				{
 					enemy->setDamage(enemy->getDamage() - 2 <=0 ? 0 : enemy->getDamage() - 2);
+					
 				}
 				else if (distanciaEnemigo < 60.f)
 				{
 					enemy->setDamage(enemy->getDamage() - 1 <= 0 ? 0 : enemy->getDamage() - 1);
 				}
+			//TODO sumar enemigo que explota a los enemigos borrados
 			}
 
 			//Sacar vida a player cerca
@@ -742,38 +831,41 @@ void Gameplay::updateBlock()
 
 void Gameplay::update()
 {
-	//Inputs
-	updateInput();
+	if (!_isMenu)
+	{
+		//Inputs
+		updateInput();
 
-	//Efectos
-	updateEffect();
+		//Efectos
+		updateEffect();
 
-	//Balas
-	updateBullet();
+		//Balas
+		updateBullet();
 
-	//Spawn de eneigos
-	updateEnemies();
+		//Spawn de eneigos
+		updateEnemies();
 
-	//player
-	updatePlayer();
-	
-	//Bloque
-	updateBlock();
+		//player
+		updatePlayer();
 
-	//Colliders
-	updateColliders();
+		//Bloque
+		updateBlock();
 
-	//level
-	_level->update();
+		//Colliders
+		updateColliders();
 
-	//Helpers
-	_clockEnemy->updateClock();
+		//level
+		_level->update();
 
-	//PowerUps
-	_powerUp->update();
+		//Helpers
+		_clockEnemy->updateClock();
 
-	//GUI
-	updateGUI();
+		//PowerUps
+		_powerUp->update();
+
+		//GUI
+		updateGUI();
+	}
 }
 
 void Gameplay::render()
@@ -781,55 +873,64 @@ void Gameplay::render()
 	// Clear
 	_window->clear();
 
-	//Mapa
-	_level->render(*_window);
-
-	//Bloque Caja
-	_movable->render(*_window);
-
-	//Player
-	_player->render(*_window);
-
-	//trees
-	for (auto* tree : _trees)
+	if (_isMenu)
 	{
-		tree->render(*_window);
+		// Menu
+		_menu->render(*_window);
 	}
-
-	//Enemy
-	// Vector enemigos
-	for (auto* enemy : _enemies)
+	else
 	{
-		enemy->render(*_window);
-		enemy->renderEffect(*_window);
-	}
+		//Mapa
+		_level->render(*_window);
 
-	//Bullets
-	for (auto* bullet : _bullet)
-	{
-		bullet->render(*_window);
-	}
+		//Bloque Caja
+		_movable->render(*_window);
 
-	// Vector enemigos
-	for (auto* enemy : _enemies)
-	{
-		for (auto* bullet : enemy->getBullets())
+		//Player
+		_player->render(*_window);
+
+		//trees
+		for (auto* tree : _trees)
+		{
+			tree->render(*_window);
+		}
+
+		//Enemy
+		// Vector enemigos
+		for (auto* enemy : _enemies)
+		{
+			enemy->render(*_window);
+			enemy->renderEffect(*_window);
+		}
+
+		//Bullets
+		for (auto* bullet : _bullet)
 		{
 			bullet->render(*_window);
 		}
+
+		// Vector enemigos
+		for (auto* enemy : _enemies)
+		{
+			for (auto* bullet : enemy->getBullets())
+			{
+				bullet->render(*_window);
+			}
+		}
+
+		//Efectos
+		if (_shoot->getState())
+		{
+			_shoot->render(*_window);
+		}
+
+		//PowerUps
+		_powerUp->render(*_window);
+
+		//GUI
+		_GUI->render(*_window);
 	}
-
-	//Efectos
-	if (_shoot->getState())
-	{
-		_shoot->render(*_window);
-	}
-
-	//PowerUps
-	_powerUp->render(*_window);
-
-	//GUI
-	_GUI->render(*_window);
+	
 
 	//Display
 	_window->display();

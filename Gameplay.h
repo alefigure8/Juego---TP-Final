@@ -13,6 +13,7 @@
 #include "PowerUp.h"
 #include "Sound.h"
 #include "Graphic.h"
+#include "Menu.h"
 
 class Gameplay
 {
@@ -38,6 +39,10 @@ private:
 	Helper* _distance;
 	Sound* _sound;
 	Graphic* _GUI;
+	
+	//Menu
+	Menu* _menu;
+	bool _isMenu;
 
 	//efectos
 	Effect* _shoot;
@@ -64,6 +69,7 @@ private:
 	
 	// Init functions
 	void _initWindow();
+	void _initGame();
 	void _initPowerUp();
 	void _initFile();
 	void _initPlayer();
@@ -75,6 +81,11 @@ private:
 	void _initHelpers();
 	void _initSounds();
 	void _initGraphic();
+	void _initMenu();
+
+	// delete
+	
+	void _deleteGame();
 	
 public:
 	//Constructor
