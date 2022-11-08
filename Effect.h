@@ -36,5 +36,6 @@ public:
 	//Methods
 	void updateAnimation();
 	void update();
+	//void render(sf::RenderWindow& window);
 };
 
