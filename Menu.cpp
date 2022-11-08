@@ -4,24 +4,99 @@ Menu::Menu(float width, float height)
 {
 	_screen.x = width;
 	_screen.y = height;
+	_cant = 3;
+	_selectedItemIndex = 0;
+	_continue = false;
+	_show = true;
 	
-	//Backgorund
-	if (!_texture_title.loadFromFile("Texture/bg.png"))
+	initImages();
+	initFont();
+	initSound();
+	
+	//Options
+	_text = new sf::Text[_cant];
+	_btn = new sf::RectangleShape[_cant];
+	addMenu("PLAY", 0);
+	addMenu("RANKING", 1);
+	addMenu("EXIT", 2);
+	
+}
+
+Menu::~Menu()
+{
+}
+
+void Menu::addMenu(std::string title, int position)
+{
+	_text[position].setFont(_font);
+	_text[position].setFillColor(sf::Color::White);
+	_text[position].setString(title);
+	_text[position].setPosition(sf::Vector2f(_screen.x / 2 - _text[position].getLocalBounds().width / 2, 300.f + (position + 1) * 50.f));
+	_btn[position].setFillColor(position == 0 ? sf::Color{ 255, 255, 255, 100 } : sf::Color{0, 0, 0, 150});
+	_btn[position].setSize({ _text[position].getLocalBounds().width + 30.f, 40.f});
+	_btn[position].setPosition(sf::Vector2f(_screen.x / 2 - _btn[position].getSize().x / 2, 300.f + (position + 1) * 50.f));
+	_btn[position].setOutlineThickness(3);
+	_btn[position].setOutlineColor(sf::Color(0, 0, 0, 180));
+}
+
+void Menu::render(sf::RenderWindow& window)
+{
+	window.draw(_background);
+
+	for (int i = 0; i < _cant; i++)
 	{
-		std::cout << "Error loading texture" << std::endl;
+		window.draw(_btn[i]);
+		window.draw(_text[i]);
 	}
-	
-	
-	if (!_texture_bg.loadFromFile("Texture/bg2.png"))
+
+}
+
+void Menu::setShow(bool show)
+{
+	_show = show;
+}
+
+void Menu::MoveUp()
+{
+
+	if (_selectedItemIndex - 1 >= 0)
 	{
-		std::cout << "Error loading texture" << std::endl;
+		_btn[_selectedItemIndex].setFillColor(sf::Color{ 0, 0, 0, 150 });
+		_selectedItemIndex--;
+		_btn[_selectedItemIndex].setFillColor(sf::Color{ 255, 255, 255, 100 });
 	}
-	
-	_background.setTexture(_texture_bg);
-	_background.setPosition({ -20, -15 });
-	_title.setTexture(_texture_title);
-	_title.setPosition(sf::Vector2f(_screen.x / 2 - _title.getGlobalBounds().width / 2, 100.f));
-	
+
+}
+
+void Menu::MoveDown()
+{
+
+	if (_selectedItemIndex + 1 < _cant)
+	{
+		_btn[_selectedItemIndex].setFillColor(sf::Color{ 0, 0, 0, 150 });
+		_selectedItemIndex++;
+		_btn[_selectedItemIndex].setFillColor(sf::Color{ 255, 255, 255, 100 });
+	}
+
+}
+
+int Menu::getPressedItem()
+{
+	return _selectedItemIndex;
+}
+
+bool Menu::getContinue()
+{
+	return _continue;
+}
+
+bool Menu::getShow()
+{
+	return _show;
+}
+
+void Menu::initFont()
+{
 	//Font
 	if (!_font.loadFromFile("Font/pixel.ttf"))
 	{
@@ -32,76 +107,33 @@ Menu::Menu(float width, float height)
 	_description.setString("Grupo 17 - Laboratorio de Computacion II - 2022");
 	_description.setCharacterSize(15);
 	_description.setPosition(sf::Vector2f(_screen.x / 2 - _description.getLocalBounds().width / 2, 600.f));
-	
-	_cant = 3;
-	_text = new sf::Text[_cant];
-	_selectedItemIndex = 0;
-	_continue = false;
-
-	//Options
-	addMenu("PLAY", 0);
-	addMenu("RANKING", 1);
-	addMenu("EXIT", 2);
 }
 
-Menu::~Menu()
+void Menu::initImages()
 {
-}
 
-void Menu::addMenu(std::string title, int position)
-{
-	_text[position].setFont(_font);
-	_text[position].setFillColor(position == 0 ? sf::Color::Green : sf::Color::White);
-	_text[position].setString(title);
-	_text[position].setPosition(sf::Vector2f(_screen.x / 2 - _text[position].getLocalBounds().width / 2, 300.f + (position + 1) * 50.f));
-}
-
-void Menu::render(sf::RenderWindow& window)
-{
-	window.draw(_background);
-	window.draw(_description);
-	window.draw(_title);
-
-	for (int i = 0; i < _cant; i++)
+	if (!_texture_bg.loadFromFile("Menu/bg.png"))
 	{
-		window.draw(_text[i]);
+		std::cout << "Error loading texture" << std::endl;
 	}
 
+	_background.setTexture(_texture_bg);
+	_background.setPosition({ -20, -15 });
 }
 
-void Menu::MoveUp()
+void Menu::initSound()
 {
-
-	if (_selectedItemIndex - 1 >= 0)
-	{
-		_text[_selectedItemIndex].setFillColor(sf::Color::White);
-		_selectedItemIndex--;
-		_text[_selectedItemIndex].setFillColor(sf::Color::Green);
-	}
-
+	_sound = new Sound();
+	_sound->GetSoundConfig().setVolume(5.f);
+	_sound->playTheme(20.f);
+	_sound->play();
 }
 
-void Menu::MoveDown()
+void Menu::stopSound()
 {
-
-	if (_selectedItemIndex + 1 < _cant)
-	{
-		_text[_selectedItemIndex].setFillColor(sf::Color::White);
-		_selectedItemIndex++;
-		_text[_selectedItemIndex].setFillColor(sf::Color::Green);
-	}
-
+	_sound->stop();
 }
 
-int Menu::GetPressedItem()
-{
-	return _selectedItemIndex;
-}
-
-bool Menu::getContinue()
-{
-	return _continue;
-}
 
 void Menu::restart()
 {
@@ -110,6 +142,8 @@ void Menu::restart()
 	_continue = true;
 	delete [] _text;
 	_text = new sf::Text[_cant];
+	delete[] _btn;
+	_btn = new sf::RectangleShape[_cant];
 	addMenu("CONTINUE", 0);
 	addMenu("RESTART", 1);
 	addMenu("RANKING", 2);
