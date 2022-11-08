@@ -14,6 +14,7 @@ void Helper::setTime(float time)
 {
 	_time = time;
 	_time_max = _time;
+	//_time_max = time;
 }
 
 float Helper::getTime()
