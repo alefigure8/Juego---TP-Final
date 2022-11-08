@@ -19,7 +19,7 @@ FileLevel::~FileLevel()
 bool FileLevel::saveLevel(int level)
 {
 	FILE* pFile;
-	pFile = fopen("Files/levels.dat", "rb+");
+	pFile = fopen("Files/levels.dat", "ab");
 	
 	if (pFile == NULL) {
 		std::cout << "Error opening file" << std::endl;
