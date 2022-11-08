@@ -26,7 +26,7 @@ private:
 	FileLevel fileLevel;
 
 public:
-	Level(int level);
+	Level();
 	~Level();
 	
 	//getter
@@ -36,7 +36,7 @@ public:
 	sf::Vector2i getTargetIndex();
 	
 	//Methods
-	void initFile();
+	bool initFile(int level);
 	void initLevel();
 	void update();
 	void render(sf::RenderWindow& window);

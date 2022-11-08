@@ -1,10 +1,12 @@
 #include "Level.h"
 
-void Level::initFile() {
+bool Level::initFile(int level) {
 	
 	//Read Register _level
-    if (fileLevel.loadLevels(_level))
+    if (fileLevel.loadLevels(level))
     {
+        std::cout << "Level" << level <<std::endl;
+		
         char mapFile[460];
         int k = 0;
 
@@ -15,15 +17,18 @@ void Level::initFile() {
                 _map[i][j] = fileLevel.getLevel()[k++];
             }
         }
+		
+        initLevel();
+		
+		return true;
     }
+
+	return false;
 }
 
-Level::Level(int level)
+Level::Level()
 {
     _grid = sf::Vector2f(40, 30);
-	_level = level;
-    initFile();
-    initLevel();
 }
 
 Level::~Level()
@@ -482,6 +487,7 @@ int Level::getWidth()
 {
     return WIDTH_MAP;
 }
+
 
 sf::Vector2i Level::getTargetIndex()
 {
