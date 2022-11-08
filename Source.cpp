@@ -35,11 +35,11 @@ int main()
 	//	 { '9','%','9','%','9','%','9','%','9','$',' ','9','%','9','%','9','%','9','%','9' }
 	//};
 	//fileLevel.setLevel(_map);
-	//fileLevel.setEnemiesNumber(15);
-	//int enemies[15]{ 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3 };
+	//fileLevel.setEnemiesNumber(1);
+	//int enemies[15]{ 1 };
 	//fileLevel.setEnemies(enemies);
-	//fileLevel.setLevelNumber(1);
-	//fileLevel.saveLevel(1);
+	//fileLevel.setLevelNumber(3);
+	//fileLevel.saveLevel(3);
 	
     Gameplay gameplay;
     gameplay.run();
