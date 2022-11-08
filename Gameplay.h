@@ -14,6 +14,7 @@
 #include "Sound.h"
 #include "Graphic.h"
 #include "Menu.h"
+#include "Screen.h"
 
 class Gameplay
 {
@@ -21,6 +22,8 @@ private:
 	//Variables
 	int _levelNumber;
 	float _bulletDistance;
+	bool _gameOver;
+	bool _backMenu;
 	//int _points;
 	
 	//window config
@@ -39,10 +42,11 @@ private:
 	Helper* _distance;
 	Sound* _sound;
 	Graphic* _GUI;
+	Screen* _screen;
 	
 	//Menu
 	Menu* _menu;
-	bool _isMenu;
+	//bool _isMenu;
 
 	//efectos
 	Effect* _shoot;
@@ -70,6 +74,7 @@ private:
 	// Init functions
 	void _initWindow();
 	void _initGame();
+	bool _initLevel();
 	void _initPowerUp();
 	void _initFile();
 	void _initPlayer();
@@ -77,15 +82,21 @@ private:
 	void _initBlock();
 	Bullet* _initBullet();
 	void _initEffect();
-	void _initLevel();
 	void _initHelpers();
 	void _initSounds();
 	void _initGraphic();
 	void _initMenu();
+	void _initScreen();
 
 	// delete
-	
 	void _deleteGame();
+
+	//restar game
+	void _restartGame();
+	void _endGame();
+
+	//Next level
+	void _nextLevel();
 	
 public:
 	//Constructor
@@ -102,6 +113,8 @@ public:
 	void updatePlayer();
 	void updatePollevents();
 	void updateGUI();
+	void updateScreen();
+	void updateLevel();
 	void update();
 
 	//Render

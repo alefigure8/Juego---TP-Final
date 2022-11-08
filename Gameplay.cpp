@@ -18,21 +18,42 @@ void Gameplay::_initGame()
 	_positionTankVector = 0;
 	_tanksDeleted = 0;
 	//_points = 0;
-	_initFile();
-	_initLevel();
-	_initPlayer();
-	_initEnemy();
-	_initBlock();
-	_initEffect();
-	_initHelpers();
-	_initPowerUp();
-	_initSounds();
-	_initGraphic();
+
+	if (_initLevel())
+	{
+		_initPlayer();
+		_initEnemy();
+		_initBlock();
+		_initEffect();
+		_initHelpers();
+		_initPowerUp();
+		_initSounds();
+		_initGraphic();
+	}
+	else
+	{
+		_gameOver = true;
+	}
 }
 
 void Gameplay::_initPowerUp()
 {
 	_powerUp = new PowerUp;
+}
+
+bool Gameplay::_initLevel()
+{
+	delete _level;
+
+	_level = new Level();
+
+	if (_level->initFile(_levelNumber))
+	{
+		_initFile();
+		return true;
+	}
+
+	return false;
 }
 
 void Gameplay::_initFile()
@@ -59,7 +80,7 @@ void Gameplay::_initPlayer()
 {
 	_player = new Player("Texture/tank1_body_2.png", "Texture/tank1_gun_2.png", sf::Vector2u(3, 1));
 
-	// Init Position
+	// Init values
 	_player->getSprite().setPosition({ _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().x - 50, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().y - 150 });
 	_player->getArmor()->setPosition(_player->getPosition());
 	_player->setWeight(1);
@@ -82,7 +103,7 @@ void Gameplay::_initEnemy()
 			_enemy->setAttackMax(15.f);
 			_enemy->setWeight(2);
 			_enemy->setSpeedMovement(0.7f);
-			_enemy->setHP(1);
+			_enemy->setHP(2);
 			_enemy->setLifePost(3);
 			_enemy->setBulletDistance(90.f);
 
@@ -101,7 +122,7 @@ void Gameplay::_initEnemy()
 			_enemy->setAttackMax(20.f);
 			_enemy->setSpeedMovement(1.1f);
 			_enemy->setWeight(1);
-			_enemy->setHP(2);
+			_enemy->setHP(1);
 			_enemy->setLifePost(3);
 			_enemy->setBulletDistance(120.f);
 
@@ -118,7 +139,7 @@ void Gameplay::_initEnemy()
 
 			//Init Position
 			_enemy->getArmor()->setPosition(_enemy->getPosition());
-			_enemy->setAttackMax(25.f);
+			_enemy->setAttackMax(15.f);
 			_enemy->setSpeedMovement(0.5f);
 			_enemy->setWeight(3);
 			_enemy->setHP(3);
@@ -166,10 +187,6 @@ void Gameplay::_initBlock()
 	}
 }
 
-void Gameplay::_initLevel()
-{
-	_level = new Level(_levelNumber);
-}
 
 void Gameplay::_initHelpers()
 {
@@ -196,12 +213,38 @@ void Gameplay::_initMenu()
 	_menu = new Menu(_window->getSize().x, _window->getSize().y);
 }
 
+void Gameplay::_initScreen()
+{
+	_screen = new Screen;
+}
+
 void Gameplay::_deleteGame()
 {
 	delete _player;
 	_bullet.clear();
 	_enemies.clear();
 	delete _shoot;
+}
+
+void Gameplay::_restartGame()
+{
+	_levelNumber = 1;
+	_screen->initIntroLevel(_levelNumber - 1);
+	_deleteGame();
+	_initGame();
+}
+
+void Gameplay::_endGame()
+{
+	_backMenu = false;
+	_levelNumber = 1;
+	_gameOver = false;
+}
+
+void Gameplay::_nextLevel()
+{
+	_deleteGame();
+	_initGame();
 }
 
 void Gameplay::_initEffect()
@@ -218,11 +261,13 @@ Gameplay::Gameplay()
 	_levelNumber = 1;
 	_bulletDistance = 120.f;
 	_tanksDeleted = 0;
-	_isMenu = true;
+	_gameOver = false;
+	_backMenu = false;
 	
 	//Init functiones
 	_initWindow();
 	_initMenu();
+	_initScreen();
 }
 
 Gameplay::~Gameplay()
@@ -247,16 +292,18 @@ void Gameplay::updatePollevents()
 	while (_window->pollEvent(event))
 	{
 
-		if (_isMenu) {
+		if (_menu->getShow()) {
 			switch (event.type)
 			{
 			case sf::Event::KeyPressed:
 				switch (event.key.code)
 				{
+				case sf::Keyboard::W:
 				case sf::Keyboard::Up:
 					_menu->MoveUp();
 					break;
 
+				case sf::Keyboard::S:
 				case sf::Keyboard::Down:
 					_menu->MoveDown();
 					break;
@@ -264,42 +311,43 @@ void Gameplay::updatePollevents()
 				{
 					if (_menu->getContinue()) {
 
-						if (_menu->GetPressedItem() == 0)
+						if (_menu->getPressedItem() == 0)
 						{
-							_isMenu = false;
+							_menu->setShow(false);
 						}
-						else if (_menu->GetPressedItem() == 1)
+						else if (_menu->getPressedItem() == 1)
 						{
-							_deleteGame();
-							_initGame();
-							_isMenu = false;
+							_restartGame();
+							_menu->setShow(false);
 						}
-						else if (_menu->GetPressedItem() == 2)
+						else if (_menu->getPressedItem() == 2)
 						{
 							// hanlde Ranking
 						}
-						else if (_menu->GetPressedItem() == 3)
+						else if (_menu->getPressedItem() == 3)
 						{
 							_window->close();
 						}
 					}
 					else
 					{
-						if (_menu->GetPressedItem() == 0)
+						if (_menu->getPressedItem() == 0)
 						{
-							_isMenu = false;
+							_menu->setShow(false);
+							_screen->initInstruction();
 							_initGame();
 						}
-						else if (_menu->GetPressedItem() == 1)
+						else if (_menu->getPressedItem() == 1)
 						{
 							// hanlde Ranking
+							
 						}
-						else if (_menu->GetPressedItem() == 2)
+						else if (_menu->getPressedItem() == 2)
 						{
 							_window->close();
 						}
 					}
-
+					_menu->stopSound();
 				}
 				break;
 				}
@@ -317,7 +365,7 @@ void Gameplay::updatePollevents()
 				switch (event.key.code)
 				{
 				case sf::Keyboard::Escape:
-					_isMenu = true;
+					_menu->setShow(true);
 					_menu->restart();
 					break;
 				}
@@ -443,7 +491,7 @@ void Gameplay::updateBullet()
 						_sound->playHit();
 
 						// Damage
-						_enemies[j]->setDamage(_enemies[j]->getDamage() - 1);
+						_enemies[j]->setDamage(_enemies[j]->getDamage() - _player->getHP());
 						
 						// Sumar enemigo eliminado
 						if (_enemies[j]->getDamage() == 0)
@@ -522,7 +570,7 @@ void Gameplay::updateBullet()
 						deleteBullet2 = true;
 
 						//Saca puntos de damage
-						_player->setDamage(_player->getDamage() - 1);
+						_player->setDamage(_player->getDamage() - enemy->getHP() <= 0 ? 0 : _player->getDamage() - enemy->getHP());
 						
 						//Respawn
 						if (_player->getDamage() == 0)
@@ -530,8 +578,6 @@ void Gameplay::updateBullet()
 							_player->reset();
 							_player->getSprite().setPosition({ _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().x - 50, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().y - 150 });
 						}
-
-						//if Life es 0, Game Over
 
 						//Check Base Life. Si llega a 0, Game Over
 					}
@@ -765,14 +811,13 @@ void Gameplay::updateEnemies()
 				
 				if(distanciaEnemigo < 40.f)
 				{
-					enemy->setDamage(enemy->getDamage() - 2 <=0 ? 0 : enemy->getDamage() - 2);
+					enemy->setDamage(enemy->getDamage() - 2 <=0 ? 1 : enemy->getDamage() - 2);
 					
 				}
 				else if (distanciaEnemigo < 60.f)
 				{
-					enemy->setDamage(enemy->getDamage() - 1 <= 0 ? 0 : enemy->getDamage() - 1);
+					enemy->setDamage(enemy->getDamage() - 1 <= 0 ? 1 : enemy->getDamage() - 1);
 				}
-			//TODO sumar enemigo que explota a los enemigos borrados
 			}
 
 			//Sacar vida a player cerca
@@ -790,9 +835,13 @@ void Gameplay::updateEnemies()
 			else if (distanciaPlayer < 60.f)
 			{
 				_player->setDamage(_player->getDamage() - 1 <= 0 ? 0 : _player->getDamage() - 1);
-				_player->getSprite().setPosition({ _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().x - 50, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().y - 150 });
+
+				if (_player->getDamage() == 0)
+				{
+					_player->getSprite().setPosition({ _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().x - 50, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().y - 150 });
+
+				}
 			}
-			
 			//Borrar enemigo
 			delete _enemies.at(i);
 			_enemies.erase(_enemies.begin() + i);
@@ -804,6 +853,14 @@ void Gameplay::updatePlayer()
 {
 	_player->updateArmor(*_window);
 	_player->update(*_window);
+
+	//Si la vida del player es 0 o la vida del puente es 0
+	if (_player->getLife() == 0 || _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getLife() == 0)
+	{
+		_screen->initBadEnding();
+		_backMenu = true;
+		_deleteGame();
+	}
 }
 
 void Gameplay::updateBlock()
@@ -829,42 +886,90 @@ void Gameplay::updateBlock()
 	}
 }
 
+void Gameplay::updateScreen()
+{
+	if (_screen->getShowInstruction() || _screen->getShowScreen())
+	{
+		_screen->update();
+	}
+
+
+	if (!_screen->getShowScreen() && _backMenu)
+	{
+		_menu->setShow(true);
+		_endGame();
+	}
+
+}
+
+void Gameplay::updateLevel()
+{
+
+	// si matamos a todos los enemigos cambiamos de nivel
+	if (_tanksDeleted - _tanksNumber == 0 && !_gameOver)
+	{
+		_levelNumber++;
+		_nextLevel();
+
+		if (!_gameOver)
+		{
+			_screen->initIntroLevel(_levelNumber - 1);
+
+		}
+		else
+		{
+			//Final bueno por terminar los niveles
+			_backMenu = true;
+			_screen->initGoodEnding();
+		}
+	}
+}
+
 void Gameplay::update()
 {
-	if (!_isMenu)
+	updateScreen();
+	
+
+	if (!_menu->getShow() && !_screen->getShowInstruction() && !_screen->getShowScreen())
 	{
-		//Inputs
-		updateInput();
+		//Level
+		updateLevel();
 
-		//Efectos
-		updateEffect();
+		if (!_gameOver)
+		{
+			//Inputs
+			updateInput();
 
-		//Balas
-		updateBullet();
+			//Efectos
+			updateEffect();
 
-		//Spawn de eneigos
-		updateEnemies();
+			//Balas
+			updateBullet();
 
-		//player
-		updatePlayer();
+			//Spawn de eneigos
+			updateEnemies();
 
-		//Bloque
-		updateBlock();
+			//player
+			updatePlayer();
 
-		//Colliders
-		updateColliders();
+			//Bloque
+			updateBlock();
 
-		//level
-		_level->update();
+			//Colliders
+			updateColliders();
 
-		//Helpers
-		_clockEnemy->updateClock();
+			//level
+			_level->update();
 
-		//PowerUps
-		_powerUp->update();
+			//Helpers
+			_clockEnemy->updateClock();
 
-		//GUI
-		updateGUI();
+			//PowerUps
+			_powerUp->update();
+
+			//GUI
+			updateGUI();
+		}
 	}
 }
 
@@ -873,12 +978,16 @@ void Gameplay::render()
 	// Clear
 	_window->clear();
 
-	if (_isMenu)
+	if (_menu->getShow())
 	{
 		// Menu
 		_menu->render(*_window);
 	}
-	else
+	else if (_screen->getShowInstruction() || _screen->getShowScreen())
+	{
+		_screen->render(*_window);
+	}
+	else if(!_gameOver)
 	{
 		//Mapa
 		_level->render(*_window);
@@ -930,7 +1039,6 @@ void Gameplay::render()
 		//GUI
 		_GUI->render(*_window);
 	}
-	
 
 	//Display
 	_window->display();
