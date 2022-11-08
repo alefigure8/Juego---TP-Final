@@ -12,11 +12,15 @@ private:
 public:
 	Sound();
 	~Sound();
+	sf::Sound GetSoundConfig();
 	void playExplosion();
 	void PlayPowerup();
 	void playBullet();
 	void playeBulletEnemies();
 	void playHit();
+	void playTheme(float volume);
+	void buffer(std::string file);
+	void stop();
 	void play();
 };
 

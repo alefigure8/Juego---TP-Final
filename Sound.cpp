@@ -9,44 +9,56 @@ Sound::~Sound()
 {
 }
 
+sf::Sound Sound::GetSoundConfig() {
+	return _sound;
+}
+
 void Sound::playExplosion()
 {
-	if (!_buffer.loadFromFile("Sound/explosion.wav"))
-		std::cout << "Gameplay::Error sound" << std::endl;
-
+	buffer("Sound/explosion.wav");
 	play();
 }
 
 void Sound::PlayPowerup()
 {
-	if (!_buffer.loadFromFile("Sound/powerUp.wav"))
-		std::cout << "Gameplay::Error sound" << std::endl;
-
+	buffer("Sound/powerUp.wav");
 	play();
 }
 
 void Sound::playBullet()
 {
-	if (!_buffer.loadFromFile("Sound/bullet_player.wav"))
-		std::cout << "Gameplay::Error sound" << std::endl;
-	
+	buffer("Sound/bullet_player.wav");
 	play();
 }
 
 void Sound::playeBulletEnemies()
 {
-	if (!_buffer.loadFromFile("Sound/bullet_tanks.wav"))
-		std::cout << "Gameplay::Error sound" << std::endl;
-
+	buffer("Sound/bullet_tanks.wav");
 	play();
 }
 
 void Sound::playHit()
 {
-	if (!_buffer.loadFromFile("Sound/hitTank.wav"))
-		std::cout << "Gameplay::Error sound" << std::endl;
-
+	buffer("Sound/hitTank.wav");
 	play();
+}
+
+void Sound::playTheme(float volume)
+{
+	buffer("Sound/theme.wav");
+	_sound.setVolume(volume);
+	play();
+}
+
+void Sound::stop()
+{
+	_sound.stop();
+}
+
+void Sound::buffer(std::string file)
+{
+	if (!_buffer.loadFromFile(file))
+		std::cout << "Gameplay::Error sound" << std::endl;
 }
 
 void Sound::play()
