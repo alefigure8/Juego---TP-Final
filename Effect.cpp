@@ -93,3 +93,12 @@ void Effect::updateAnimation()
 	}
 			
 }
+//
+//void Effect::render(sf::RenderWindow& window)
+//{
+//
+//	if (_state)
+//	{
+//		window.draw(_sprite);
+//	}
+//}
