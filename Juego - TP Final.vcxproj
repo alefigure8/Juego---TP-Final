@@ -143,6 +143,7 @@
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="FileLevel.cpp" />
+    <ClCompile Include="FileUser.cpp" />
     <ClCompile Include="Gameplay.cpp" />
     <ClCompile Include="Graphic.cpp" />
     <ClCompile Include="Helper.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="Effect.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="FileLevel.h" />
+    <ClInclude Include="FileUser.h" />
     <ClInclude Include="Gameplay.h" />
     <ClInclude Include="Graphic.h" />
     <ClInclude Include="Helper.h" />
