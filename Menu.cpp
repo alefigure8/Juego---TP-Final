@@ -4,7 +4,7 @@ Menu::Menu(float width, float height)
 {
 	_screen.x = width;
 	_screen.y = height;
-	_cant = 3;
+	_cant = 4;
 	_selectedItemIndex = 0;
 	_continue = false;
 	_show = true;
@@ -18,7 +18,8 @@ Menu::Menu(float width, float height)
 	_btn = new sf::RectangleShape[_cant];
 	addMenu("PLAY", 0);
 	addMenu("RANKING", 1);
-	addMenu("EXIT", 2);
+	addMenu("CONTROLES", 2);
+	addMenu("EXIT", 3);
 	
 }
 
@@ -137,7 +138,7 @@ void Menu::stopSound()
 
 void Menu::restart()
 {
-	_cant = 4;
+	_cant = 5;
 	_selectedItemIndex = 0;
 	_continue = true;
 	delete [] _text;
@@ -147,5 +148,6 @@ void Menu::restart()
 	addMenu("CONTINUE", 0);
 	addMenu("RESTART", 1);
 	addMenu("RANKING", 2);
-	addMenu("EXIT", 3);
+	addMenu("CONTROLES", 3);
+	addMenu("EXIT", 4);
 }
