@@ -11,6 +11,7 @@ protected:
 	sf::Texture _texture;
 	int _life;
 	int _max_life;
+	bool _is_target;
 	
 	void _initSprite();
 	void _initTexture(std::string texture);

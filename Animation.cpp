@@ -21,6 +21,7 @@ void Animation::update()
 	uvRect.left = currentImage.x * uvRect.width;
 	uvRect.top = currentImage.y * uvRect.height;
 }
+
 sf::Vector2u Animation::getCurrentImage()
 {
 	return currentImage;
