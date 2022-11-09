@@ -24,7 +24,8 @@ private:
 	float _bulletDistance;
 	bool _gameOver;
 	bool _backMenu;
-	//int _points;
+	bool _initPlay;
+	int _points;
 	
 	//window config
 	sf::RenderWindow* _window;

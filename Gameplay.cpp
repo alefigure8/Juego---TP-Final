@@ -17,7 +17,7 @@ void Gameplay::_initGame()
 {
 	_positionTankVector = 0;
 	_tanksDeleted = 0;
-	//_points = 0;
+	_points = 0;
 
 	if (_initLevel())
 	{
@@ -215,7 +215,7 @@ void Gameplay::_initMenu()
 
 void Gameplay::_initScreen()
 {
-	_screen = new Screen;
+	_screen = new Screen({ _rectHeight, _rectWidth });
 }
 
 void Gameplay::_deleteGame()
@@ -239,6 +239,7 @@ void Gameplay::_endGame()
 	_backMenu = false;
 	_levelNumber = 1;
 	_gameOver = false;
+	_initPlay = false;
 }
 
 void Gameplay::_nextLevel()
@@ -261,8 +262,10 @@ Gameplay::Gameplay()
 	_levelNumber = 1;
 	_bulletDistance = 120.f;
 	_tanksDeleted = 0;
+	_points = 0;
 	_gameOver = false;
 	_backMenu = false;
+	_initPlay = false;
 	
 	//Init functiones
 	_initWindow();
@@ -292,6 +295,7 @@ void Gameplay::updatePollevents()
 	while (_window->pollEvent(event))
 	{
 
+		//MENU
 		if (_menu->getShow()) {
 			switch (event.type)
 			{
@@ -322,9 +326,17 @@ void Gameplay::updatePollevents()
 						}
 						else if (_menu->getPressedItem() == 2)
 						{
-							// hanlde Ranking
+							_screen->initPoint();
+							_menu->setShow(false);
+							
 						}
 						else if (_menu->getPressedItem() == 3)
+						{
+							_screen->initInstruction();
+							_menu->setShow(false);
+							
+						}
+						else if (_menu->getPressedItem() == 4)
 						{
 							_window->close();
 						}
@@ -334,15 +346,22 @@ void Gameplay::updatePollevents()
 						if (_menu->getPressedItem() == 0)
 						{
 							_menu->setShow(false);
-							_screen->initInstruction();
+							_screen->initStory();
 							_initGame();
+							_initPlay = true;
 						}
 						else if (_menu->getPressedItem() == 1)
 						{
-							// hanlde Ranking
-							
+							_menu->setShow(false);
+							_screen->initPoint();
 						}
 						else if (_menu->getPressedItem() == 2)
+						{
+							_screen->initInstruction();
+							_menu->setShow(false);
+							
+						}
+						else if (_menu->getPressedItem() == 3)
 						{
 							_window->close();
 						}
@@ -366,7 +385,12 @@ void Gameplay::updatePollevents()
 				{
 				case sf::Keyboard::Escape:
 					_menu->setShow(true);
-					_menu->restart();
+					
+					if (_initPlay) {
+						_menu->restart();
+					}
+					_screen->setShowPoints(false);
+					_screen->setShowInstruction(false);
 					break;
 				}
 				break;
@@ -375,7 +399,14 @@ void Gameplay::updatePollevents()
 				break;
 			}
 		}
+		
+		//Habilitar teclado para la pantalla de ingreso de nombre
+		if (_screen->getShowEnterName())
+		{
+			_screen->updateInputs(event);
+		}
 	}
+	
 }
 
 void Gameplay::updateGUI()
@@ -858,7 +889,8 @@ void Gameplay::updatePlayer()
 	if (_player->getLife() == 0 || _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getLife() == 0)
 	{
 		_screen->initBadEnding();
-		_backMenu = true;
+		//_backMenu = true;
+		_screen->setShowEnterName(true);
 		_deleteGame();
 	}
 }
@@ -888,15 +920,26 @@ void Gameplay::updateBlock()
 
 void Gameplay::updateScreen()
 {
-	if (_screen->getShowInstruction() || _screen->getShowScreen())
+	//Update pantallas
+	if (_screen->getShowScreen() || _screen->getShowEnterName() || _screen->getShowIntro())
 	{
 		_screen->update();
+		
 	}
-
-
-	if (!_screen->getShowScreen() && _backMenu)
+	
+	
+	//Iniciar Ingresar Nombre
+	if (!_screen->getShowScreen() && _screen->getShowEnterName())
+	{
+		_screen->initEnterName(_points);
+		_backMenu = true;
+	}
+	
+	//Regresar al menu
+	if (_backMenu && _screen->getEndScreen())
 	{
 		_menu->setShow(true);
+		_screen->setEndScreen(false);
 		_endGame();
 	}
 
@@ -913,14 +956,15 @@ void Gameplay::updateLevel()
 
 		if (!_gameOver)
 		{
+			//Pantalla de Sigueinte Nivel
 			_screen->initIntroLevel(_levelNumber - 1);
 
 		}
 		else
 		{
 			//Final bueno por terminar los niveles
-			_backMenu = true;
 			_screen->initGoodEnding();
+			_screen->setShowEnterName(true);
 		}
 	}
 }
@@ -930,7 +974,7 @@ void Gameplay::update()
 	updateScreen();
 	
 
-	if (!_menu->getShow() && !_screen->getShowInstruction() && !_screen->getShowScreen())
+	if (!_menu->getShow() && !_screen->getShowInstruction() && !_screen->getShowScreen() && !_screen->getShowPoints() && !_screen->getShowEnterName() && !_screen->getShowIntro())
 	{
 		//Level
 		updateLevel();
@@ -983,7 +1027,7 @@ void Gameplay::render()
 		// Menu
 		_menu->render(*_window);
 	}
-	else if (_screen->getShowInstruction() || _screen->getShowScreen())
+	else if (_screen->getShowInstruction() || _screen->getShowScreen() || _screen->getShowPoints() || _screen->getShowEnterName() || _screen->getShowIntro())
 	{
 		_screen->render(*_window);
 	}
