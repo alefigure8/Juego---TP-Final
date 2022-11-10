@@ -132,7 +132,7 @@ void Gameplay::_initEnemy()
 			_enemy->setAttackMax(15.f);
 			_enemy->setWeight(2);
 			_enemy->setSpeedMovement(0.7f);
-			_enemy->setSpeedMovement(0.f);
+			//_enemy->setSpeedMovement(0.f);
 			_enemy->setHP(2);
 			_enemy->setLifePost(3);
 			_enemy->setBulletDistance(90.f);
@@ -514,7 +514,6 @@ void Gameplay::updateBullet()
 					if (_level->getTile(j, h)->getLife() == 1 && _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y) != _level->getTile(j, h))
 					{
 						_sound->playExplosion();
-						_points = _points - 2 <= 0 ? 0 : _points - 2;
 					}
 
 					if (_level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getLife() == 1)
