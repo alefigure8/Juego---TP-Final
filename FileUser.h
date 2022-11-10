@@ -6,6 +6,7 @@ class FileUser
 private:
 	std::string _name;
 	int _points;
+	FileUser* users;
 public:
 	
 	FileUser();

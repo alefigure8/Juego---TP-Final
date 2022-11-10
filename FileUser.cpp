@@ -32,18 +32,18 @@ void FileUser::setPoints(int points)
 
 FileUser* FileUser::sortUsers()
 {
-	
-	FileUser* users = new FileUser[howManyUsers()];
-	for (int i = 0; i < howManyUsers(); i++)
+	int cant = howManyUsers();
+	FileUser* users = new FileUser[cant];
+	for (int i = 0; i < cant; i++)
 	{
 		loadUser(i);
 		users[i].setName(_name);
 		users[i].setPoints(_points);
 	}
 
-	for (int i = 0; i < howManyUsers(); i++)
+	for (int i = 0; i < cant; i++)
 	{
-		for (int j = 0; j < howManyUsers() - 1; j++)
+		for (int j = 0; j < cant - 1; j++)
 		{
 			if (users[j].getPoints() < users[j + 1].getPoints())
 			{
