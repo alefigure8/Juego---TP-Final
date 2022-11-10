@@ -65,43 +65,42 @@ void Screen::initPoint()
 {
 	_showPoints = true;
 	int _SHOWRANK = 10;
+	_cantRanking = _fileUser->howManyUsers();
 
 	initFonts("Font/pixel.ttf");
 	initTexture("Menu/points.png");
 	_screen.setTexture(_texture);
 
-	_cantRanking = _fileUser->howManyUsers() < _SHOWRANK ? _fileUser->howManyUsers() : _SHOWRANK;
-
-	FileUser* users = new FileUser[_cantRanking];
-
-	for (int i = 0; i < _cantRanking || _cantRanking < _SHOWRANK; i++)
+	_cantRanking = _fileUser->howManyUsers();
+	
+	FileUser* users = _fileUser->sortUsers();
+	
+	for (int i = 0; i < _cantRanking; i++)
 	{
-		users[i] = _fileUser->sortUsers()[i];
-	}
+		if (i < 8)
+		{
+			_points[i].setFont(_fonts);
+			_ranks[i].setFont(_fonts);
+			_names[i].setFont(_fonts);
 
-	for (int i = 0; i < _cantRanking || _cantRanking < _SHOWRANK; i++)
-	{
-		_points[i].setFont(_fonts);
-		_ranks[i].setFont(_fonts);
-		_names[i].setFont(_fonts);
+			_ranks[i].setFillColor(sf::Color::White);
+			_points[i].setFillColor(sf::Color::White);
+			_names[i].setFillColor(sf::Color::White);
 
-		_ranks[i].setFillColor(sf::Color::White);
-		_points[i].setFillColor(sf::Color::White);
-		_names[i].setFillColor(sf::Color::White);
-
-		_ranks[i].setCharacterSize(20);
-		_points[i].setCharacterSize(20);
-		_names[i].setCharacterSize(20);
+			_ranks[i].setCharacterSize(20);
+			_points[i].setCharacterSize(20);
+			_names[i].setCharacterSize(20);
 
 
-		_ranks[i].setString(std::to_string(i + 1));
-		_points[i].setString(std::to_string(users[i].getPoints()));
-		_names[i].setString(users[i].getName());
+			_ranks[i].setString(std::to_string(i + 1));
+			_points[i].setString(std::to_string(users[i].getPoints()));
+			_names[i].setString(users[i].getName());
 
-		float posY = 250.f +  (30.f * i);
-		_ranks[i].setPosition({150.f, posY});
-		_points[i].setPosition({335.f, posY});
-		_names[i].setPosition({535.f, posY});
+			float posY = 250.f + (30.f * i);
+			_ranks[i].setPosition({ 150.f, posY });
+			_points[i].setPosition({ 335.f, posY });
+			_names[i].setPosition({ 535.f, posY });
+		}
 	}
 }
 
