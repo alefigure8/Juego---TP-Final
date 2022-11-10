@@ -1,6 +1,7 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include "Helper.h"
+#include "Sound.h"
 #include <iostream>
 
 class PowerUp
@@ -18,6 +19,7 @@ private:
 	bool _shield;
 	Helper* _clock_spawn;
 	Helper* _clock_duration;
+	Sound* _sound;
 
 public:
 	PowerUp();

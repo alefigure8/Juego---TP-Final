@@ -28,6 +28,7 @@ public:
 	bool getHAveEffect();
 	int getMaxLife();
 	bool getIsShield();
+	Effect* getEffect();
 	
 	//setter
 	void setLife(int life);

@@ -15,9 +15,9 @@ Screen::Screen(sf::Vector2f screen)
 	_pointsPlayer = 0;
 	_namePlayer = "";
 	_cantRanking = 0;
-	_points = new sf::Text[8];
-	_ranks = new sf::Text[8];
-	_names = new sf::Text[8];
+	_points = new sf::Text[10];
+	_ranks = new sf::Text[10];
+	_names = new sf::Text[10];
 }
 
 Screen::~Screen()
@@ -56,7 +56,7 @@ void Screen::initGoodEnding()
 void Screen::initStory()
 {
 	_showIntro = true;
-	_time_max = 300.f;
+	_time_max = 200.f;
 	initTexture("Menu/intro.png");
 	_screen.setTexture(_texture);
 }
@@ -64,21 +64,22 @@ void Screen::initStory()
 void Screen::initPoint()
 {
 	_showPoints = true;
+	int _SHOWRANK = 10;
 
 	initFonts("Font/pixel.ttf");
 	initTexture("Menu/points.png");
 	_screen.setTexture(_texture);
 
-	_cantRanking = _fileUser->howManyUsers() < 8 ? _fileUser->howManyUsers() : 8;
+	_cantRanking = _fileUser->howManyUsers() < _SHOWRANK ? _fileUser->howManyUsers() : _SHOWRANK;
 
 	FileUser* users = new FileUser[_cantRanking];
 
-	for (int i = 0; i < _cantRanking && _cantRanking < 8; i++)
+	for (int i = 0; i < _cantRanking || _cantRanking < _SHOWRANK; i++)
 	{
 		users[i] = _fileUser->sortUsers()[i];
 	}
 
-	for (int i = 0; i < _cantRanking && _cantRanking < 8; i++)
+	for (int i = 0; i < _cantRanking || _cantRanking < _SHOWRANK; i++)
 	{
 		_points[i].setFont(_fonts);
 		_ranks[i].setFont(_fonts);
@@ -216,6 +217,11 @@ void Screen::updateInputs(sf::Event _event)
 			//Salvar archivo
 			if (_fileUser->saveUser(_namePlayer, _pointsPlayer))
 			{
+				//Reset name
+				_namePlayer.erase();
+				_name.setString("");
+				
+				//false screens
 				_showEnterName = false;
 				_showPoints = false;
 				_endScreen = true;

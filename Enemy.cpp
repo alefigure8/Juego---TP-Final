@@ -69,7 +69,6 @@ Bullet* Enemy::initBullet()
 	float armorPositionY = this->getArmor()->getPosition().y + (this->getArmor()->getBounds().height / 2 * vely);
 
 	return new Bullet({ armorPositionX, armorPositionY }, { velx, vely }, degree - 180, _bulletDistance, _bulletImage);
-	//return new BUllet(helper.amorPosition(_player), helper.vel(degree),degree-180,"Texture/bulletGreen1.png"); TODO agregar al helper
 }
 
 std::vector<Bullet*>& Enemy::getBullets()
@@ -85,7 +84,7 @@ void Enemy::movement()
 	float distanceEnemyPlayer = _distance->distance(_sprite.getPosition(), _player_position);
 	
 	int optionCase = 0;
-	float distance = 50.f;
+	float distance = 100.f;
 
 	//Generar Random direction
 	if (_movement_state || canMove())
@@ -105,12 +104,15 @@ void Enemy::movement()
 	// Frenar movimiento
 	if (distanceEnemyTarget  <= distance || distanceEnemyPlayer  <= distance)
 	{
-		_direction = 3;
+		if (_direction == 2)
+			_direction = 0;
+		else if (_direction == 3)
+			_direction = 1;
 	}
 	
 	if (_life >= 1)
 	{
-		if (distancePlayer < distanceTarget && _player_visibility)
+		if (distancePlayer < distanceTarget /*&& _player_visibility*/)
 		{
 			switch (_direction)
 			{
@@ -296,7 +298,7 @@ void Enemy::updateArmor()
 	if (_life >= 1)
 	{
 		//APUNTA ENEMIGO
-		if (distancePlayer < distanceTarget && _player_visibility)
+		if (distancePlayer < distanceTarget /*&& _player_visibility*/)
 		{
 			//armor´s degree
 			float deg = _distance->degree(_player_position, _armor->getPosition());
@@ -317,7 +319,7 @@ void Enemy::updateArmor()
 		}
 		else //APUNTA BASE
 		{
-			float deg = _distance->degree(_target_position, _armor->getPosition());
+			float deg = _distance->degree({ _target_position.x, _target_position.y - 50.f }, _armor->getPosition());
 
 			_buffer[_buffer_position] = deg;
 			_buffer_position++;

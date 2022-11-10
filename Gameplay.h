@@ -55,22 +55,30 @@ private:
 	//methods
 	sf::Vector2f _last_position_shoot;
 
-	//Test
-	Movable* _movable;
-	Tree* _tree;
-	std::vector<Tree*>  _trees;
-	
 	//File Level
 	FileLevel _fileLevel;
+	
+	//Tanks
 	int _tanksDeleted;
 	int* _tanks;
 	int _tanksNumber;
 	int _positionTankVector;
 
+	//Movable
+	Movable* _movable;
+	std::vector<Movable*> _movables;
+	int _movablesNumber;
+	sf::Vector2f* _movablePosition;
+
+	//Tree
+	Tree* _tree;
+	std::vector<Tree*>  _trees;
+	int _treesNumber;
+	sf::Vector2f* _treePosition;
+	int _hiddenTree;
+	
 	//PowerUp
 	PowerUp* _powerUp;
-
-	sf::Vector2f tree[1] = { {100, 500} };
 	
 	// Init functions
 	void _initWindow();
@@ -80,7 +88,6 @@ private:
 	void _initFile();
 	void _initPlayer();
 	void _initEnemy();
-	void _initBlock();
 	Bullet* _initBullet();
 	void _initEffect();
 	void _initHelpers();

@@ -2,10 +2,9 @@
 
 bool Level::initFile(int level) {
 	
-	//Read Register _level
+	//LEER NOVELES DE ARCHIVO
     if (fileLevel.loadLevels(level))
     {
-        std::cout << "Level" << level <<std::endl;
 		
         char mapFile[460];
         int k = 0;
@@ -39,7 +38,6 @@ Block* Level::getTile(int i, int j)
 {
     return _tile[i][j];
 }
-
 
 void Level::initLevel()
 {
@@ -169,6 +167,12 @@ void Level::initLevel()
                         _tile[i][j] = new Unbreakable("Texture/water_4.png", sf::Vector2u(1, 1));
                         break;
                     }
+                }
+                break;
+				
+                case '?':
+                {
+                  _tile[i][j] = new Unbreakable("Texture/water_2.png", sf::Vector2u(1, 1));
                 }
                 break;
 
@@ -422,6 +426,8 @@ void Level::initLevel()
                     _tile[i][j] = new Target("Texture/target_bridge_x_5.png", sf::Vector2u(5, 1));
                     _tile[i][j]->setHaveEffect(true);
                     _tile[i][j]->getSprite().setColor(sf::Color(255, 255, 255, rand() % 20 + 205));
+                    _tile[i][j]->setScale({ 1.5f, 1.5f });
+                    _tile[i][j]->getEffect()->getSprite().setScale({ 2.f, 2.f });
                     _targetIndex.x = i;
                     _targetIndex.y = j;
                 }
@@ -465,17 +471,26 @@ void Level::update()
 
 void Level::render(sf::RenderWindow& window)
 {
+	//OBEJTOS
     for (int i = 0; i < HEIGHT_MAP; i++)
     {
         for (int j = 0; j < WIDTH_MAP; j++)
         {
             _tile[i][j]->render(window);
-            _tile[i][j]->renderEffect(window);
         }
     }
 
+	//TARGET
     _tile[_targetIndex.x][_targetIndex.y]->render(window);
-    _tile[_targetIndex.x][_targetIndex.y]->setScale({ 1.5f, 1.5f });
+
+	//EFECTOS
+    for (int i = 0; i < HEIGHT_MAP; i++)
+    {
+        for (int j = 0; j < WIDTH_MAP; j++)
+        {
+            _tile[i][j]->renderEffect(window);
+        }
+    }
 }
 
 int Level::getHeight()

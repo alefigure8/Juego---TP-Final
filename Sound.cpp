@@ -13,15 +13,33 @@ sf::Sound Sound::GetSoundConfig() {
 	return _sound;
 }
 
+void Sound::playSlide()
+{
+	buffer("Sound/slide.wav");
+	play();
+}
+
 void Sound::playExplosion()
 {
 	buffer("Sound/explosion.wav");
 	play();
 }
 
+void Sound::playBigExplosion()
+{
+	buffer("Sound/big_explosion.wav");
+	play();
+}
+
 void Sound::PlayPowerup()
 {
 	buffer("Sound/powerUp.wav");
+	play();
+}
+
+void Sound::PlayPowerupApperece()
+{
+	buffer("Sound/powerUp2.wav");
 	play();
 }
 

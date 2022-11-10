@@ -13,8 +13,11 @@ public:
 	Sound();
 	~Sound();
 	sf::Sound GetSoundConfig();
+	void playSlide();
 	void playExplosion();
+	void playBigExplosion();
 	void PlayPowerup();
+	void PlayPowerupApperece();
 	void playBullet();
 	void playeBulletEnemies();
 	void playHit();

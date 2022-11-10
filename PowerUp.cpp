@@ -107,6 +107,9 @@ PowerUp::PowerUp()
 	//clock
 	_clock_duration->setTime(300.f);
 	_clock_spawn->setTime(600.f);
+
+	//sound
+	_sound = new Sound;
 }
 
 PowerUp::~PowerUp()

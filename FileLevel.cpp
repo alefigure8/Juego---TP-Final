@@ -19,7 +19,7 @@ FileLevel::~FileLevel()
 bool FileLevel::saveLevel(int level)
 {
 	FILE* pFile;
-	pFile = fopen("Files/levels.dat", "ab");
+	pFile = fopen("Files/levels.dat", "rb+");
 	
 	if (pFile == NULL) {
 		std::cout << "Error opening file" << std::endl;
@@ -120,7 +120,7 @@ void FileLevel::setEnemies(int enemies[15])
 	}
 }
 
-void FileLevel::setTrees(sf::Vector2f trees[6])
+void FileLevel::setTrees(sf::Vector2f* trees)
 {
 	for (int i = 0; i < 6; i++)
 	{
@@ -128,7 +128,7 @@ void FileLevel::setTrees(sf::Vector2f trees[6])
 	}
 }
 
-void FileLevel::setMovables(sf::Vector2f movables[6])
+void FileLevel::setMovables(sf::Vector2f* movables)
 {
 	for (int i = 0; i < 6; i++)
 	{

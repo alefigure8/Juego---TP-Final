@@ -17,17 +17,14 @@ void Gameplay::_initGame()
 {
 	_positionTankVector = 0;
 	_tanksDeleted = 0;
-	_points = 0;
 
 	if (_initLevel())
 	{
 		_initPlayer();
 		_initEnemy();
-		_initBlock();
 		_initEffect();
 		_initHelpers();
 		_initPowerUp();
-		_initSounds();
 		_initGraphic();
 	}
 	else
@@ -58,9 +55,10 @@ bool Gameplay::_initLevel()
 
 void Gameplay::_initFile()
 {
+	//LEER DE ARCHIVO
 	if (_fileLevel.loadLevels(_levelNumber))
 	{
-		//Enemies
+		//ENEMIES
 		_tanksNumber = _fileLevel.getEnemiesNumber();
 		_tanks = new int[_tanksNumber];
 
@@ -68,12 +66,43 @@ void Gameplay::_initFile()
 		{
 			_tanks[i] = _fileLevel.getEnemies()[i];
 		}
+
+		//MOVABLES
+		_movablesNumber = _fileLevel.getMovablesNumber();
+		_movablePosition = new sf::Vector2f[_movablesNumber];
+		
+		for (int i = 0; i < _movablesNumber; i++)
+		{
+			_movablePosition[i] = _fileLevel.getMovables()[i];
+		}
+		
+		for (int i = 0; i < _movablesNumber; i++)
+		{
+			_movable = new Movable("Texture/truck_1.png", sf::Vector2u(2, 1));
+			_movable->setScale({ 0.7, 0.7 });
+			_movable->getSprite().setColor(sf::Color(rand() % 40 + 205, rand() % 40 + 205, rand() % 40 + 205));
+			_movable->setPosition(_movablePosition[i]);
+			_movables.push_back(_movable);
+		}
+
+
+		//TREE
+		_treesNumber = _fileLevel.getMovablesNumber();
+		_treePosition = new sf::Vector2f[_treesNumber];
+		
+		for (int i = 0; i < _treesNumber; i++)
+		{
+			_treePosition[i] = _fileLevel.getTrees()[i];
+		}
+		
+		for (int i = 0; i < _treesNumber; i++)
+		{
+			_tree = new Tree("Texture/tree_1.png", sf::Vector2u(1, 1));
+			_tree->getSprite().setColor(sf::Color(rand() % 40 + 205, 255, 255));
+			_tree->setPosition(_treePosition[i]);
+			_trees.push_back(_tree);
+		}
 	}
-
-	//Movales
-
-
-	//Trees
 }
 
 void Gameplay::_initPlayer()
@@ -103,6 +132,7 @@ void Gameplay::_initEnemy()
 			_enemy->setAttackMax(15.f);
 			_enemy->setWeight(2);
 			_enemy->setSpeedMovement(0.7f);
+			_enemy->setSpeedMovement(0.f);
 			_enemy->setHP(2);
 			_enemy->setLifePost(3);
 			_enemy->setBulletDistance(90.f);
@@ -172,22 +202,6 @@ Bullet* Gameplay::_initBullet()
 	return new Bullet({ armorPositionX, armorPositionY }, { velx, vely }, degree - 180, _bulletDistance, "Texture/bullet_player_1.png");
 }
 
-void Gameplay::_initBlock()
-{
-	_movable = new Movable("Texture/truck_1.png", sf::Vector2u(2, 1));
-	_movable->setPosition({ 200, 300 });
-	_movable->setScale({ 0.7, 0.7 });
-
-
-	for (int i = 0; i < 1; i++)
-	{
-		_tree = new Tree("Texture/tree_1.png", sf::Vector2u(1, 1));
-		_tree->setPosition(tree[i]);
-		_trees.push_back(_tree);
-	}
-}
-
-
 void Gameplay::_initHelpers()
 {
 	//Reloj de los Enemigos
@@ -236,8 +250,9 @@ void Gameplay::_restartGame()
 
 void Gameplay::_endGame()
 {
-	_backMenu = false;
 	_levelNumber = 1;
+	_points = 0;
+	_backMenu = false;
 	_gameOver = false;
 	_initPlay = false;
 }
@@ -266,11 +281,13 @@ Gameplay::Gameplay()
 	_gameOver = false;
 	_backMenu = false;
 	_initPlay = false;
+	_hiddenTree = 0;
 	
 	//Init functiones
 	_initWindow();
 	_initMenu();
 	_initScreen();
+	_initSounds();
 }
 
 Gameplay::~Gameplay()
@@ -304,15 +321,21 @@ void Gameplay::updatePollevents()
 				{
 				case sf::Keyboard::W:
 				case sf::Keyboard::Up:
+				{
 					_menu->MoveUp();
+					_sound->playSlide();
+				}
 					break;
-
 				case sf::Keyboard::S:
 				case sf::Keyboard::Down:
+				{
 					_menu->MoveDown();
+					_sound->playSlide();
+				}
 					break;
 				case sf::Keyboard::Enter:
 				{
+					_sound->playBullet();
 					if (_menu->getContinue()) {
 
 						if (_menu->getPressedItem() == 0)
@@ -411,7 +434,7 @@ void Gameplay::updatePollevents()
 
 void Gameplay::updateGUI()
 {
-	_GUI->update(_player, _tanksNumber -  _tanksDeleted);
+	_GUI->update(_player, _tanksNumber -  _tanksDeleted, _points, _levelNumber);
 }
 
 void Gameplay::updateInput()
@@ -488,18 +511,16 @@ void Gameplay::updateBullet()
 
 					_level->getTile(j, h)->setLife(_level->getTile(j, h)->getLife() - 1);
 
-					if (_level->getTile(j, h)->getLife() == 1)
+					if (_level->getTile(j, h)->getLife() == 1 && _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y) != _level->getTile(j, h))
 					{
 						_sound->playExplosion();
+						_points = _points - 2 <= 0 ? 0 : _points - 2;
 					}
-				}
-				else if (_bullet[i]->getBounds().intersects(_movable->getBounds()) && !deleteBullet) // Colision con caja
-				{
-					delete _bullet.at(i);
-					_bullet.erase(_bullet.begin() + i);
-					deleteBullet = true;
 
-					_movable->setLife(_movable->getLife() - 1);
+					if (_level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getLife() == 1)
+					{
+						_sound->playBigExplosion();
+					}
 				}
 				else if (_bullet[i]->getBounds().top > _window->getSize().y ||
 					_bullet[i]->getBounds().top + _bullet[i]->getBounds().height < 0.f ||
@@ -511,6 +532,19 @@ void Gameplay::updateBullet()
 					delete _bullet.at(i);
 					_bullet.erase(_bullet.begin() + i);
 					deleteBullet = true;
+				}
+
+				//MOVABLES
+				for (auto* movables : _movables)
+				{
+					if (_bullet[i]->getBounds().intersects(movables->getBounds()) && !deleteBullet)
+					{
+						delete _bullet.at(i);
+						_bullet.erase(_bullet.begin() + i);
+						deleteBullet = true;
+
+						movables->setLife(movables->getLife() - 1);
+					}
 				}
 				
 				//Enemies
@@ -528,6 +562,7 @@ void Gameplay::updateBullet()
 						if (_enemies[j]->getDamage() == 0)
 						{
 							_tanksDeleted++;
+							_points += _enemies[j]->getHP() * 5;
 						}
 						
 						//Borrar enemigo si la vida llega a 0
@@ -561,56 +596,74 @@ void Gameplay::updateBullet()
 						enemy->getBullets()[i]->getBounds().intersects(_level->getTile(j, h)->getBounds()) &&
 						!deleteBullet2 &&
 						_level->getTile(j, h)->getLife() > 0
-						) // Colision Edificios
+						) // DISPARO CASAS
 					{
+						//BORRAR BALA
 						delete enemy->getBullets().at(i);
 						enemy->getBullets().erase(enemy->getBullets().begin() + i);
 						deleteBullet2 = true;
 
 						_level->getTile(j, h)->setLife(_level->getTile(j, h)->getLife() - enemy->getHP());
 
-
-						if (_level->getTile(j, h)->getLife() == 1)
+						//Explosion casas
+						if (_level->getTile(j, h)->getLife() == 1 && _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getLife() != 1)
 						{
 							_sound->playExplosion();
+							_points = _points - 2 <= 0 ? 0 : _points - 2;
 						}
-					}
-					else if (enemy->getBullets()[i]->getBounds().intersects(_movable->getBounds()) && !deleteBullet2) // Colision con caja
-					{
-						delete enemy->getBullets().at(i);
-						enemy->getBullets().erase(enemy->getBullets().begin() + i);
-						deleteBullet2 = true;
 
-						_movable->setLife(_movable->getLife() - enemy->getHP());
+						//Explosion Target
+						if (_level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getLife() == 0)
+						{
+							_sound->playBigExplosion();
+						}
 					}
 					else if (enemy->getBullets()[i]->getBounds().top > _window->getSize().y ||
 						enemy->getBullets()[i]->getBounds().top + enemy->getBullets()[i]->getBounds().height < 0.f ||
 						enemy->getBullets()[i]->getBounds().left + enemy->getBullets()[i]->getBounds().width > _window->getSize().x ||
 						enemy->getBullets()[i]->getBounds().left + enemy->getBullets()[i]->getBounds().width < 0.f ||
 						dxyEnemy > enemy->getBullets()[i]->getMaxDistance()
-						&& !deleteBullet2)
+						&& !deleteBullet2) // BORRAR BALA SI SALE DE LA PANTALLA
 					{
+						//BORRAR BALA
 						delete enemy->getBullets().at(i);
 						enemy->getBullets().erase(enemy->getBullets().begin() + i);
 						deleteBullet2 = true;
 					}
-					else if (enemy->getBullets()[i]->getBounds().intersects(_player->getBounds()) && !deleteBullet2) // Colision con player
+					else if (enemy->getBullets()[i]->getBounds().intersects(_player->getBounds()) && !deleteBullet2) // DISPARO PLAYER
 					{
+						//BORRAR BALA
 						delete enemy->getBullets().at(i);
 						enemy->getBullets().erase(enemy->getBullets().begin() + i);
 						deleteBullet2 = true;
 
-						//Saca puntos de damage
+						//DAÑO
 						_player->setDamage(_player->getDamage() - enemy->getHP() <= 0 ? 0 : _player->getDamage() - enemy->getHP());
 						
-						//Respawn
+						//AL PERDER UNA VIDA
 						if (_player->getDamage() == 0)
 						{
+							//PUNTOS
+							_points = _points - 20 <= 0 ? 0 : _points - 20;
+
+							//RESET
 							_player->reset();
 							_player->getSprite().setPosition({ _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().x - 50, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().y - 150 });
 						}
+					}
+					
+					//Movables
+					for (auto* movables : _movables)
+					{
+						if (enemy->getBullets()[i]->getBounds().intersects(movables->getBounds()) && !deleteBullet2) //DISPARO CAMIONES
+						{
+							//BORRAR BALA
+							delete enemy->getBullets().at(i);
+							enemy->getBullets().erase(enemy->getBullets().begin() + i);
+							deleteBullet2 = true;
 
-						//Check Base Life. Si llega a 0, Game Over
+							movables->setLife(movables->getLife() - enemy->getHP());
+						}
 					}
 
 					//Si la bala del enemigo golpea a otro enemigo
@@ -645,7 +698,6 @@ void Gameplay::updateBullet()
 void Gameplay::updateColliders()
 {
 	Collider player = _player->getCollider();
-	Collider movable = _movable->getCollider();
 
 	for (int i = 0; i < _level->getHeight(); i++)
 	{
@@ -678,37 +730,47 @@ void Gameplay::updateColliders()
 				}
 				
 				//Detener movimiento de los elementos movible si la casa tiene vida, sino no frenar
-				if (_level->getTile(i, j)->getCollider().CheckCollision(movable, 1.f))
+				for (auto* movables : _movables)
 				{
-					_movable->getCollider().CheckCollision(player, 1.f);
+					Collider movable = movables->getCollider();
+					
+					if (_level->getTile(i, j)->getCollider().CheckCollision(movable, 1.f))
+					{
+						movables->getCollider().CheckCollision(player, 1.f);
+
+						for (auto* enemy : _enemies)
+						{
+							Collider enemyC = enemy->getCollider();
+							// Cambiar direccion de enemigo si hay colision
+							movables->getCollider().CheckCollision(enemyC, 1.f);
+						}
+					}
+					else
+					{
+						movables->getCollider().CheckCollision(player, 0.5f);
+						for (auto* enemy : _enemies)
+						{
+							Collider enemyC = enemy->getCollider();
+							// Cambiar direccion de enemigo si hay colision
+							movables->getCollider().CheckCollision(enemyC, 0.5);
+						}
+					}
+				}
+				
+			}
+			else
+			{
+				for (auto* movables : _movables)
+				{
+					Collider movable = movables->getCollider();
 
 					for (auto* enemy : _enemies)
 					{
 						Collider enemyC = enemy->getCollider();
+
 						// Cambiar direccion de enemigo si hay colision
-						_movable->getCollider().CheckCollision(enemyC, 1.f);
+						movables->getCollider().CheckCollision(enemyC, 0.5f);
 					}
-				}
-				else
-				{
-					_movable->getCollider().CheckCollision(player, 0.5f);
-					for (auto* enemy : _enemies)
-					{
-						Collider enemyC = enemy->getCollider();
-						// Cambiar direccion de enemigo si hay colision
-						_movable->getCollider().CheckCollision(enemyC, 0.5);
-					}
-				}
-			}
-			else
-			{
-				_movable->getCollider().CheckCollision(player, 0.5f);
-				
-				for (auto* enemy : _enemies)
-				{
-					Collider enemyC = enemy->getCollider();
-					// Cambiar direccion de enemigo si hay colision
-					_movable->getCollider().CheckCollision(enemyC, 0.5f);
 				}
 			}
 		}
@@ -744,6 +806,9 @@ void Gameplay::updateColliders()
 		{
 			//Sonido
 			_sound->PlayPowerup();
+
+			//Puntos por agarrar PowerUps
+			_points += 50;
 
 			_powerUp->setCanDelete(true);
 
@@ -860,6 +925,7 @@ void Gameplay::updateEnemies()
 
 				if (_player->getDamage() == 0)
 				{
+					//Respawn
 					_player->getSprite().setPosition({ _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().x - 50, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().y - 150 });
 				}
 			}
@@ -869,13 +935,18 @@ void Gameplay::updateEnemies()
 
 				if (_player->getDamage() == 0)
 				{
+					//Respawn
 					_player->getSprite().setPosition({ _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().x - 50, _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getPosition().y - 150 });
 
 				}
 			}
+			
 			//Borrar enemigo
 			delete _enemies.at(i);
 			_enemies.erase(_enemies.begin() + i);
+
+			//puntos por explotar enemigos
+			_points += 5;
 		}
 	}
 }
@@ -885,11 +956,10 @@ void Gameplay::updatePlayer()
 	_player->updateArmor(*_window);
 	_player->update(*_window);
 
-	//Si la vida del player es 0 o la vida del puente es 0
-	if (_player->getLife() == 0 || _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getLife() == 0)
+	if (_player->getLife() == 0 || _level->getTile(_level->getTargetIndex().x, _level->getTargetIndex().y)->getLife() == 1)
 	{
+		// Al morir o ser destruida la base empieza el final malo y luego la pantalla de puntos
 		_screen->initBadEnding();
-		//_backMenu = true;
 		_screen->setShowEnterName(true);
 		_deleteGame();
 	}
@@ -897,24 +967,38 @@ void Gameplay::updatePlayer()
 
 void Gameplay::updateBlock()
 {
-	_movable->update();
 	
-	//trees
+	//Movables
+	for (auto* movables : _movables)
+	{
+		movables->update();
+	}
+
+	//Trees
 	for (int i = 0; i < _trees.size(); i++)
 	{
 		_trees[i]->update();
-		
-		if (_trees[i]->getPosition().x + 10 < _player->getPosition().x ||
-			_trees[i]->getPosition().x - 10 > _player->getPosition().x ||
-			_trees[i]->getPosition().y + 10 < _player->getPosition().y ||
-			_trees[i]->getPosition().y - 10 > _player->getPosition().y)
-		{
-			_player->setVisibility(true);
-		}
-		else
-		{
-			_player->setVisibility(false);
-		}
+
+		// TODO: LOS TANQUE SE PUEDEN ESCONDER
+		//if (_trees[i]->getPosition().x + 10 < _player->getPosition().x ||
+		//	_trees[i]->getPosition().x - 10 > _player->getPosition().x ||
+		//	_trees[i]->getPosition().y + 10 < _player->getPosition().y ||
+		//	_trees[i]->getPosition().y - 10 > _player->getPosition().y)
+		//{
+		//	//_player->setVisibility(true);
+		//	_hiddenTree = i;
+		//	std::cout << "Tree: " << _hiddenTree << std::endl;
+		//	std::cout << "True: " << std::endl;
+		//}
+		//
+		//if (_trees[_hiddenTree]->getPosition().x + 50 < _player->getPosition().x ||
+		//	_trees[_hiddenTree]->getPosition().x - 50 > _player->getPosition().x ||
+		//	_trees[_hiddenTree]->getPosition().y + 50 < _player->getPosition().y ||
+		//	_trees[_hiddenTree]->getPosition().y - 50 > _player->getPosition().y)
+		//{
+		//	//_player->setVisibility(false);
+		//	std::cout << "False: " << std::endl;
+		//}
 	}
 }
 
@@ -924,9 +1008,7 @@ void Gameplay::updateScreen()
 	if (_screen->getShowScreen() || _screen->getShowEnterName() || _screen->getShowIntro())
 	{
 		_screen->update();
-		
 	}
-	
 	
 	//Iniciar Ingresar Nombre
 	if (!_screen->getShowScreen() && _screen->getShowEnterName())
@@ -938,9 +1020,9 @@ void Gameplay::updateScreen()
 	//Regresar al menu
 	if (_backMenu && _screen->getEndScreen())
 	{
+		_endGame();
 		_menu->setShow(true);
 		_screen->setEndScreen(false);
-		_endGame();
 	}
 
 }
@@ -956,13 +1038,13 @@ void Gameplay::updateLevel()
 
 		if (!_gameOver)
 		{
-			//Pantalla de Sigueinte Nivel
+			//SIGUIENTE NIVEL
 			_screen->initIntroLevel(_levelNumber - 1);
 
 		}
 		else
 		{
-			//Final bueno por terminar los niveles
+			//NO HAY MAS NIVELES
 			_screen->initGoodEnding();
 			_screen->setShowEnterName(true);
 		}
@@ -973,7 +1055,6 @@ void Gameplay::update()
 {
 	updateScreen();
 	
-
 	if (!_menu->getShow() && !_screen->getShowInstruction() && !_screen->getShowScreen() && !_screen->getShowPoints() && !_screen->getShowEnterName() && !_screen->getShowIntro())
 	{
 		//Level
@@ -995,6 +1076,7 @@ void Gameplay::update()
 
 			//player
 			updatePlayer();
+			std::cout << "X: " << _player->getPosition().x << " / Y: " << _player->getPosition().y << std::endl;
 
 			//Bloque
 			updateBlock();
@@ -1036,24 +1118,25 @@ void Gameplay::render()
 		//Mapa
 		_level->render(*_window);
 
-		//Bloque Caja
-		_movable->render(*_window);
+		//Camiones
+		for (auto* movable : _movables)
+		{
+			movable->render(*_window);
+		}
 
 		//Player
 		_player->render(*_window);
 
-		//trees
-		for (auto* tree : _trees)
-		{
-			tree->render(*_window);
-		}
-
-		//Enemy
 		// Vector enemigos
 		for (auto* enemy : _enemies)
 		{
 			enemy->render(*_window);
 			enemy->renderEffect(*_window);
+			
+			for (auto* bullet : enemy->getBullets())
+			{
+				bullet->render(*_window);
+			}
 		}
 
 		//Bullets
@@ -1061,20 +1144,17 @@ void Gameplay::render()
 		{
 			bullet->render(*_window);
 		}
-
-		// Vector enemigos
-		for (auto* enemy : _enemies)
-		{
-			for (auto* bullet : enemy->getBullets())
-			{
-				bullet->render(*_window);
-			}
-		}
-
+		
 		//Efectos
 		if (_shoot->getState())
 		{
 			_shoot->render(*_window);
+		}
+
+		//trees
+		for (auto* tree : _trees)
+		{
+			tree->render(*_window);
 		}
 
 		//PowerUps

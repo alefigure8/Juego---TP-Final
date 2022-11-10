@@ -9,11 +9,12 @@ void Tank::_initArmor(std::string armorTexture, sf::Vector2u imagecount)
 
 void Tank::initEffect()
 {
+	//INIT HUMO
 	_explotion = new Effect("Texture/smoke_1.png", sf::Vector2u(24, 1));
 	_explotion->getSprite().setScale({0.6f, 0.6f });
 	_explotion->getSprite().setColor(sf::Color(255, 255, 255, rand() % 20 + 205));
 	
-	
+	//INIT EXPLOSION
 	_bigger_explotion = new Effect("Texture/explotion_1.png", sf::Vector2u(10, 1));
 	_bigger_explotion->getSprite().setScale({ 0.6f, 0.6f });
 }

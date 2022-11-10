@@ -19,7 +19,7 @@ Block::~Block()
 void Block::initEffect()
 {
 	_explotion = new Effect("Texture/explotion_1.png", sf::Vector2u(10, 1));
-	_explotion->getSprite().setScale({0.3f, 0.3f});
+	_explotion->getSprite().setScale({0.5f, 0.5f});
 }
 
 int Block::getLife()
@@ -35,6 +35,11 @@ int Block::getMaxLife()
 bool Block::getIsShield()
 {
 	return _isShield;
+}
+
+Effect* Block::getEffect()
+{
+	return _explotion;
 }
 
 bool Block::getTarget()
