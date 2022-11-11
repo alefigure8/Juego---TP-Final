@@ -253,8 +253,6 @@ void Screen::update()
 	
 	if (isReady())
 	{
-		std::cout << "Entra1" << std::endl;
-
 		if (!_showScreen)
 		{
 			
@@ -264,8 +262,6 @@ void Screen::update()
 		}
 		else
 		{
-			std::cout << "Entra3" << std::endl;
-
 			_showScreen = false;
 		}
 	}
